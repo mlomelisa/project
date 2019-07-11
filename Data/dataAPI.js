@@ -1,5 +1,5 @@
 'use strict';
-let GoogFirebase =
+let Firebase =
 {
     "database": firebase.database(),
     "connected": false,
@@ -107,4 +107,78 @@ let GoogFirebase =
             console.log(errorCode, errorMessage, email, credential)
         })
     },
+}
+
+let BrowserData = 
+{
+    "BrowserName": function()
+    {
+        window.browserName()
+        {
+            return navigator.appName;
+        }
+    },
+
+    "BrowserEngine": function()
+    {
+        window.browserEngine()
+        {
+            return navigator.product;
+        }
+    },
+
+    "BrowserLanguage": function()
+    {
+        window.browserLanguage()
+        {
+            return navigator.language;
+        }
+    },
+
+    "BrowserOnline": function()
+    {
+        window.browserOnline()
+        {
+            return navigator.onLine;
+        }
+    },
+
+    "BrowserPlatform": function()
+    {
+        {
+            return navigator.platform;
+        }
+    },
+
+    "BrowserData": function()
+    {
+
+    },
+
+    "BrowserData": function()
+    {
+
+    },
+
+    "BrowserData": function()
+    {
+
+    },
+
+    "BrowserData": function()
+    {
+
+    },
+
+    "BrowserData": function()
+    {
+
+    },
+
+    "BrowserData": function()
+    {
+
+    },
+
+    
 }
