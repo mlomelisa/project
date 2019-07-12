@@ -113,9 +113,6 @@ let API =
             {
                 let msDate = new Date(milliseconds);
                 
-                DataAPI.userCred.shipSelectionArray = object.shipSelectionArray;
-                DataAPI.userCred.WinLossHistory = object.WinLossHistory;
-                DataAPI.userCred.HighestScore = object.HighestScore;
                 DataAPI.userCred.email = object.email;
                 DataAPI.userCred.refreshToken = object.refreshToken;
                 DataAPI.userCred.signupDate = object.signupDate;
@@ -245,13 +242,13 @@ let API =
     //How do I hide this?
     "firebaseConfig":
     {
-        apiKey: "AIzaSyC2FlvVF-Wi6l3IWPCCwaSaiNg3cZP6iNs",
-        authDomain: "orion-7b3c4.firebaseapp.com",
-        databaseURL: "https://orion-7b3c4.firebaseio.com",
-        projectId: "orion-7b3c4",
-        storageBucket: "orion-7b3c4.appspot.com",
-        messagingSenderId: "620631967011",
-        appId: "1:620631967011:web:16cff0f134a3e088"
+        apiKey: "AIzaSyBWuqUPwxrgPbVQ3H4fA77ySoz7XURsKPA",
+        authDomain: "ieat-3a848.firebaseapp.com",
+        databaseURL: "https://ieat-3a848.firebaseio.com",
+        projectId: "ieat-3a848",
+        storageBucket: "",
+        messagingSenderId: "791706584965",
+        appId: "1:791706584965:web:bd04f2511e920ae8"
     },
 
     //login via google
