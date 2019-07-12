@@ -1,82 +1,7 @@
 
-.body{
-    max-height: 100%;
-}
 body{
     height: 100vh;
     max-height: 100%
-}
-
-
-.carousel-item {
-    height: 20rem;
-
-  }
-
-.carousel-image1{
-   text-align: center;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-image: url("meal.png");
-        background-position: center;
-        background-repeat: no-repeat;
-       
-    
-  }
-  .carousel-image2{
-   text-align: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url("ingredients.png");
-    background-repeat: no-repeat;
-    background-position: center;
-
-
-}
-
-.carousel-inner{
-    margin: auto;
-    width: 80%
-}
-.jumbotron{
-    padding: 5em 0em 2em 0em;
-    height: 100vh;
-    max-height: 100%;
-    background-color: white;
-
-}
-
-
-.introSection.row{
-    text-align: center;
- color: white;
-    padding-top:1em;
-    width: 60%;
-    margin-right: auto;
-    margin-left: auto;
-    margin-bottom: 2em;
-    border-radius: 0.5em;
-
-
-}
-.introButtons button{
-margin: 1em 2em;
-padding: 0.5em 1em;
-font-weight: bold;
-color: #343a40;
-border:0.2em #343a40 solid;
-
-background-color: lightskyblue;
-}
-
-.carousel-indicators li.active{
-    background-color: lightskyblue;
 }
 
 .brandText{
@@ -96,3 +21,73 @@ a.nav-link{
     font-weight: bold;
     font-family: 'Merriweather', serif;
 }
+#signIn{
+    margin: 1em 0.5em;
+    padding: 0.3em 1em;
+    font-weight: bold;
+    color: #343a40;
+    border:0.2em #343a40 solid;
+    background-color: lightskyblue;
+}
+
+.jumbotron{
+    padding: 5em 0em 2em 0em;
+    height: 100vh;
+    max-height: 100%;
+    background-color: white;
+
+}
+
+.carousel-inner{
+    margin: auto;
+    width: 80%
+}
+.carousel-item {
+    height: 20rem;
+  }
+
+.carousel-image1{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("meal.png");
+    background-position: center;
+    background-repeat: no-repeat;  
+  }
+
+.carousel-image2{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("ingredients.png");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.carousel-indicators li.active{
+    background-color: lightskyblue;
+}
+
+
+.introSection.row{
+    text-align: center;
+    color: white;
+    padding-top:1em;
+    width: 60%;
+    margin-right: auto;
+    margin-left: auto;
+    margin-bottom: 2em;
+    border-radius: 0.5em;
+}
+.introButtons button{
+    margin: 1em 2em;
+    padding: 0.5em 1em;
+    font-weight: bold;
+    color: #343a40;
+    border:0.2em #343a40 solid;
+    background-color: lightskyblue;
+}
+
