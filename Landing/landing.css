@@ -55,7 +55,7 @@ body{
 
 .introSection.row{
     text-align: center;
-    background-color: darkgray;
+ color: white;
     padding-top:1em;
     width: 60%;
     margin-right: auto;
@@ -67,8 +67,30 @@ body{
 }
 .introButtons button{
 margin: 1em 2em;
+padding: 0.5em 1em;
+font-weight: bold;
+color: #343a40;
+border:0.2em #343a40 solid;
+
+background-color: lightskyblue;
 }
 
 .carousel-indicators li.active{
-    background-color: orange;
+    background-color: lightskyblue;
+}
+
+.brandText{
+    color:  lightskyblue;
+    font-weight: bold;
+    font-size: 3em;
+    margin: 0em 2em;
+}
+.brandText:hover{
+    text-decoration: none;
+    color:lightgray;
+}
+a.nav-link{
+    font-size: 1.5em;
+    margin: 0em 1em;
+    font-weight: bold;
 }
