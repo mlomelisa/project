@@ -1,9 +1,32 @@
 'use strict';
-let API = 
+let data = 
 {
-    "auth": firebase.Auth(),
+//DatabaseMain
     "database": firebase.database(),
-    "connected": false,
+    
+    //CONFIGS
+    "firebaseConfig":
+    {
+        apiKey: "AIzaSyBWuqUPwxrgPbVQ3H4fA77ySoz7XURsKPA",
+        authDomain: "ieat-3a848.firebaseapp.com",
+        databaseURL: "https://ieat-3a848.firebaseio.com",
+        projectId: "ieat-3a848",
+        storageBucket: "",
+        messagingSenderId: "791706584965",
+        appId: "1:791706584965:web:bd04f2511e920ae8"
+    },
+
+    //COMMANDS
+    //required to make firebase calls
+    "InitFirebase": function()
+    {
+        let config = this.firebaseConfig
+        this.database.initializeApp(config).then(this.connected = true)
+    },
+
+//API
+
+//PUBLIC OBJECTS   
     "userCalender" : 
     {
         "userID": "id",
@@ -19,7 +42,7 @@ let API =
         }
     },
     
-    "userProfile" : 
+    "userHealthProfile" : 
     {
         "userID": "id",
         "created": "msdate",
@@ -47,7 +70,6 @@ let API =
         "googUserInfo": "",
         "refreshToken": "unknown",
         //firebaseinfo
-        "newUser": false,
         "email": "unknown",
         //tracked
         "signupDate": "unknown",
@@ -56,86 +78,6 @@ let API =
         "anonymous": false,
     },
 
-    //todo this function should take an argument which can replace the window.confirm. that way it can be called in context
-    "authAgent": function()
-    {
-        firebase.auth().onAuthStateChanged(function(user){
-            if (user)
-            {
-                this.refreshUserProfile()
-                this.refreshBrowserData()
-            }
-            else
-            {
-                let response = window.confirm("Not Signed In: Sign in with Google?, hit yes to link your google account or cancel to remain anonymous. specifically I will be looking at: https://www.googleapis.com/auth/admin.directory.customer.readonly, https://www.googleapis.com/auth/analytics.readonly, https://www.googleapis.com/auth/adsense.readonly, https://www.googleapis.com/auth/contacts.readonly, even though I dont even know what kind of data this is structured as, also I am collecting all of your availble browser data, and I dont even know the legality of that... ")
-                if(response)
-                {
-                    this.googleLogin()
-                        .then(function ()
-                        {
-                            this.refreshUserProfile()
-                            this.refreshBrowserData()
-                        })
-                        .catch(function (err)
-                        {
-                            alert(`Error: ${err.message}`);
-                            console.log(`Error: ${err.message}`)
-                            console.log(`Error: ${err.stack}`)
-                        })
-                }
-                else
-                {
-                    firebase.auth().signInAnonymously()
-                        .then(function ()
-                        {
-                            this.userCred.anonymous = true;
-                            this.refreshUserProfile()
-                            this.refreshBrowserData()
-                        })
-                        .catch(function (err)
-                        {
-                            alert(`Error: ${err.message}`);
-                            console.log(`Error: ${err.message}`)
-                            console.log(`Error: ${err.stack}`)
-                        }
-                    )
-                }
-            }
-            this.onUserChangeSetGlobalUser();
-        })
-    },
-
-    "fbReadUserCreds": function(userid)
-    {
-        
-        this.database.ref('/UserSettings/' + userid).once('usersettingsobject')
-            .then(function(object)
-            {
-                let msDate = new Date(milliseconds);
-                
-                DataAPI.userCred.email = object.email;
-                DataAPI.userCred.refreshToken = object.refreshToken;
-                DataAPI.userCred.signupDate = object.signupDate;
-                DataAPI.userCred.lastSignIn = msDate
-                DataAPI.userCred.anonymous = object.anonymous
-            })
-            .catch(function (err)
-            {
-                alert(`Error: ${err.message}`);
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-            })
-    },
-    //call this as part of our enviro on all entrypoints, attach to major listener
-    "onUserChangeSetGlobalUser": function()
-    {
-        //user is undefined if no user is signed in
-        firebase.auth().onAuthStateChanged(function(user)
-        {
-            window.user = user;
-        })
-    },
-    
     //collected and stored as an object for each user instance.
     "browserData": 
     {
@@ -157,103 +99,296 @@ let API =
         "referrer": "unknown",
         "previousSites": {}
     },
+    
+    
+    
+//AUTHENTICATION CLUSTER
+    //AccessCommands
+    "auth": firebase.Auth(),
 
-    //builds browserdata object
+    //AGENTS
+    "authAgent": function()
+    {
+        this.InitFirebase();
+        this.refreshBrowserData();
+        this.auth.onAuthStateChanged(function(user){
+            newID = user;
+            previousID = data.userCred.firebaseUserID;
+            userLogout(previousID)
+            .then(function(newID)
+            {
+                window.user = newID;
+                let userID = newID.uid;
+                if(user)
+                {
+                    data.enableUserCredAgent(userID)
+                    console.log("enabled UserCredAgent")
+                    
+                }
+                else
+                {    
+                data.userLogin()
+                    .then(function(){
+                        let newuserID = data.userCred.firebaseUserID;
+                        data.enableUserCredAgent(newuserID);
+                        console.log("enabled UserCred Agent")
+                    })
+                }
+            })
+        })
+    },
+
+    "enableUserCredAgent": function(id)
+    {
+        this.InitFirebase();
+        this.userCred.active = true;
+        
+        //if data exists turn on agent
+        if (this.userIDExists(id))
+        {
+            data.userCredAgent(id)
+                .then(console.log("user data agent activated"))
+                .catch(function(id)
+                {
+                    //attempts to read from local if failing to connect to db
+                    data.readUserCredLocal(id);
+                })
+            data.writeUserCredLocal(id)
+                .then(console.log("user cred written locally"))
+            data.writeUserCred(id)
+                .then(console.log("user cred written to FireBase"))
+                .catch(function(id)
+                {
+                    //attempts to read from local if failing to connect to db
+                    data.readUserCredLocal(id);
+                })
+        }
+        //else turn on data and write settings data.
+        else
+        {
+        data.userCred.signupDate = msDate;
+        data.userCredAgent(id)
+            .then(console.log("user cred agent activated"))
+            .catch(function(id)
+            {
+                //attempts to read from local if failing to write to db
+                data.readUserCredLocal(id);
+            })
+        data.writeUserCredLocal(id)
+            .then(console.log("user cred written locally"))
+        data.writeUserCred(id)
+            .then(console.log("user cred written to FB"))
+            .catch(function(id)
+            {
+                //attempts to read from local if failing to write to db
+                data.readUserCredLocal(id);
+            })
+        }
+    },
+
+    "userCredAgent": function(userID)
+    {
+        this.InitFirebase();
+        userNode = this.database.ref('/UserCreds/' + userID)
+        userNode.on('child_added', function(storedCredential)
+        {
+            data.userCred = storedCredential
+        })
+            .catch(function (err)
+            {
+                console.log(`Error: ${err.message}`)
+                console.log(`Error: ${err.stack}`)
+            })
+    },
+
+    //WRITEDATA
+    "writeUserCred": function(userID)
+    {
+        this.InitFirebase();
+        let msDate = new Date(milliseconds);
+        let currentUser = this.auth.currentUser;
+        this.userCred.firebaseDisplayName = currentUser.displayName;
+        this.userCred.email = currentUser.email;
+        this.userCred.refreshToken = currentUser.refreshToken;
+        this.userCred.lastSignIn = msDate
+
+        this.database.getInstance().getReference()
+            .then(function(snapshot){
+                snapshot.child(userList).child(userID).setValue(msDate)
+            })
+            .then(function(snapshot){
+                snapshot.child(UserCreds).child(userID).child(msDate).setValue(data.userCred)
+            })
+            .then(function(snapshot)
+            {
+                snapshot.child(BrowserSettings).child(userID).child(msDate).setValue(data.browserData)
+            })
+            .catch(err)
+            {
+                console.log(`Error: ${err.message}`)
+                console.log(`Error: ${err.stack}`)
+                console.log(`Error: ${err.code}`)
+                console.log("There was an issue with saving userProfile Data to our Firebase")
+            }
+    },
+
+    "writeUserCredLocal" : function(userID)
+    {
+        window.localStorage.setItem(userID, JSON.stringify(data.userCred))
+        if (this.browserData.cookiesEnabled)
+        {
+            let date = new Date(milliseconds)
+            let expireDate = date + 2.628e+9 | 0
+            window.document.cookie = (userID + '=' + (JSON.stringify(data.userCred)) + '; expires=' + expireDate);
+        }
+    },
+
+    //CONDITIONS
+
+    "userIDExists": function(userID)
+    {
+        this.InitFirebase();
+        this.database.ref('/userList').once('userlist')
+            .then(function(snapshot)
+            {
+                if(snapshot.child(userID))
+                {
+                    return true;
+                }
+                else 
+                {
+                    return false;
+                }
+            })
+    },
+
+    //JOBS
+
+    //**TODO** PASS IN LOGIN METHOD - USE SWITCH TO FIREOFF PREFERRED CHOICE
+    "userLogin" : function()
+    {
+        let response = window.confirm("Not Signed In: Sign in with Google?, hit yes to link your google account or cancel to remain anonymous. specifically I will be looking at: https://www.googleapis.com/auth/admin.directory.customer.readonly, https://www.googleapis.com/auth/analytics.readonly, https://www.googleapis.com/auth/adsense.readonly, https://www.googleapis.com/auth/contacts.readonly, even though I dont even know what kind of data this is structured as, also I am collecting all of your availble browser data, and I dont even know the legality of that... ")
+        if(response)
+        {
+            data.googleLogin()
+                .then(function ()
+                {
+                    let currentUser = data.auth.currentUser;
+                    data.userCred.firebaseUserID = currentUser.uid;
+                    data.userCred.anonymous = false;
+                })
+                .catch(function (err)
+                {
+                    alert(`Error: ${err.message}`);
+                    console.log(`Error: ${err.message}`)
+                    console.log(`Error: ${err.stack}`)
+                })
+        }
+        else
+        {
+            data.auth.signInAnonymously()
+                .then(function ()
+                {
+                    let currentUser = data.auth.currentUser;
+                    this.userCred.firebaseUserID = currentUser.uid;
+                    this.userCred.anonymous = true;
+                })
+                .catch(function (err)
+                {
+                    alert(`Error: ${err.message}`);
+                    console.log(`Error: ${err.message}`)
+                    console.log(`Error: ${err.stack}`)
+                }
+            )
+        }
+    },
+
+    "userLogout" : function(userID)
+    {
+        this.InitFirebase();
+        userNode = this.database.ref('/UserCreds/' + userID)
+        userNode.off('child_added')
+        this.userCred.active = false;
+        this.writeUserCredLocal(userID);
+        this.writeUserCred(userID);
+    },
+
     "refreshBrowserData" : function ()
     {
         window.browserName()
         {
-            DataAPI.browserData.browserName = navigator.browserName;
+            data.browserData.browserName = navigator.browserName;
         };
         
         window.browserEngine()
         {
-            DataAPI.browserData.browserEngine = navigator.browserEngine;
+            data.browserData.browserEngine = navigator.browserEngine;
         };
 
         window.browserVersion1a()
         {
-            DataAPI.browserData.browserEngine = navigator.appVersion;
+            data.browserData.browserEngine = navigator.appVersion;
         };
 
         window.browserLanguage()
         {
-            DataAPI.browserData.browserLanguage = navigator.language;
+            data.browserData.browserLanguage = navigator.language;
         };
 
         window.browserOnline()
         {
-            DataAPI.browserData.browserOnline = navigator.onLine;
+            data.browserData.browserOnline = navigator.onLine;
         };
 
         window.dataCookiesEnabled()
         {
-            DataAPI.browserData.cookiesEnabled = navigator.cookieEnabled;
+            data.browserData.cookiesEnabled = navigator.cookieEnabled;
         };
 
         window.sizeScreenH()
         {
-            DataAPI.browserData.sizeScreenH = screen.height;
+            data.browserData.sizeScreenH = screen.height;
         };
 
         window.sizeScreenW()
         {
-            DataAPI.browserData.sizeScreenW = screen.width;
+            data.browserData.sizeScreenW = screen.width;
         };
 
         window.latitude()
         {
-            DataAPI.browserData.latCoord = position.coords.latitude;
+            data.browserData.latCoord = position.coords.latitude;
         };
 
         window.longitude()
         {
-            DataAPI.browserData.longCoord = position.coords.longitude;
+            data.browserData.longCoord = position.coords.longitude;
         };
         
         window.altitude()
         {
-            DataAPI.browserData.altitude = position.coords.altitude;
+            data.browserData.altitude = position.coords.altitude;
         };
 
         window.accuracy()
         {
-            DataAPI.browserData.accuracy = position.coords.accuracy;
+            data.browserData.accuracy = position.coords.accuracy;
         }
 
         window.referrer()
         {
-            DataAPI.browserData.referrer = document.referrer;
+            data.browserData.referrer = document.referrer;
         }
 
         window.previousSites()
         {
-            DataAPI.browserData.previousSites = history;
+            data.browserData.previousSites = history;
         }
     },
 
-    //obviously required to make firebase calls
-    "InitFirebase": function()
-    {
-        let config = this.firebaseConfig
-        this.database.initializeApp(config).then(this.connected = true)
-    },
-
-    //How do I hide this?
-    "firebaseConfig":
-    {
-        apiKey: "AIzaSyBWuqUPwxrgPbVQ3H4fA77ySoz7XURsKPA",
-        authDomain: "ieat-3a848.firebaseapp.com",
-        databaseURL: "https://ieat-3a848.firebaseio.com",
-        projectId: "ieat-3a848",
-        storageBucket: "",
-        messagingSenderId: "791706584965",
-        appId: "1:791706584965:web:bd04f2511e920ae8"
-    },
-
-    //login via google
     "googleLogin": function()
     {
+        this.InitFirebase();
         var provider = new firebase.auth.googleAuthProvider();
         provider.addScope('profile');
         provider.addScope('email');
@@ -261,12 +396,12 @@ let API =
         provider.addScope("https://www.googleapis.com/auth/analytics.readonly")
         provider.addScope("https://www.googleapis.com/auth/adsense.readonly")
         provider.addScope('https://www.googleapis.com/auth/contacts.readonly')
-        firebase.auth().useDeviceLanguage();
-        firebase.auth().signInWithPopup(provider)
+        this.auth.useDeviceLanguage();
+        this.auth.signInWithPopup(provider)
             .then(function(result)
             {
-                this.userCred.googUserInfo = result.user;
-                this.userCred.googAcsTkn = result.credential.accessToken;
+                data.userCred.googUserInfo = result.user;
+                data.userCred.googAcsTkn = result.credential.accessToken;
             })
             .catch(function(err)
             {
@@ -280,37 +415,7 @@ let API =
         )
     },
 
-    "refreshUserProfile": function()
-    {
-        let currentUser = firebase.auth().currentUser;
-        this.userCred.firebaseUserID = currentUser.uid;
-        this.userCred.firebaseDisplayName = currentUser.displayName;
-        this.userCred.active = true;
-        
-        if (this.userExists(currentUser.uid))
-        {
-            fbReadUserProfile(currentUser.uid)
-        }
-        else
-        {
-            this.userCred.newUser = true;
-            this.addNewUser(currentUser.uid)
-        }
-    },
+    
 
-    "userExists": function(userID)
-    {
-        this.database.ref('/UserList').once('userlist')
-            .then(function(snapshot)
-            {
-                if(snapshot.child(userID))
-                {
-                    return true;
-                }
-                else 
-                {
-                    return false;
-                }
-            })
-    }
+    
 }
