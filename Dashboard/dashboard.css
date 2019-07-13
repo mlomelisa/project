@@ -1,0 +1,41 @@
+
+body{
+    height: 100vh;
+    max-height: 100%
+}
+
+.brandText{
+    color:  lightskyblue;
+    font-weight: bold;
+    font-size: 3em;
+    margin: 0em 2em;
+    font-family: 'Merriweather', serif;
+}
+.brandText:hover{
+    text-decoration: none;
+    color:lightgray;
+}
+a.nav-link{
+    font-size: 1.5em;
+    margin: 0em 1em;
+    font-weight: bold;
+    font-family: 'Merriweather', serif;
+}
+#signIn{
+    margin: 1em 0.5em;
+    padding: 0.3em 1em;
+    font-weight: bold;
+    color: #343a40;
+    border:0.2em #343a40 solid;
+    background-color: lightskyblue;
+}
+
+.jumbotron{
+    padding: 5em 0em 2em 0em;
+    height: 100vh;
+    max-height: 100%;
+    background-color: white;
+
+}
+
+
