@@ -36,6 +36,30 @@ a.nav-link{
     max-height: 100%;
     background-color: white;
 
+
 }
 
+.header-text{
+    text-align: center;
+     margin: 3em auto;
+     font-family: 'Merriweather', serif;
+}
+.datePick{
+    text-align: center;
+    width: 35em;
+    margin: 5em auto;
+    
+}
+.input-group-addon{
+    margin: 0em 0.5em;
+}
+.datepicker{
+    width: 200px;
+}
 
+#showMeals{
+    padding: 0.3em 1em;
+    font-weight: bold;
+    color: #343a40;
+    background-color: lightskyblue;
+}
