@@ -25,21 +25,211 @@ let data =
     },
 
 //API
+    //APICONFIGS
+    "spoonify":
+    {
+        "project":"",
+        "key":"0b151b0d8dmsh59752643ccdd463p17ee4cjsncd65478a0ec8",
+        "host":"spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
+        "url":"https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
+    },
 
-//PUBLIC OBJECTS   
+    //API CALLS
+    "getRecipe": function(){
+       
+    }
+    "getIngredient": function(){
+        
+    }
+    "getMealPlan": function(time){
+        let host = data.spoonify.url
+        let mealgenerator = "/recipes/mealplans/generate?";
+        let queryString = `${host}${mealgenerator}timeFrame=${time}`
+        await appendCalories();
+        await appendDietString();
+        await appendExcludeString();
+        
+        $.ajax({
+            type: "GET",
+            beforeSend: function(request) {
+              request.setRequestHeader("X-RapidAPI-Host", data.spoonify.host);
+              request.setRequestHeader("X-RapidAPI-Key", data.spoonify.key );
+            },
+            url: queryString,
+            success: function(msg) {
+              $("#results").append("The result =" + StringifyPretty(msg));
+            }
+          });
+
+          //query builders
+          async function appendCalories()
+          {
+              let calorieTarget = data.userHealthProfile.healthSettings.calTarget
+              if(calorieTarget === 0)
+              {
+                  return;
+              }
+              else
+              {
+                let calories = caloriesTarget.toString();
+                queryString.concat(`&targetCalories=${calories}`)
+              }
+          }
+
+          async function appendDietString()
+          {
+            if(data.userHealthProfile.dietArray[0] === "null")
+            {
+                return;
+            }
+            else
+            {
+                let dietArray = data.userHealthProfile.dietarySelection;
+                let andOperator = '%2C+';
+                let dietString = `&diet=${dietArray[0]}`
+                
+                if(dietArray.length > 1)
+                {
+                    for(let i=1; i<dietArray.length; i++)
+                    {
+                        dietString.concat(andOperator + dietArray[i])
+                    }
+                }
+
+                queryString.concat(dietString)
+            }
+            
+          }
+
+          async function appendExcludeString()
+          {
+            if(data.userHealthProfile.exclusionList[0] === "null")
+            {
+                return;
+            }
+            else
+            {
+                let excludeArray = data.userHealthProfile.exclusionList;
+                let andOperator = '%2C+';
+                let excludeString = `&exclude=${excludeArray[0]}`
+                
+                if(excludeArray.length > 1)
+                {
+                    for(let i=1; i<excludeArray.length; i++)
+                    {
+                        excludeString.concat(andOperator + excludeArray[i])
+                    }
+                }
+
+                queryString.concat(excludeString)
+            }
+            
+          }
+        }
+    }
+    
+
+
+
+    //FrontEndAccessFuntions
+    "generateSchedule": function(days)
+    {
+        
+    }
+
+    //URLBuilders
+    "buildImageUrl": function()
+    {
+        id = recipeid
+        https://spoonacular.com/recipeImages/{ID}-{SIZE}.{FILETYPE},
+        90x90 
+        312x231
+        636x393
+    }
+
+    "buildgroceryProductImageUrl": function()
+    {
+        id = productid
+        https://spoonacular.com/recipeImages/{ID}-{SIZE}.{FILETYPE},
+        90x90 
+        312x231
+        636x393
+    }
+
+    "buildIngredientImageUrl": function() 
+    {
+        id = ingredientname
+        https://spoonacular.com/cdn/ingredients_{SIZE}
+    }
+
+
+//WriteObjectsDB
+
+//PubicDBQueries
+    
+
+    "GetRecipeID":  function(recipeID)
+    {
+        this.InitFirebase();
+        this.database.ref('/knownRecipes').once('recipe')
+            .then(function(snapshot)
+            {
+                if(snapshot.child(recipeID))
+                {
+                    return snapshot.recipeID;
+                }
+                else 
+                {
+                    call api
+                    store recipe
+                    return object
+                }
+            })
+
+    },
+
+    "GetIngredientID": function()
+    {
+
+    },
+
+    "GetIngredientProducts": function()
+    {
+
+    },
+
+
+
+//ACCESSIBLE DATA OBJECTS  
     "userCalender" : 
     {
         "userID": "id",
         "created": "msdate",
+        //first 
         "starts": "msdate",
+        //the last localized date time schedules, key/values.
         "expires": "msdate",
+        //this a returned from an API Call which is all the recipe id's returned in meal query.
         "availableRecipes" : ["recipid", "recipeid"],
-        "chosenRecipes" : ["recipid", "recipeid"],
+        //this is an array of recipes which a user can specify in advanced dashboard settings
+        "chosenRecipes" : ["recipeid", "recipeid"],
+        
         "schedule" : 
         {
-            "localizedDateTime": "recipeID",
-            "localizedDateTime2": "recipeID2",
+            //this localizedDateTime represents when the recipe occurs:
+            "localizedDateTime": "mealObject",
+            "localizedDateTime2": "mealObject",
         }
+    },
+
+    "mealObject":
+    {
+        "day":1
+        "mealPlanId":0
+        "slot":1
+        "position":0
+        "type":"RECIPE"
+        "value":"{"id":655786,"imageType":"jpg","title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"}"
     },
     
     "userHealthProfile" : 
@@ -99,6 +289,35 @@ let data =
         "referrer": "unknown",
         "previousSites": {}
     },
+
+    //
+    "Recipe":
+    {
+        "ingredients": [{}, {}],
+        "id": "string",
+        "title" : "string",
+        "readyInMinutes": int,
+        "images": {
+            "thumbnail" : "string",
+            "small" : "string",
+            "med" : "string"
+        },
+    
+    },
+
+    "Ingredient":
+    {
+
+    },
+
+    "Product":
+    {
+
+    },
+
+    "currentMealObject"
+    
+    
     
     
     
