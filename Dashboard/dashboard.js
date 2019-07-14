@@ -63,24 +63,33 @@ $("#showMeals").on("click", function()
     var k=1;
     keyarray = (Object.keys(data.userCalender.schedule));
     valuesarray = (Object.entries(data.userCalender.schedule))
+        if (dates.length===2 && dates[0]===dates[1]){
 
-        for (let j =0; j<dates.length; j++){
-            for (let i=0; i<valuesarray.length;i++)
-            {
-                var dbDate = moment.unix(valuesarray[i][0]).format("MM/DD/YYYY");
-
-                //console.log("element from DB "+ dbDate + " meal "+ valuesarray[i][1]);
-               // console.log("range" + dates[j]);
-            if(dates[j]===dbDate){
-            //console.log((moment().format('L')));
-            console.log("day " + j+" meals " + valuesarray[i][1]);
-           // console.log("day " + i +" meals " + valuesarray[i][1]);
-          //  console.log("range "+ valuesarray[i][0]);
-          //  console.log("element from DB " + element);
-            }
+            var endOfDatesArray = dates.length-1;
             
+        } else{
+            endOfDatesArray= dates.length;
+        }
+
+            for (let j =0; j<endOfDatesArray; j++){
+                for (let i=0; i<valuesarray.length;i++)
+                {
+                    var dbDate = moment.unix(valuesarray[i][0]).format("MM/DD/YYYY");
+    
+                    //console.log("element from DB "+ dbDate + " meal "+ valuesarray[i][1]);
+                   // console.log("range" + dates[j]);
+                if(dates[j]===dbDate){
+                //console.log((moment().format('L')));
+                console.log("day " + j+" meals " + valuesarray[i][1]);
+               // console.log("day " + i +" meals " + valuesarray[i][1]);
+              //  console.log("range "+ valuesarray[i][0]);
+              //  console.log("element from DB " + element);
+                }
+                
+        }
     }
-}
+        
+
 });
 
 function getNumberOfDaysinRange(date1, date2)
