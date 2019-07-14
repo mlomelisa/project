@@ -24,15 +24,22 @@ var data =
         "chosenRecipes" : ["recipid", "recipeid"],
         "schedule" : 
         {
-            "07/12/2019": "recipeID1",
-            "07/12/2019": "recipeID1",
-            "07/13/2019": "recipeID2",
-            "07/13/2019": "recipeID2",
-            "07/13/2019": "recipeID2",
+            "1562928437": "day1_RecipeID1",
+            "1562939237": "day1_RecipeID2",
+            "1563014837": "day2_RecipeID1",
+            "1563025637": "day2_RecipeID2",
+            "1563050837": "day2_RecipeID3",
 
         }
     }
 }
+
+//ms time 1562928437000 morning 07/12
+//ms time 1562939237000 lunch 07/12
+//ms time 1563014837000 morning 07/13
+//ms time 1563025637000 lunch 07/13
+//ms time 1563050837000 dinner 07/13
+//convert to unix time
 //////////////////////////////////
 $('.input-daterange input').each(function()
 {
@@ -48,37 +55,46 @@ $("#showMeals").on("click", function()
     var fromDate = $("#fromDate").val();
     var toDate = $("#toDate").val();
     var days = getNumberOfDaysinRange(fromDate,toDate);
-    console.log (days);
-    var k=1;
- 
-    for (let i=0;i<days;i++)
-    {
-        
-        keyarray = (Object.keys(data.userCalender.schedule));
-        valuesarray = (Object.entries(data.userCalender.schedule));
-        for (let i=0; i<valuesarray.length;i++)
-        {
-            for (j=0; j<3; j++)
-            {
-            console.log((moment().format('L')));
-            console.log("day " + i+" meals " + valuesarray[j][0]);
-            console.log("day " + i +" meals " + valuesarray[j][1]);
-            }
-        }
-    } 
+    console.log ("days number - " + days);
 
+    let dates = enumerateDaysBetweenDates(fromDate,toDate);
+
+    console.log( "dates range" + dates);
+    var k=1;
+    keyarray = (Object.keys(data.userCalender.schedule));
+    valuesarray = (Object.entries(data.userCalender.schedule))
+
+        for (let j =0; j<dates.length; j++){
+            for (let i=0; i<valuesarray.length;i++)
+            {
+                var dbDate = moment.unix(valuesarray[i][0]).format("MM/DD/YYYY");
+
+                //console.log("element from DB "+ dbDate + " meal "+ valuesarray[i][1]);
+               // console.log("range" + dates[j]);
+            if(dates[j]===dbDate){
+            //console.log((moment().format('L')));
+            console.log("day " + j+" meals " + valuesarray[i][1]);
+           // console.log("day " + i +" meals " + valuesarray[i][1]);
+          //  console.log("range "+ valuesarray[i][0]);
+          //  console.log("element from DB " + element);
+            }
+            
+    }
+}
 });
 
 function getNumberOfDaysinRange(date1, date2)
 {
     let fromDateUnix = moment(date1, "MM/DD/YYYY").format("X");
+    console.log(" from unix date "+fromDateUnix);
+
     let toDateUnix = moment(date2, "MM/DD/YYYY").format("X");
+    console.log(" to unix date "+toDateUnix);
     let fromDate = moment.unix(fromDateUnix).format("MM/DD/YYYY");
     let toDate = moment.unix(toDateUnix).format("MM/DD/YYYY");
     let daysNumber= moment(toDate).diff(moment(fromDate), "days");
-    let dates = enumerateDaysBetweenDates(fromDate,toDate);
+    return daysNumber;
 
-    console.log( "dates" + dates);
   
 } 
 
@@ -87,12 +103,14 @@ function  enumerateDaysBetweenDates (startDate, endDate) {
 
     var currDate = moment(startDate).startOf('day');
     var lastDate = moment(endDate).startOf('day');
-    dates.push(moment(startDate));
+
+    dates.push(moment(startDate).format("MM/DD/YYYY"));
     while(currDate.add(1, 'days').diff(lastDate) < 0) 
     {
-        dates.push(currDate.clone().toDate());
+        dates.push(moment(currDate.clone().toDate()).format("MM/DD/YYYY"));
     }
-    dates.push(moment(endDate));
+
+    dates.push(moment(endDate).format("MM/DD/YYYY"));
 
     return dates;
 };
