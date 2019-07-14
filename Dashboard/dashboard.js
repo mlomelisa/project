@@ -1,16 +1,6 @@
-//$('.datepicker').datepicker();
 
 ////////////////////////////////////
 //dellete before commiting
-var fromDate = $("#fromDate").val();
-var toDate = $("#toDate").val();
-let fromDateUnix = moment(fromDate, "MM/DD/YYYY").format("X");
-let toDateUnix = moment(toDate, "MM/DD/YYYY").format("X");
-
-var currentDate = moment().format();
-///unix date
-console.log ( moment("07/11/2019", "MM/DD/YYYY").format("X"));
-console.log(moment.unix(moment("07/11/2019", "MM/DD/YYYY").format("X")).format("MM/DD/YYYY"));
 
 var data =
 {
@@ -18,17 +8,17 @@ var data =
     {
         "userID": "nata",
         "created": "msdate",
-        "starts": fromDateUnix,
-        "expires": toDateUnix,
+        "starts": "fromDateUnix",
+        "expires": "toDateUnix",
         "availableRecipes" : ["recipid", "recipeid"],
         "chosenRecipes" : ["recipid", "recipeid"],
         "schedule" : 
         {
             "1562928437": "day1_RecipeID1",
-            "1562939237": "day1_RecipeID2",
+            "1562962020": "day1_RecipeID2",
             "1563014837": "day2_RecipeID1",
-            "1563025637": "day2_RecipeID2",
-            "1563050837": "day2_RecipeID3",
+            "1563052020": "day2_RecipeID2",
+            "1563066420": "day2_RecipeID3",
 
         }
     }
@@ -41,28 +31,24 @@ var data =
 //ms time 1563050837000 dinner 07/13
 //convert to unix time
 //////////////////////////////////
+
+
+
 $('.input-daterange input').each(function()
 {
     $(this).datepicker('clearDates');
 });
 
-var days = getNumberOfDaysinRange(fromDate,toDate);
-
 
 $("#showMeals").on("click", function()
 {
-    console.log ("do i get here");
     var fromDate = $("#fromDate").val();
     var toDate = $("#toDate").val();
     var days = getNumberOfDaysinRange(fromDate,toDate);
-    console.log ("days number - " + days);
 
     let dates = enumerateDaysBetweenDates(fromDate,toDate);
-
-    console.log( "dates range" + dates);
-    var k=1;
-    keyarray = (Object.keys(data.userCalender.schedule));
-    valuesarray = (Object.entries(data.userCalender.schedule))
+ 
+    var valuesarray = (Object.entries(data.userCalender.schedule))
         if (dates.length===2 && dates[0]===dates[1]){
 
             var endOfDatesArray = dates.length-1;
@@ -70,35 +56,33 @@ $("#showMeals").on("click", function()
         } else{
             endOfDatesArray= dates.length;
         }
+        for (let j =0; j<endOfDatesArray; j++)
+        {
+            var arrayOfMealsPerDay=[];
 
-            for (let j =0; j<endOfDatesArray; j++){
-                for (let i=0; i<valuesarray.length;i++)
-                {
-                    var dbDate = moment.unix(valuesarray[i][0]).format("MM/DD/YYYY");
-    
-                    //console.log("element from DB "+ dbDate + " meal "+ valuesarray[i][1]);
-                   // console.log("range" + dates[j]);
-                if(dates[j]===dbDate){
-                //console.log((moment().format('L')));
-                console.log("day " + j+" meals " + valuesarray[i][1]);
-               // console.log("day " + i +" meals " + valuesarray[i][1]);
-              //  console.log("range "+ valuesarray[i][0]);
-              //  console.log("element from DB " + element);
-                }
+            for (let i=0; i<valuesarray.length;i++){
                 
+                var dbDate = moment.unix(valuesarray[i][0]).format("MM/DD/YYYY");
+                var mealTime = getMealTime(moment.unix(valuesarray[i][0]));
+                if(dates[j]===dbDate)
+                {
+                    arrayOfMealsPerDay.push(
+                        {   "mealDate":dbDate,
+                            "mealTime":mealTime,
+                            "meal": valuesarray[i][1]
+                        });
+                }       
+            }
+            createMealContainer(arrayOfMealsPerDay);
         }
-    }
-        
-
 });
 
 function getNumberOfDaysinRange(date1, date2)
 {
     let fromDateUnix = moment(date1, "MM/DD/YYYY").format("X");
-    console.log(" from unix date "+fromDateUnix);
 
     let toDateUnix = moment(date2, "MM/DD/YYYY").format("X");
-    console.log(" to unix date "+toDateUnix);
+
     let fromDate = moment.unix(fromDateUnix).format("MM/DD/YYYY");
     let toDate = moment.unix(toDateUnix).format("MM/DD/YYYY");
     let daysNumber= moment(toDate).diff(moment(fromDate), "days");
@@ -127,13 +111,40 @@ function  enumerateDaysBetweenDates (startDate, endDate) {
 
 
 
-function createMealContainer(dayMealObject)
+function createMealContainer(dayMealsArray)
 {
-    console.log("hello");
-    var divDay = $("<div>");
-     divDay.text(dayMealObject);
-     $("#meals-section").append(divDay);
-    
+
+    var divDay = $("<div id='mealDay' class='row'>");
+
+    for (let i=0; i<dayMealsArray.length; i++){
+        var mealDate = dayMealsArray[0].mealDate;
+        var divMeal = $("<div class='meal col-3'>");
+        var mealTitle = $("<h5 class='mealType'>");
+        mealTitle.text(dayMealsArray[i].mealTime);
+        divMeal.text(dayMealsArray[i].meal);
+        divMeal.prepend(mealTitle);
+        divDay.append(divMeal);
+
+    }
+    divDay.prepend(mealDate);
+    $("#meals-section").append(divDay);
 }
 
 
+function getMealTime (m) {
+	var g = null; 
+	
+	var split_afternoon = 12 //24hr time to split the afternoon
+	var split_evening = 17 //24hr time to split the evening
+	var currentHour = parseFloat(moment(m).format("HH"));
+	
+	if(currentHour >= split_afternoon && currentHour <= split_evening) {
+		g = "lunch";
+	} else if(currentHour >= split_evening) {
+		g = "dinner";
+	} else {
+		g = "breakfast";
+	}
+	
+	return g;
+}

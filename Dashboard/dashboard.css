@@ -63,3 +63,10 @@ a.nav-link{
     color: #343a40;
     background-color: lightskyblue;
 }
+
+#mealDay{
+    padding: 0.3em 1em;
+    font-weight: bold;
+    text-align: center;
+    border: solid grey 0.5em;
+}
