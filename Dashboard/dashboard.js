@@ -1,6 +1,5 @@
-
 ////////////////////////////////////
-//dellete before commiting
+//delete before  merging
 
 var data =
 {
@@ -16,8 +15,11 @@ var data =
         {
             "1562928437": "day1_RecipeID1",
             "1562962020": "day1_RecipeID2",
-            "1563014837": "day2_RecipeID1",
-            "1563052020": "day2_RecipeID2",
+            "1562962030": "day1_RecipeID22",
+            "1562962050": "day1_RecipeID23",
+            "1562962120": "day1_RecipeID24",
+            "1563014837": "day2_RecipeID1 lorem",
+            "1563052020": "day2_RecipeID2 lorem ipsum lorem ipsum",
             "1563066420": "day2_RecipeID3",
 
         }
@@ -34,6 +36,9 @@ var data =
 
 
 
+
+
+//date picker
 $('.input-daterange input').each(function()
 {
     $(this).datepicker('clearDates');
@@ -41,21 +46,30 @@ $('.input-daterange input').each(function()
 
 
 $("#showMeals").on("click", function()
-{
+{   
+    //clear previous selection range before displaying new 
+    $("#meals-section").empty();
+
     var fromDate = $("#fromDate").val();
     var toDate = $("#toDate").val();
-    var days = getNumberOfDaysinRange(fromDate,toDate);
-
-    let dates = enumerateDaysBetweenDates(fromDate,toDate);
+    //var days = getNumberOfDaysinRange(fromDate,toDate);
+    
+    if (fromDate !=="" && toDate!=="" )
+    {
+  
+    let rangeDates = enumerateDaysBetweenDates(fromDate,toDate);
  
     var valuesarray = (Object.entries(data.userCalender.schedule))
-        if (dates.length===2 && dates[0]===dates[1]){
+        if (rangeDates.length===2 && rangeDates[0]===rangeDates[1])
+        {
 
-            var endOfDatesArray = dates.length-1;
+            var endOfDatesArray = rangeDates.length-1;
             
-        } else{
-            endOfDatesArray= dates.length;
+        } else
+        {
+            endOfDatesArray= rangeDates.length;
         }
+
         for (let j =0; j<endOfDatesArray; j++)
         {
             var arrayOfMealsPerDay=[];
@@ -63,18 +77,24 @@ $("#showMeals").on("click", function()
             for (let i=0; i<valuesarray.length;i++){
                 
                 var dbDate = moment.unix(valuesarray[i][0]).format("MM/DD/YYYY");
-                var mealTime = getMealTime(moment.unix(valuesarray[i][0]));
-                if(dates[j]===dbDate)
+                var mealType = getMealType(moment.unix(valuesarray[i][0]));
+                if(rangeDates[j]===dbDate)
                 {
                     arrayOfMealsPerDay.push(
                         {   "mealDate":dbDate,
-                            "mealTime":mealTime,
-                            "meal": valuesarray[i][1]
+                            "mealTime":mealType,
+                            //we need to parse name, image, recipe here and add new keys
+                            "meal": valuesarray[i][1],
+                          //  "image":valuesarray[i][1].image 
                         });
                 }       
             }
             createMealContainer(arrayOfMealsPerDay);
         }
+    } else 
+    {
+        alert("Please select both dates from the range");
+    }
 });
 
 function getNumberOfDaysinRange(date1, date2)
@@ -86,18 +106,18 @@ function getNumberOfDaysinRange(date1, date2)
     let fromDate = moment.unix(fromDateUnix).format("MM/DD/YYYY");
     let toDate = moment.unix(toDateUnix).format("MM/DD/YYYY");
     let daysNumber= moment(toDate).diff(moment(fromDate), "days");
-    return daysNumber;
 
-  
+    return daysNumber; 
 } 
 
 function  enumerateDaysBetweenDates (startDate, endDate) {
-    var dates = [];
 
+    var dates = [];
     var currDate = moment(startDate).startOf('day');
     var lastDate = moment(endDate).startOf('day');
 
     dates.push(moment(startDate).format("MM/DD/YYYY"));
+
     while(currDate.add(1, 'days').diff(lastDate) < 0) 
     {
         dates.push(moment(currDate.clone().toDate()).format("MM/DD/YYYY"));
@@ -109,42 +129,62 @@ function  enumerateDaysBetweenDates (startDate, endDate) {
 };
 
 
-
-
 function createMealContainer(dayMealsArray)
 {
-
     var divDay = $("<div id='mealDay' class='row'>");
+    var mealDate = $("<div class='mealDate col-12'>");
 
-    for (let i=0; i<dayMealsArray.length; i++){
-        var mealDate = dayMealsArray[0].mealDate;
-        var divMeal = $("<div class='meal col-3'>");
-        var mealTitle = $("<h5 class='mealType'>");
-        mealTitle.text(dayMealsArray[i].mealTime);
-        divMeal.text(dayMealsArray[i].meal);
-        divMeal.prepend(mealTitle);
+    mealDate.text(moment(dayMealsArray[0].mealDate).format('dddd, MMMM D, YYYY'));
+    divDay.append(mealDate);
+
+    for (let i=0; i<dayMealsArray.length; i++)
+    {
+
+        var mealCard = $('<div class="card">');
+        var mealCardBody = $('<div class="card-body">');
+        var mealImage = $('<img class="card-img-top" src="mealIcon.png" alt="Card image cap">');
+        var mealName = $('<h5 class="card-title">');
+        var viewButton= $('<a href="#" class="btn btn-primary">View recipe</a>');
+        var divMeal = $("<div class='meal col-xs-6 col-sm-6 col-md-3 col-lg-3'>");
+        var mealType = $("<h5 class='mealType'>");
+
+        mealType.text(dayMealsArray[i].mealTime);
+        mealName.text(dayMealsArray[i].meal);
+        mealCardBody.append(mealType);
+        mealCardBody.append(mealImage);
+        mealCardBody.append(mealName);
+        mealCardBody.append(viewButton);
+        mealCard.html(mealCardBody);
+        divMeal.append(mealCard);
         divDay.append(divMeal);
-
+    
     }
-    divDay.prepend(mealDate);
+
+    if(divDay.html()==="")
+    {
+        divDay.text("no meals selected for this day");
+    }
+
     $("#meals-section").append(divDay);
 }
 
 
-function getMealTime (m) {
-	var g = null; 
+function getMealType (mealDate) {
+	var type = null; 
 	
 	var split_afternoon = 12 //24hr time to split the afternoon
 	var split_evening = 17 //24hr time to split the evening
-	var currentHour = parseFloat(moment(m).format("HH"));
+	var currentHour = parseFloat(moment(mealDate).format("HH"));
 	
 	if(currentHour >= split_afternoon && currentHour <= split_evening) {
-		g = "lunch";
+		type = "Lunch";
 	} else if(currentHour >= split_evening) {
-		g = "dinner";
+		type = "Dinner";
 	} else {
-		g = "breakfast";
+		type = "Breakfast";
 	}
 	
-	return g;
+	return type;
 }
+
+

@@ -1,7 +1,9 @@
 
 body{
+    padding: 5em 0em 2em 0em;
     height: 100vh;
-    max-height: 100%
+    max-height: 100%;
+    background-color: #F8F8F8;
 }
 
 .brandText{
@@ -28,15 +30,6 @@ a.nav-link{
     color: #343a40;
     border:0.2em #343a40 solid;
     background-color: lightskyblue;
-}
-
-.jumbotron{
-    padding: 5em 0em 2em 0em;
-    height: 100vh;
-    max-height: 100%;
-    background-color: white;
-
-
 }
 
 .header-text{
@@ -68,5 +61,31 @@ a.nav-link{
     padding: 0.3em 1em;
     font-weight: bold;
     text-align: center;
-    border: solid grey 0.5em;
+    margin: 1em 1em 2em 1em;
+    background-color: white;
+}
+
+input::placeholder {
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+.mealDate{
+    font-family:  'Merriweather', serif;
+    font-size: 2em;
+    margin: 1em auto;
+
+}
+.meal {
+    margin:0em 2.7em 1em 2.7em;
+}
+.mealType{
+
+    background-color:lightskyblue;
+    color:#343a40;
+    border-radius: 0.1em;
+
+}
+.card-body{
+    padding: 0em 0em 1em 0em;
 }
