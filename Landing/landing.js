@@ -22,10 +22,9 @@ var data = {"userHealthProfile" :
 //mockdata do not include in pr
 
 
-
 $('#btnNext').on('click', function(event){
   
-  $('#btnNext').off();
+  // $('#btnNext').off();
   event.preventDefault();
   
    var calories = $('#inputCalories').val();
@@ -41,8 +40,8 @@ $('#btnNext').on('click', function(event){
       'exclusionList':exclusionArray
     };
 
-   
-   console.log(data.userHealthProfile);
+    console.log(data.userHealthProfile);
+
 
     $('#myModalDiet').modal('hide');
     $('#inputCalories').val('');
@@ -51,11 +50,10 @@ $('#btnNext').on('click', function(event){
     $('li').remove();
    
     return data.userHealthProfilee;
- 
-      
-   
+    
 });
 
+// Add Exclusion to list
 $('#btnAddExclusion').on('click',function(e){
   
    e.preventDefault();
@@ -73,6 +71,7 @@ $('#btnAddExclusion').on('click',function(e){
   return  exclusionArray;
   });
 
+  // Cancel button
   $('#btnCancel').on('click',function(e){
     e.preventDefault();
     $('#inputCalories').val('');
@@ -81,6 +80,5 @@ $('#btnAddExclusion').on('click',function(e){
     $('#dietOption :first').prop('selected', true);
     $('li').remove();
     $('#myModalDiet').modal('hide');
-  
 
   });
