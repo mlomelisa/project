@@ -21,30 +21,29 @@ var data = {"userHealthProfile" :
 };
 //mockdata do not include in pr
 
-$('#inputCalories').keyup(function (){
-  this.value = this.value.replace(/[^0-9\.]/g,'');
-})
+
 
 $('#btnNext').on('click', function(event){
-  console.log('im here')
+  
   $('#btnNext').off();
   event.preventDefault();
   
-   var calories = $('#inputCalories').val().trim();
+   var calories = $('#inputCalories').val();
    var dietOptions = $('#dietOption').val();
-   var totalDays = $('#inputDays').val();
+  //  var totalDays = $('#inputDays').val();
    
-   if (calories) {
+   
     
-    data.userHealthProfile.update({
+    data.userHealthProfile = {
       'healthSettings.calTarget':calories,
       'dietarySelection':dietOptions,
-      'days':totalDays,
+      // 'days':totalDays,
       'exclusionList':exclusionArray
-    });
+    };
 
+   
+   console.log(data.userHealthProfile);
 
-   console.log(data.userHealthProfile)
     $('#myModalDiet').modal('hide');
     $('#inputCalories').val('');
     $('#dietOption option:selected').prop('selected', false);
@@ -52,9 +51,7 @@ $('#btnNext').on('click', function(event){
     $('li').remove();
    
     return data.userHealthProfilee;
-   } else{
-     return false
-   }
+ 
       
    
 });
@@ -67,7 +64,7 @@ $('#btnAddExclusion').on('click',function(e){
 
   exclusionArray.push(exclusion);
    
-       var exclusionList = $('<li>').text(exclusion);
+       var exclusionList = $('<li>').addClass('list-group').text(exclusion);
    
       $('#listExclusion').prepend(exclusionList);
  

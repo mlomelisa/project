@@ -71,7 +71,7 @@
                     <div class="modal-dialog" role="document">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h5 class="modal-title">Tell us your diet</h5>
+                          <h5 class="modal-title">Tell Us Your Diet</h5>
             
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -80,10 +80,10 @@
                         <div class="modal-body">
                           <p></p>
                           <form>
-                              <div class="form-group">
-                                <label for="inputCalories">Calories per Day</label>
-                                <input type="text" class="form-control" id="inputCalories">
-                              </div>
+      
+                              <label for="customRange3">Calories per Day</label>
+                              
+                             <p>  <input type="range" class="custom-range" min="1000" max="3500" step="10" id="inputCalories" oninput="document.getElementById('caloriesPerDay').innerHTML = this.value" ><label id='caloriesPerDay'></label> </p>
                               <select class="custom-select" id="dietOption" multiple>
                                   <option selected value='balanced' >Any food</option>
                                   <option value="vegetarian" >Vegetarian</option>
@@ -91,7 +91,7 @@
                                   <option value="paleo" >Paleo</option>
                                   <option value="ketogenic" >Ketogenic</option>                      
                                 </select>
-                              <div class="form-group">
+                              <!-- <div class="form-group">
                                 <label for="exampleFormControlSelect2">Total Days</label>
                                 <select class="custom-select" id='inputDays'>                        
                                     <option selected value="1" data-item="inputDays">1</option>
@@ -102,8 +102,10 @@
                                     <option value="6" data-item="inputDays">6</option>
                                     <option value="7" data-item="inputDays">7</option>
                                   </select>
-                              </div>
+                              </div> -->
+                              <br/>
                               <div class="form-group">
+                                  <br/>
                                 <label for="exampleFormControlTextarea1">Add Exclusion</label>
                                 <div class="input-group">
                                     <input class="form-control" aria-describedby="basic-addon1" aria-label="" type="text" id="inputExclusion">
@@ -112,7 +114,7 @@
                                     </div>
                                   </div>
                                   <div class="list-Exclusion">
-                                      <ul id="listExclusion">
+                                      <ul id="listExclusion" class='list-group'>
             
                                         </ul>
                                   </div>
