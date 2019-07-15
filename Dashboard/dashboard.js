@@ -35,9 +35,6 @@ var data =
 //////////////////////////////////
 
 
-
-
-
 //date picker
 $('.input-daterange input').each(function()
 {
@@ -52,48 +49,53 @@ $("#showMeals").on("click", function()
 
     var fromDate = $("#fromDate").val();
     var toDate = $("#toDate").val();
-    //var days = getNumberOfDaysinRange(fromDate,toDate);
-    
-    if (fromDate !=="" && toDate!=="" )
+
+    if ( moment(fromDate).unix()>moment(toDate).unix() || fromDate ==="" || toDate ==="" )
     {
-  
-    let rangeDates = enumerateDaysBetweenDates(fromDate,toDate);
- 
-    var valuesarray = (Object.entries(data.userCalender.schedule))
-        if (rangeDates.length===2 && rangeDates[0]===rangeDates[1])
-        {
-
-            var endOfDatesArray = rangeDates.length-1;
-            
-        } else
-        {
-            endOfDatesArray= rangeDates.length;
-        }
-
-        for (let j =0; j<endOfDatesArray; j++)
-        {
-            var arrayOfMealsPerDay=[];
-
-            for (let i=0; i<valuesarray.length;i++){
-                
-                var dbDate = moment.unix(valuesarray[i][0]).format("MM/DD/YYYY");
-                var mealType = getMealType(moment.unix(valuesarray[i][0]));
-                if(rangeDates[j]===dbDate)
-                {
-                    arrayOfMealsPerDay.push(
-                        {   "mealDate":dbDate,
-                            "mealTime":mealType,
-                            //we need to parse name, image, recipe here and add new keys
-                            "meal": valuesarray[i][1],
-                          //  "image":valuesarray[i][1].image 
-                        });
-                }       
-            }
-            createMealContainer(arrayOfMealsPerDay);
-        }
+    
+        showErrorPopUp();
     } else 
     {
-        alert("Please select both dates from the range");
+
+        if (fromDate !=="" && toDate!=="" )
+        {
+  
+        let rangeDates = enumerateDaysBetweenDates(fromDate,toDate);
+ 
+        var valuesarray = (Object.entries(data.userCalender.schedule))
+       
+            if (rangeDates.length===2 && rangeDates[0]===rangeDates[1])
+            {
+
+                var endOfDatesArray = rangeDates.length-1;
+            
+            } else
+            {
+                endOfDatesArray= rangeDates.length;
+            }
+
+            for (let j =0; j<endOfDatesArray; j++)
+            {
+                var arrayOfMealsPerDay=[];
+
+                for (let i=0; i<valuesarray.length;i++){
+                
+                    var dbDate = moment.unix(valuesarray[i][0]).format("MM/DD/YYYY");
+                    var mealType = getMealType(moment.unix(valuesarray[i][0]));
+                    if(rangeDates[j]===dbDate)
+                    {
+                        arrayOfMealsPerDay.push(
+                            {   "mealDate":dbDate,
+                                "mealTime":mealType,
+                                //we need to parse name, image, recipe here and add new keys
+                                "meal": valuesarray[i][1],
+                            //  "image":valuesarray[i][1].image 
+                            });
+                    }       
+                }
+            createMealContainer(arrayOfMealsPerDay);
+            }
+        } 
     }
 });
 
@@ -134,8 +136,17 @@ function createMealContainer(dayMealsArray)
     var divDay = $("<div id='mealDay' class='row'>");
     var mealDate = $("<div class='mealDate col-12'>");
 
-    mealDate.text(moment(dayMealsArray[0].mealDate).format('dddd, MMMM D, YYYY'));
-    divDay.append(mealDate);
+    if(dayMealsArray[0] === undefined)
+    {
+
+        divDay.text("no meals selected for this day");
+    } else
+    {
+        mealDate.text(moment(dayMealsArray[0].mealDate).format('dddd, MMMM D, YYYY'));
+        divDay.append(mealDate);
+    }
+
+
 
     for (let i=0; i<dayMealsArray.length; i++)
     {
@@ -160,11 +171,6 @@ function createMealContainer(dayMealsArray)
     
     }
 
-    if(divDay.html()==="")
-    {
-        divDay.text("no meals selected for this day");
-    }
-
     $("#meals-section").append(divDay);
 }
 
@@ -187,4 +193,28 @@ function getMealType (mealDate) {
 	return type;
 }
 
+function showErrorPopUp(){
+    $("#myModal").on("show", function() {    
+        $("#myModal a.btn").on("click", function(e) {
+            $("#myModal").modal('hide');    
+        });
+    });
+        
+    $("#myModal").on("hide", function() {    
+        $("#myModal a.btn").off("click");
+    });
+            
+    $("#myModal").on("hidden", function() {  
+        $("#myModal").remove();
+    });
+            
+    $("#myModal").modal({     
+        "backdrop"  : "static",
+        "keyboard"  : true,
+        "show"      : true                    
+    });
+}
 
+        
+
+ 
