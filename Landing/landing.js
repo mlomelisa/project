@@ -82,3 +82,49 @@ $('#btnAddExclusion').on('click',function(e){
     $('#myModalDiet').modal('hide');
 
   });
+
+
+  
+$('#btnNextCalories').on('click', function(event){
+  
+  event.preventDefault();
+  
+   var userSex = $('#inputCalories').val();
+   var dietOptions = $('#dietOption').val();
+  //  var totalDays = $('#inputDays').val();
+   
+   
+    
+    data.userHealthProfile = {
+      'healthSettings.calTarget':calories,
+      'dietarySelection':dietOptions,
+      // 'days':totalDays,
+      'exclusionList':exclusionArray
+    };
+
+    console.log(data.userHealthProfile);
+
+
+    $('#myModalDiet').modal('hide');
+    $('#inputCalories').val('');
+    $('#dietOption option:selected').prop('selected', false);
+    $('#dietOption :first').prop('selected', true);
+    $('li').remove();
+   
+    return data.userHealthProfilee;
+    
+});
+
+var radios = document.getElementsByName('inlineRadioOptions');
+
+for (var i = 0, length = radios.length; i < length; i++)
+{
+ if (radios[i].checked)
+ {
+  // do whatever you want with the checked radio
+ console.log(radios[i].value);
+
+  // only one radio can be logically checked, don't check the rest
+  break;
+ }
+}
