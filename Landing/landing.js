@@ -1,6 +1,15 @@
 
 var exclusionArray = [];
+var userPerfil = [];
+var genderId;
 
+// let newUserHealthProfile = data.userHealthProfile
+// newUserHealthProfile.height = input
+
+
+// data.userHealthProfile = newUserHealthProfile
+
+// data.writeUserHealthProfile(newUserHealthProfile)
 //mockdata do not include in pr
 var data = {"userHealthProfile" :
 {
@@ -83,48 +92,40 @@ $('#btnAddExclusion').on('click',function(e){
 
   });
 
+// Next Calories  
+$('#btnNextCalories').click(function(e){
+  
+  e.preventDefault();
+ 
+
+  var ageUser = $('#age').val();
+  var heightUser = $('#meters').val();
+  var weightUser = $('#kilograms').val();
 
   
-$('#btnNextCalories').on('click', function(event){
+  userPerfil = {
+    'age':ageUser,
+    'height':heightUser,
+    'weight':weightUser,
+    'gender': genderId
+  };
   
-  event.preventDefault();
-  
-   var userSex = $('#inputCalories').val();
-   var dietOptions = $('#dietOption').val();
-  //  var totalDays = $('#inputDays').val();
-   
-   
-    
-    data.userHealthProfile = {
-      'healthSettings.calTarget':calories,
-      'dietarySelection':dietOptions,
-      // 'days':totalDays,
-      'exclusionList':exclusionArray
-    };
+  console.log(userPerfil)
 
-    console.log(data.userHealthProfile);
-
-
-    $('#myModalDiet').modal('hide');
-    $('#inputCalories').val('');
-    $('#dietOption option:selected').prop('selected', false);
-    $('#dietOption :first').prop('selected', true);
-    $('li').remove();
-   
-    return data.userHealthProfilee;
+  $('#myModalCalories').modal('hide');
     
 });
 
-var radios = document.getElementsByName('inlineRadioOptions');
+  // Cancel Calories button
+  $('#btnCancelCalories').on('click',function(event){
+    event.preventDefault();
+    $('#myModalCalories').modal('hide');
+    return 
+  });
 
-for (var i = 0, length = radios.length; i < length; i++)
-{
- if (radios[i].checked)
- {
-  // do whatever you want with the checked radio
- console.log(radios[i].value);
-
-  // only one radio can be logically checked, don't check the rest
-  break;
- }
-}
+  $('#genderSection input[type="radio"]').change(function(){
+    
+    genderId = $("input[name='inlineRadioOptions']:checked").val();
+    
+    return genderId
+})
