@@ -15,6 +15,8 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         <script type="text/javascript" src="landing.js"></script>
     </head>
+
+      </head>
     <body>
         <div>
             <header>
@@ -49,6 +51,7 @@
                         
                         <span class="mt-2 mt-md-0">
                             <button id="signIn"> Sign in </button><img id="userCabinet" src="Images/user-icon.png">
+                            
                         </span>
                     </div>
                 </nav>
@@ -81,10 +84,78 @@
                     </div>
                     <div class="col-12 introButtons">
                         <button id="explore" value="Explore"> Explore </button>
-                        <button id="getStarted" value="Get started"> Get started </button>
-                    </div>    
+                        <button id="getStarted" value="Get started" data-toggle="modal" data-target="#myModalDiet"> Get started </button>
+
+                        
+                    </div>  
+                   <!--Modal-->
+                   <div class="modal" tabindex="-1" role="dialog" id="myModalDiet">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Tell Us Your Diet</h5>
+            
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <p></p>
+                          <form>
+      
+                              <label for="customRange3">Calories per Day</label>
+                              
+                             <p>  <input type="range" class="custom-range" min="1000" max="3500" step="10" id="inputCalories" oninput="document.getElementById('caloriesPerDay').innerHTML = this.value" ><label id='caloriesPerDay'></label> </p>
+                              <select class="custom-select" id="dietOption" multiple>
+                                  <option selected value='balanced' >Any food</option>
+                                  <option value="vegetarian" >Vegetarian</option>
+                                  <option value="vegan" >Vegan</option>
+                                  <option value="paleo" >Paleo</option>
+                                  <option value="ketogenic" >Ketogenic</option>                      
+                                </select>
+                              <!-- <div class="form-group">
+                                <label for="exampleFormControlSelect2">Total Days</label>
+                                <select class="custom-select" id='inputDays'>                        
+                                    <option selected value="1" data-item="inputDays">1</option>
+                                    <option value="2" data-item="inputDays">2</option>
+                                    <option value="3" data-item="inputDays">3</option>
+                                    <option value="4" data-item="inputDays">4</option>
+                                    <option value="5" data-item="inputDays">5</option>
+                                    <option value="6" data-item="inputDays">6</option>
+                                    <option value="7" data-item="inputDays">7</option>
+                                  </select>
+                              </div> -->
+                              <br/>
+                              <div class="form-group">
+                                  <br/>
+                                <label for="exampleFormControlTextarea1">Add Exclusion</label>
+                                <div class="input-group">
+                                    <input class="form-control" aria-describedby="basic-addon1" aria-label="" type="text" id="inputExclusion">
+                                    <div class="input-group-append">
+                                      <button class="btn btn-success" type="button" id='btnAddExclusion'>Add</button>
+                                    </div>
+                                  </div>
+                                  <div class="list-Exclusion">
+                                      <ul id="listExclusion" class='list-group'>
+            
+                                        </ul>
+                                  </div>
+                            
+                                  
+                              </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-primary"id="btnCancel">Cancel</button>
+                          <button type="button" class="btn btn-primary" id="btnNext">Next</button>
+                          
+                        </div>
+                      </div>
+                    </div>
+                  </div>  
                 </div>
             </div>
-        </div>             
+        </div> 
+        <script src="./landing.js"></script>            
     </body>
 </html>
