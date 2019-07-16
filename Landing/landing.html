@@ -88,7 +88,7 @@
 
                         
                     </div>  
-                   <!--Modal-->
+                   <!--Modal Diet Information-->
                    <div class="modal" tabindex="-1" role="dialog" id="myModalDiet">
                     <div class="modal-dialog" role="document">
                       <div class="modal-content">
@@ -103,7 +103,8 @@
                           <p></p>
                           <form>
       
-                              <label for="customRange3">Calories per Day</label>
+                               <label for="customRange3">Calories per Day</label> 
+                              <small> <button type='button' data-toggle="modal" data-target="#myModalCalories" class="btn btn-link">Need help?</button></small>
                               
                              <p>  <input type="range" class="custom-range" min="1000" max="3500" step="10" id="inputCalories" oninput="document.getElementById('caloriesPerDay').innerHTML = this.value" ><label id='caloriesPerDay'></label> </p>
                               <select class="custom-select" id="dietOption" multiple>
@@ -153,6 +154,65 @@
                       </div>
                     </div>
                   </div>  
+
+                  <!--Modal Calories-->
+                  <div class="modal" tabindex="-1" role="dialog" id="myModalCalories">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Tell Us About You</h5>
+              
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <p></p>
+                            <form>
+                              <div id="genderSection">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" data-id="radioGender" value="female">
+                                    <label class="form-check-label" for="radioFemale">Female</label>
+                                  </div>
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" data-id="radioGender" value="male">
+                                    <label class="form-check-label" for="radioMale">Male</label>
+                                  </div>
+                                  <div class="form-check form-check-inline">
+                                      <input class="form-check-input" type="radio" name="inlineRadioOptions" data-id="radioGender" value="other">
+                                      <label class="form-check-label" for="radioMale">Other</label>
+                                    </div>
+                                  <div>
+                                    </div>
+                                      <label for="age">Age:</label>
+                                      <input id="age" type="number" name="inputAge" step="1" min="0" max="100" required>
+                                      <span class="validity"></span>
+                              </div>
+
+                                <div class="form-group">
+                                  <div class="metersInputGroup">
+                                    <label for="meters">Height — meters:</label>
+                                    <input id="meters" type="number" name="meters" step="0.01" min="0" required>
+                                    <span class="validity"></span>
+                                </div>
+                                <div class="metersInputGroup">
+                                  <label for="kilograms">Weight — Kg:</label>
+                                  <input id="kilograms" type="number" name="kilograms" step="0.01" min="0" required>
+                                  <span class="validity"></span>
+                              </div>
+                              
+                                    
+        
+                              </form>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="btnCancelCalories">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="btnNextCalories">Next</button>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </div>  
                 </div>
             </div>
         </div> 

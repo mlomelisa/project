@@ -45,7 +45,16 @@ function filterFunction() {
   }
 }
 var exclusionArray = [];
+var userPerfil = [];
+var genderId;
 
+// let newUserHealthProfile = data.userHealthProfile
+// newUserHealthProfile.height = input
+
+
+// data.userHealthProfile = newUserHealthProfile
+
+// data.writeUserHealthProfile(newUserHealthProfile)
 //mockdata do not include in pr
 var data = {"userHealthProfile" :
 {
@@ -67,10 +76,9 @@ var data = {"userHealthProfile" :
 //mockdata do not include in pr
 
 
-
 $('#btnNext').on('click', function(event){
   
-  $('#btnNext').off();
+  // $('#btnNext').off();
   event.preventDefault();
   
    var calories = $('#inputCalories').val();
@@ -86,8 +94,8 @@ $('#btnNext').on('click', function(event){
       'exclusionList':exclusionArray
     };
 
-   
-   console.log(data.userHealthProfile);
+    console.log(data.userHealthProfile);
+
 
     $('#myModalDiet').modal('hide');
     $('#inputCalories').val('');
@@ -96,11 +104,10 @@ $('#btnNext').on('click', function(event){
     $('li').remove();
    
     return data.userHealthProfilee;
- 
-      
-   
+    
 });
 
+// Add Exclusion to list
 $('#btnAddExclusion').on('click',function(e){
   
    e.preventDefault();
@@ -118,6 +125,7 @@ $('#btnAddExclusion').on('click',function(e){
   return  exclusionArray;
   });
 
+  // Cancel button
   $('#btnCancel').on('click',function(e){
     e.preventDefault();
     $('#inputCalories').val('');
@@ -126,6 +134,43 @@ $('#btnAddExclusion').on('click',function(e){
     $('#dietOption :first').prop('selected', true);
     $('li').remove();
     $('#myModalDiet').modal('hide');
-  
 
   });
+
+// Next Calories  
+$('#btnNextCalories').click(function(e){
+  
+  e.preventDefault();
+ 
+
+  var ageUser = $('#age').val();
+  var heightUser = $('#meters').val();
+  var weightUser = $('#kilograms').val();
+
+  
+  userPerfil = {
+    'age':ageUser,
+    'height':heightUser,
+    'weight':weightUser,
+    'gender': genderId
+  };
+  
+  console.log(userPerfil)
+
+  $('#myModalCalories').modal('hide');
+    
+});
+
+  // Cancel Calories button
+  $('#btnCancelCalories').on('click',function(event){
+    event.preventDefault();
+    $('#myModalCalories').modal('hide');
+    return 
+  });
+
+  $('#genderSection input[type="radio"]').change(function(){
+    
+    genderId = $("input[name='inlineRadioOptions']:checked").val();
+    
+    return genderId
+})
