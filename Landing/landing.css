@@ -15,12 +15,21 @@ body{
     text-decoration: none;
     color:lightgray;
 }
+a.nav-menu{
+    font-size: 1.5em;
+    margin: 0em 1em;
+    font-weight: bold;
+    font-family: 'Merriweather', serif;
+
+}
 a.nav-link{
     font-size: 1.5em;
     margin: 0em 1em;
     font-weight: bold;
     font-family: 'Merriweather', serif;
 }
+
+
 #signIn{
     margin: 1em 0.5em;
     padding: 0.3em 1em;
@@ -31,19 +40,21 @@ a.nav-link{
 }
 
 .jumbotron{
-    padding: 5em 0em 2em 0em;
+    padding: 5em 0em 0em 0em;
     height: 100vh;
     max-height: 100%;
-    background-color: white;
+    background-color:white;
 
 }
 
 .carousel-inner{
     margin: auto;
-    width: 80%
+    width: 80%;
+
 }
 .carousel-item {
-    height: 20rem;
+    height: 30rem;
+   
   }
 
 .carousel-image1{
@@ -52,7 +63,7 @@ a.nav-link{
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url("meal.png");
+    background-image: url("Images/meal.png");
     background-position: center;
     background-repeat: no-repeat;  
   }
@@ -63,7 +74,7 @@ a.nav-link{
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url("ingredients.png");
+    background-image: url("Images/ingredients.png");
     background-repeat: no-repeat;
     background-position: center;
 }
@@ -80,14 +91,74 @@ a.nav-link{
     margin-right: auto;
     margin-left: auto;
     margin-bottom: 2em;
+    background-color: rgb(227, 223, 230);
 
 }
 .introButtons button{
-    margin: 1em 2em;
+    margin: 0.5em 2em;
     padding: 0.5em 1em;
     font-weight: bold;
     color: #343a40;
     border:0.2em #343a40 solid;
     background-color: lightskyblue;
+    margin-top: 0px;
+
 }
 
+.introText {
+
+   margin-top: 0px;
+    padding-bottom: 0px;
+}
+/* Dropdown Button */
+.dropbtn {
+    background-color: lightskyblue;
+    color: #343a40;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    font-weight: bold;
+    font-family: 'Merriweather', serif;
+  }
+  
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+    width: auto;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #ddd;}
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {display: block;}
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+
+/* @media only screen and (max-width: 600px) {
+    body {
+      background-color: rgb(132, 83, 189);
+    }
+  }
+ */
