@@ -1,4 +1,8 @@
 
+
+
+
+///////
 var exclusionArray = [];
 var userPerfil = [];
 var genderId;
@@ -129,3 +133,18 @@ $('#btnNextCalories').click(function(e){
     
     return genderId
 })
+
+$('#googleLogin').on('click', function(e){
+  e.preventDefault();
+ console.log('Im here')
+});
+
+$('#anonymousLogin').click(function(e){
+  e.preventDefault();
+  console.log('Im here')
+ });
+ 
+
+
+
+
