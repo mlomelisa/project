@@ -30,7 +30,7 @@ let data =
             },
             url: queryString,
             success: function(data) {
-              return data;
+              return JSON.parse(data);
             }
           });
     },
@@ -48,12 +48,33 @@ let data =
             },
             url: queryString,
             success: function(data) {
-                return data;
+                return JSON.parse(data);
             }
           });
         
         // .get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/products/22347")
         // return json 
+    },
+
+    "getNutritionDataAPI": function(recipeID)
+    {
+        let host = data.spoonifyConfig.url
+        let queryString = `${host}/recipes/${recipeID}/nutritionWidget.json`
+        
+        $.ajax({
+            type: "GET",
+            beforeSend: function(request) {
+              request.setRequestHeader("X-RapidAPI-Host", data.spoonifyConfig.host);
+              request.setRequestHeader("X-RapidAPI-Key", data.spoonifyConfig.key );
+            },
+            url: queryString,
+            success: function(data) {
+                return data;
+            }
+          });
+        
+        // .get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/{id}/nutritionWidget.json")
+        // return json
     },
 
     //widgetCalls
@@ -109,8 +130,8 @@ let data =
               request.setRequestHeader("X-RapidAPI-Key", data.spoonifyConfig.key );
             },
             url: queryString,
-            success: function(msg) {
-              $("#results").append("The result =" + StringifyPretty(msg));
+            success: function(data) {
+                return data;
             }
           });
         // .get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/menuItems/1003464/nutritionWidget")
@@ -136,12 +157,12 @@ let data =
             },
             url: queryString,
             success: function(data) {
-                return data;
+                return JSON.parse(data);
             }
           });
 
           //query builders
-          async function appendCalories()
+          function appendCalories()
           {
               let calorieTarget = data.userHealthProfile.healthSettings.calTarget
               if(calorieTarget === 0)
@@ -155,7 +176,7 @@ let data =
               }
           }
 
-          async function appendDietString()
+          function appendDietString()
           {
             if(data.userHealthProfile.dietArray[0] === "null")
             {
@@ -180,7 +201,7 @@ let data =
             
           }
 
-          async function appendExcludeString()
+          function appendExcludeString()
           {
             if(data.userHealthProfile.exclusionList[0] === "null")
             {
@@ -264,9 +285,9 @@ let data =
             {
                 if(snapshot.child(recipeID))
                 {
-                    return snapshot.recipeID;
+                    return JSON.parse(snapshot.recipeID);
                 }
-                else 
+                else
                 {
                     console.log(`Recipe not found in our database: ${recipeID}`)
                     let apiData = data.getRecipeDataAPI(recipeID)
@@ -277,7 +298,7 @@ let data =
                         })
                         .then(function()
                         {
-                            return apidData;
+                            return apiData;
                         })
                         .catch(function(err)
                         {
@@ -423,7 +444,7 @@ let data =
                         })
                         .then(function()
                         {
-                            return apidData;
+                            return apiData;
                         })
                         .catch(function(err)
                         {
@@ -472,6 +493,133 @@ let data =
         //     2:"https://spoonacular.com/productImages/22347-90x90.jpg"
         //     ]
         //     }
+    
+    "getNutritionData": function(recipeID)
+    {
+        this.firebaseConfig.databaseInit.InitFirebase();
+        this.firebaseConfig.databaseInit.ref('/nutritionData').once('value')
+            .then(function(snapshot)
+            {
+                if(snapshot.child(productID))
+                {
+                    return snapshot.productID;
+                }
+                else 
+                {
+                    console.log(`Product not found in our database: ${recipeID}`)
+                    let apiData = data.getNutritionDataAPI(recipeID)
+                        .then(function()
+                        {
+                            console.log(`Product Data from Spoonify API: ${recipeID}`)
+                            data.writeNutritionData(productID, apiData)
+                        })
+                        .then(function()
+                        {
+                            return apiData;
+                        })
+                        .catch(function(err)
+                        {
+                            console.log(`Error: ${err.message}`);
+                            console.log(`Error: ${err.stack}`);
+                            console.log(`Error: ${err.code}`);
+                            console.error('an issue occurred retrieving product object');
+                        }) 
+                }
+            })
+    },
+    // {8 items
+    //     "calories":"316"
+    //     "carbs":"49g"
+    //     "fat":"12g"
+    //     "protein":"3g"
+    //     "bad":[7 items
+    //     0:{4 items
+    //     "title":"Calories"
+    //     "amount":"316"
+    //     "indented":false
+    //     "percentOfDailyNeeds":15.84
+    //     }
+    //     1:{4 items
+    //     "title":"Fat"
+    //     "amount":"12g"
+    //     "indented":false
+    //     "percentOfDailyNeeds":18.51
+    //     }
+    //     2:{4 items
+    //     "title":"Saturated Fat"
+    //     "amount":"3g"
+    //     "indented":true
+    //     "percentOfDailyNeeds":24.88
+    //     }
+    //     3:{...
+    //     }4 items
+    //     4:{...
+    //     }4 items
+    //     5:{...
+    //     }4 items
+    //     6:{...
+    //     }4 items
+    //     ]
+    //     "good":[21 items
+    //     0:{4 items
+    //     "title":"Protein"
+    //     "amount":"3g"
+    //     "indented":false
+    //     "percentOfDailyNeeds":7.57
+    //     }
+    //     1:{4 items
+    //     "title":"Vitamin K"
+    //     "amount":"19µg"
+    //     "indented":false
+    //     "percentOfDailyNeeds":18.76
+    //     }
+    //     2:{4 items
+    //     "title":"Manganese"
+    //     "amount":"0.37mg"
+    //     "indented":false
+    //     "percentOfDailyNeeds":18.69
+    //     }
+    //     3:{...
+    //     }4 items
+    //     4:{...
+    //     }4 items
+    //     5:{...
+    //     }4 items
+    //     6:{...
+    //     }4 items
+    //     7:{...
+    //     }4 items
+    //     8:{...
+    //     }4 items
+    //     9:{...
+    //     }4 items
+    //     10:{...
+    //     }4 items
+    //     11:{...
+    //     }4 items
+    //     12:{...
+    //     }4 items
+    //     13:{...
+    //     }4 items
+    //     14:{...
+    //     }4 items
+    //     15:{...
+    //     }4 items
+    //     16:{...
+    //     }4 items
+    //     17:{...
+    //     }4 items
+    //     18:{...
+    //     }4 items
+    //     19:{...
+    //     }4 items
+    //     20:{...
+    //     }4 items
+    //     ]
+    //     "expires":1554645762291
+    //     "isStale":true
+    //     }
+    
     "getIngredientWidget": function(recipeID)
     {
         this.firebaseConfig.databaseInit.InitFirebase();
@@ -528,7 +676,7 @@ let data =
                         })
                         .then(function()
                         {
-                            return apidData;
+                            return apiData;
                         })
                         .catch(function(err)
                         {
@@ -563,7 +711,7 @@ let data =
                         })
                         .then(function()
                         {
-                            return apidData;
+                            return apiData;
                         })
                         .catch(function(err)
                         {
@@ -644,6 +792,22 @@ let data =
             }
     },
 
+    "writeNutritionData": function(recipeID, jsonObj)
+    {
+        this.firebaseConfig.databaseInit.InitFirebase();
+        this.firebaseConfig.databaseInit.getInstance().getReference()
+            .then(function(snapshot){
+                snapshot.child(nutritionData).child(recipeID).setValue(jsonObj)
+            })
+            .catch(err)
+            {
+                console.log(`Error: ${err.message}`)
+                console.log(`Error: ${err.stack}`)
+                console.log(`Error: ${err.code}`)
+                console.log("There was an issue with saving Nutrition Data to our Database")
+            }
+    },
+
     "writeUserCalender": function(userID, jsonObj)
     {
         this.firebaseConfig.databaseInit.InitFirebase();
@@ -662,7 +826,7 @@ let data =
 
     "writeUserHealthProfile": function(userID, jsonObj)
     {
-        let msDate = new Date(milliseconds);
+        let Date = new Date().getTime()
         this.firebaseConfig.databaseInit.InitFirebase();
         this.firebaseConfig.databaseInit.getInstance().getReference()
             .then(function(snapshot){
@@ -679,7 +843,7 @@ let data =
 
     "writeUserList": function(userID)
     {
-        let msDate = new Date(milliseconds);
+        let Date = new Date().getTime()
         this.firebaseConfig.databaseInit.InitFirebase();
         this.firebaseConfig.databaseInit.getInstance().getReference()
             .then(function(snapshot){
@@ -743,37 +907,32 @@ let data =
     },
 
     
+
+    
 //ACCESSIBLE DATA OBJECTS  
     "userCalender" : 
     {
-        "userID": "id",
-        "created": "msdate",
+        "userID": "",
         //first 
-        "starts": "msdate",
+        "starts": "",
         //the last localized date time schedules, key/values.
-        "expires": "msdate",
+        "expires": "",
         //this a returned from an API Call which is all the recipe id's returned in meal query.
-        "availableRecipes" : ["recipid", "recipeid"],
-        //this is an array of recipes which a user can specify in advanced dashboard settings
-        "chosenRecipes" : ["recipeid", "recipeid"],
-        
-        "schedule" : 
-        {
-            //this localizedDateTime represents when the recipe occurs:
-            "localizedDateTime": "mealObject",
-            "localizedDateTime2": "mealObject",
-        }
+        "availableRecipes" : [],
+        //key = datelocal value = mealObject
+        "schedule" : {},
     },
 
     "userHealthProfile" : 
     {
-        "userID": "id",
-        "created": "msdate",
+        "userID": "",
+        "created": "",
         "height" : "",
         "weight" : "",
         "age" : "",
-        "dietarySelection" : ["null"],
-        "exclusionList" : ["null"],
+        "gender" : "",
+        "dietarySelection" : [],
+        "exclusionList" : [],
         "healthSettings" : {
             "calTarget": 0,
             "proteinTarget": 0,
@@ -781,7 +940,73 @@ let data =
             "fatTarget": 0,
         }
     },
+    //
+    "userCalenderFunctions":
+    {
+        //schedule queries
+        "getFirstEntryDate" : function(){
+            let key = Object.keys(data.userCalender.schedule)[0];
+            let date = new Date(key);
+            return date;
+        },
+        
+        "getLastEntryDate" : function(){
+            let keyID = Math.floor(Object.keys(data.userCalender.schedule).length - 1);
+            let key = Object.keys(data.userCalender.schedule)[keyID];
+            let date = new Date(key);
+            return date;
+        },
+        
+        "getLastRefreshDate": function(){
+            let expireDate = this.getLastEntryDate();
+            let expireDateMS = this.convertToEpoch(expireDate);
+            let msweek = Math.floor(8.64e+7 * 7);
+            let expireDateInt = Date.parse(expireDateMS);
+            let lastRefreshDatemsInt = Math.floor(expireDateInt - msweek);
+            let lastRefreshDatems = new Date(lastRefreshDatemsInt);
+            let lastRefreshDate = this.convertToMomentL(lastRefreshDatems);
+            return lastRefreshDate;
+        },
+        
+        "getCurrentMealObject": function(){},
+        
+        "getNextMealObject": function(){},
 
+        "convertToMomentL": function(datetime){
+            return moment(datetime).format('L');
+        },
+
+        "convertToEpoch": function(datetime){
+             let time = moment(datetime).toDate();
+             return time.getTime();
+        },
+
+        "addMillisecondDay" : function(datetime){
+            return datetime + 8.64e+7 | 0;
+        },
+
+        "getRecipes" : function()
+        {
+            if (Object.keys(data.userCalender.schedule).length === 0)
+            {
+                Console.log("userCalender does not have any schedule data");
+                return;
+            }
+
+            else
+            {
+                let recipeIDArray = [];
+                for(let i = 0;i < Object.keys(data.userCalender.schedule).length; i++)
+                {
+                    
+                    let key = Object.key(data.userCalender.schedule)[i];
+                    let recipeID = data.userCalender.schedule[key].value.id;
+                    recipeIDArray.push(recipeID);
+                }
+                return recipeIDArray;
+            }
+        }
+    },
     //object saved as child to msdate:obj 
     "userCred":
     {
@@ -923,7 +1148,7 @@ let data =
     "writeUserCred": function(userID)
     {
         this.firebaseConfig.databaseInit.InitFirebase();
-        let msDate = new Date(milliseconds);
+        let Date = new Date().getTime()
         let currentUser = this.firebaseConfig.authInit.currentUser;
         this.userCred.firebaseDisplayName = currentUser.displayName;
         this.userCred.email = currentUser.email;
@@ -955,7 +1180,7 @@ let data =
         window.localStorage.setItem(userID, JSON.stringify(data.userCred))
         if (this.browserData.cookiesEnabled)
         {
-            let date = new Date(milliseconds)
+            let Date = new Date().getTime()
             let expireDate = date + 2.628e+9 | 0
             window.document.cookie = (userID + '=' + (JSON.stringify(data.userCred)) + '; expires=' + expireDate);
         }
@@ -1133,7 +1358,9 @@ let data =
         )
     },
 
-    
+//Generators
+
+    "generateUserCalender" : function()
 
     
 }
