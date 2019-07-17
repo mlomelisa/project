@@ -155,13 +155,14 @@ a.nav-link{
   .dropdown:hover .dropbtn {background-color: #3e8e41;}
 
 
-/* @media only screen and (max-width: 600px) {
+ @media only screen and (max-width: 600px) {
     body {
       background-color: rgb(132, 83, 189);
     }
   }
- */
-  text-align: center;
+ 
+.introSection.row{
+   text-align: center;
   color: white;
   padding-top:1em;
   width: 100%;
@@ -169,8 +170,16 @@ a.nav-link{
   margin-left: auto;
   margin-bottom: 2em;
 
-}
+} 
 
+.introButtons button{
+  margin: 1em 2em;
+  padding: 0.5em 1em;
+  font-weight: bold;
+  color: #343a40;
+  border:0.2em #343a40 solid;
+  background-color: lightskyblue;
+}
 
 
 
@@ -271,5 +280,5 @@ a.nav-link{
 		margin-top:10px;
  	}		
 }
-=======
+
 
