@@ -1,4 +1,5 @@
 
+
 /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
 function myFunction() {
@@ -55,6 +56,7 @@ var genderId;
 // data.userHealthProfile = newUserHealthProfile
 
 // data.writeUserHealthProfile(newUserHealthProfile)
+
 //mockdata do not include in pr
 var data = {"userHealthProfile" :
 {
@@ -75,26 +77,30 @@ var data = {"userHealthProfile" :
 };
 //mockdata do not include in pr
 
+///////
+var exclusionArray = [];
+
+
+let newUserHealthProfile = data.userHealthProfile
+
+// data.writeUserHealthProfile(newUserHealthProfile)
+
+
 
 $('#btnNext').on('click', function(event){
   
-  // $('#btnNext').off();
+ 
   event.preventDefault();
   
    var calories = $('#inputCalories').val();
    var dietOptions = $('#dietOption').val();
-  //  var totalDays = $('#inputDays').val();
-   
-   
-    
-    data.userHealthProfile = {
-      'healthSettings.calTarget':calories,
-      'dietarySelection':dietOptions,
-      // 'days':totalDays,
-      'exclusionList':exclusionArray
-    };
 
-    console.log(data.userHealthProfile);
+   
+   newUserHealthProfile.dietarySelection = dietOptions;
+   newUserHealthProfile.healthSettings.calTarget = calories;
+   newUserHealthProfile.exclusionList = exclusionArray
+    
+    console.log(newUserHealthProfile);
 
 
     $('#myModalDiet').modal('hide');
@@ -103,6 +109,7 @@ $('#btnNext').on('click', function(event){
     $('#dietOption :first').prop('selected', true);
     $('li').remove();
    
+    $('#loginModal').modal('show');
     return data.userHealthProfilee;
     
 });
@@ -137,40 +144,26 @@ $('#btnAddExclusion').on('click',function(e){
 
   });
 
-// Next Calories  
-$('#btnNextCalories').click(function(e){
-  
+
+// Login Section with Google account or Anonymus
+
+$('#googleLogin').on('click', function(e){
   e.preventDefault();
- 
-
-  var ageUser = $('#age').val();
-  var heightUser = $('#meters').val();
-  var weightUser = $('#kilograms').val();
-
   
-  userPerfil = {
-    'age':ageUser,
-    'height':heightUser,
-    'weight':weightUser,
-    'gender': genderId
-  };
-  
-  console.log(userPerfil)
 
-  $('#myModalCalories').modal('hide');
-    
+  $('#loginModal').modal('hide');
+  // $('#myModalDiet').modal('show');
+ console.log('Im here')
 });
 
-  // Cancel Calories button
-  $('#btnCancelCalories').on('click',function(event){
-    event.preventDefault();
-    $('#myModalCalories').modal('hide');
-    return 
-  });
+$('#anonymousLogin').click(function(e){
+  e.preventDefault();
+  $('#loginModal').modal('hide');
+  // $('#myModalDiet').modal('show');
+  console.log('Im here')
+ });
+ 
 
-  $('#genderSection input[type="radio"]').change(function(){
-    
-    genderId = $("input[name='inlineRadioOptions']:checked").val();
-    
-    return genderId
-})
+
+
+
