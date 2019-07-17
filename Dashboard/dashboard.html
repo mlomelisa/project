@@ -1,0 +1,75 @@
+<!DOCTYPE html lang="en">
+<html>
+    <head>
+        <title>iEat - Meals Calendar</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css.map">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.standalone.css.map">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather&display=swap" >
+        <link rel="stylesheet" href="dashboard.css">
+        <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src = "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.js"></script>
+
+    </head>
+    <body>
+        <div>
+            <header>
+                <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+                    <a class="brandText" href="#">iEat</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item ">
+                                <a class="nav-link" href="../Landing/landing.html">Home </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#">Meals Calendar <span class="sr-only">(current)</span></a>
+                            </li>
+                        </ul>
+                        <span class="mt-2 mt-md-0">
+                            <button id="signIn"> Sign in </button><img id="userCabinet" src="user-icon.png">
+                        </span>
+                    </div>
+                </nav>
+            </header>
+                    
+            <div class="jumbotron" role="main">
+                <div class =" header-text">
+                    <h1> Your very own meal calendar</h1>
+                </div>
+                <div class="input-group input-daterange datePick col-12">
+                    <input type="text" class="form-control" id = "fromDate" placeholder="mm/dd/yyyy">
+                    <input type="text" class="form-control" id = "toDate" placeholder="mm/dd/yyyy">
+                    <button id="showMeals">Show meals</button>
+                </div>
+
+                <!-- set up the modal to start hidden and fade in and out -->
+                <div id="myModal" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                Incorrect range! Please check the selected dates!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!----end of modal-->
+                
+                <div class = 'container' id="meals-section">
+                </div>
+            </div>
+        </div>  
+        <script src = "https://momentjs.com/downloads/moment.js"> </script>
+        <script src="dashboard.js"></script>
+        </script>           
+    </body>
+</html>

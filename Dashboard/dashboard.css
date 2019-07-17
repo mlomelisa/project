@@ -1,0 +1,91 @@
+
+body{
+    padding: 5em 0em 2em 0em;
+    height: 100vh;
+    max-height: 100%;
+    background-color: #F8F8F8;
+}
+
+.brandText{
+    color:  lightskyblue;
+    font-weight: bold;
+    font-size: 3em;
+    margin: 0em 2em;
+    font-family: 'Merriweather', serif;
+}
+.brandText:hover{
+    text-decoration: none;
+    color:lightgray;
+}
+a.nav-link{
+    font-size: 1.5em;
+    margin: 0em 1em;
+    font-weight: bold;
+    font-family: 'Merriweather', serif;
+}
+#signIn{
+    margin: 1em 0.5em;
+    padding: 0.3em 1em;
+    font-weight: bold;
+    color: #343a40;
+    border:0.2em #343a40 solid;
+    background-color: lightskyblue;
+}
+
+.header-text{
+    text-align: center;
+     margin: 3em auto;
+     font-family: 'Merriweather', serif;
+}
+.datePick{
+    text-align: center;
+    width: 35em;
+    margin: 5em auto;
+    
+}
+.input-group-addon{
+    margin: 0em 0.5em;
+}
+.datepicker{
+    width: 200px;
+}
+
+#showMeals{
+    padding: 0.3em 1em;
+    font-weight: bold;
+    color: #343a40;
+    background-color: lightskyblue;
+}
+
+#mealDay{
+    padding: 0.3em 1em;
+    font-weight: bold;
+    text-align: center;
+    margin: 1em 1em 2em 1em;
+    background-color: white;
+}
+
+input::placeholder {
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+.mealDate{
+    font-family:  'Merriweather', serif;
+    font-size: 2em;
+    margin: 1em auto;
+
+}
+.meal {
+    margin:0em 2.7em 1em 2.7em;
+}
+.mealType{
+
+    background-color:lightskyblue;
+    color:#343a40;
+    border-radius: 0.1em;
+
+}
+.card-body{
+    padding: 0em 0em 1em 0em;
+}
