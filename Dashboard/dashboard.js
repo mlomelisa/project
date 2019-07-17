@@ -13,14 +13,25 @@ var data =
         "chosenRecipes" : ["recipid", "recipeid"],
         "schedule" : 
         {
-            "1562928437": "day1_RecipeID1",
-            "1562962020": "day1_RecipeID2",
-            "1562962030": "day1_RecipeID22",
-            "1562962050": "day1_RecipeID23",
-            "1562962120": "day1_RecipeID24",
-            "1563014837": "day2_RecipeID1 lorem",
-            "1563052020": "day2_RecipeID2 lorem ipsum lorem ipsum",
-            "1563066420": "day2_RecipeID3",
+            "1562928437": {
+                "title": "title1",
+                "rID": "id1",
+            },
+            "1562962020": {
+                "title": "title2",
+                "rID": "id2",
+            },
+            "1562962030": {
+                "title": "title1",
+                "rID": "id1",
+ 
+            },
+            "1563014837": {
+                "title": "title1",
+                "rID": "id1",
+
+            },
+
 
         }
     }
@@ -35,82 +46,49 @@ var data =
 //////////////////////////////////
 
 
-//date picker
-$('.input-daterange input').each(function()
-{
-    $(this).datepicker('clearDates');
-});
-
-
 $("#showMeals").on("click", function()
 {   
     //clear previous selection range before displaying new 
-    $("#meals-section").empty();
+   $("#meals-section").empty();
 
-    var fromDate = $("#fromDate").val();
-    var toDate = $("#toDate").val();
+   var dbDatesArray = (Object.entries(data.userCalender.schedule));
 
-    if ( moment(fromDate).unix()>moment(toDate).unix() || fromDate ==="" || toDate ==="" )
-    {
-    
-        showErrorPopUp();
-    } else 
-    {
+   var fromDate = moment.unix(dbDatesArray[0][0]).format('L');
+   var toDate = moment.unix(dbDatesArray[dbDatesArray.length-1][0]).format('L');
 
-        if (fromDate !=="" && toDate!=="" )
-        {
+   // var fromDate = "07/12/2019";
+   // var toDate = "07/13/2019";
+
   
         let rangeDates = enumerateDaysBetweenDates(fromDate,toDate);
  
-        var valuesarray = (Object.entries(data.userCalender.schedule))
-       
-            if (rangeDates.length===2 && rangeDates[0]===rangeDates[1])
-            {
+  
 
-                var endOfDatesArray = rangeDates.length-1;
-            
-            } else
-            {
-                endOfDatesArray= rangeDates.length;
-            }
 
-            for (let j =0; j<endOfDatesArray; j++)
+            for (let j =0; j<rangeDates.length; j++)
             {
                 var arrayOfMealsPerDay=[];
 
-                for (let i=0; i<valuesarray.length;i++){
+                for (let i=0; i<dbDatesArray.length;i++){
                 
-                    var dbDate = moment.unix(valuesarray[i][0]).format("MM/DD/YYYY");
-                    var mealType = getMealType(moment.unix(valuesarray[i][0]));
+                    var dbDate = moment.unix(dbDatesArray[i][0]).format("MM/DD/YYYY");
+                    var mealType = getMealType(moment.unix(dbDatesArray[i][0]));
                     if(rangeDates[j]===dbDate)
                     {
                         arrayOfMealsPerDay.push(
                             {   "mealDate":dbDate,
                                 "mealTime":mealType,
                                 //we need to parse name, image, recipe here and add new keys
-                                "meal": valuesarray[i][1],
+                                "meal": dbDatesArray[i][1],
                             //  "image":valuesarray[i][1].image 
                             });
                     }       
                 }
             createMealContainer(arrayOfMealsPerDay);
             }
-        } 
-    }
+        
+    
 });
-
-function getNumberOfDaysinRange(date1, date2)
-{
-    let fromDateUnix = moment(date1, "MM/DD/YYYY").format("X");
-
-    let toDateUnix = moment(date2, "MM/DD/YYYY").format("X");
-
-    let fromDate = moment.unix(fromDateUnix).format("MM/DD/YYYY");
-    let toDate = moment.unix(toDateUnix).format("MM/DD/YYYY");
-    let daysNumber= moment(toDate).diff(moment(fromDate), "days");
-
-    return daysNumber; 
-} 
 
 function  enumerateDaysBetweenDates (startDate, endDate) {
 
@@ -154,13 +132,18 @@ function createMealContainer(dayMealsArray)
         var mealCard = $('<div class="card">');
         var mealCardBody = $('<div class="card-body">');
         var mealImage = $('<img class="card-img-top" src="mealIcon.png" alt="Card image cap">');
+        mealCard.attr("recipeID",dayMealsArray[i].meal.rID);
         var mealName = $('<h5 class="card-title">');
+        mealName.attr("onmouseover","showDescriptionModal(this)");
+        mealCard.attr("onmouseover","hideDescriptionModal()");
         var viewButton= $('<a href="#" class="btn btn-primary">View recipe</a>');
+        viewButton.attr("onclick","getRecipe(this)");
+        viewButton.attr("recipeID",dayMealsArray[i].meal.rID);
         var divMeal = $("<div class='meal col-xs-6 col-sm-6 col-md-3 col-lg-3'>");
         var mealType = $("<h5 class='mealType'>");
 
         mealType.text(dayMealsArray[i].mealTime);
-        mealName.text(dayMealsArray[i].meal);
+        mealName.text(dayMealsArray[i].meal.title);
         mealCardBody.append(mealType);
         mealCardBody.append(mealImage);
         mealCardBody.append(mealName);
@@ -193,28 +176,29 @@ function getMealType (mealDate) {
 	return type;
 }
 
-function showErrorPopUp(){
-    $("#myModal").on("show", function() {    
-        $("#myModal a.btn").on("click", function(e) {
-            $("#myModal").modal('hide');    
-        });
-    });
+
+
         
-    $("#myModal").on("hide", function() {    
-        $("#myModal a.btn").off("click");
-    });
-            
-    $("#myModal").on("hidden", function() {  
-        $("#myModal").remove();
-    });
-            
-    $("#myModal").modal({     
-        "backdrop"  : "static",
-        "keyboard"  : true,
-        "show"      : true                    
+function getRecipe(el){
+   var recipeID =  $(el).attr("recipeID");
+   getRecipeData(recipeID);
+   // add modal on click to show the recipe
+}
+ 
+
+//add meal brief descripion on hover depending on the recipe id
+function showDescriptionModal(el){
+    var recipe =  $(el).attr("recipeID");
+
+    
+    $('.modal').modal({
+        show: true
     });
 }
 
-        
+function buildMealDescription(recipeObject){
 
- 
+
+}
+
+
