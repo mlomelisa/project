@@ -14,21 +14,53 @@ var data =
         "schedule" : 
         {
             "1562928437": {
-                "title": "title1",
-                "rID": "id1",
+ 
+                "day":1, 
+                "mealPlanId":0,
+                "slot":1, 
+                "position":0,
+                "type":"RECIPE",
+                "value":    {
+                    "id":655786,
+                    "imageType":"jpg",
+                    "title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"
+                },
             },
             "1562962020": {
-                "title": "title2",
-                "rID": "id2",
+                "day":1, 
+                "mealPlanId":0,
+                "slot":1, 
+                "position":0,
+                "type":"RECIPE",
+                "value":    {
+                    "id":655786,
+                    "imageType":"jpg",
+                    "title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"
+                },
             },
             "1562962030": {
-                "title": "title1",
-                "rID": "id1",
- 
+                "day":1, 
+                "mealPlanId":0,
+                "slot":1, 
+                "position":0,
+                "type":"RECIPE",
+                "value":    {
+                    "id":655786,
+                    "imageType":"jpg",
+                    "title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"
+                },
             },
             "1563014837": {
-                "title": "title1",
-                "rID": "id1",
+                "day":1, 
+                "mealPlanId":0,
+                "slot":1, 
+                "position":0,
+                "type":"RECIPE",
+                "value":    {
+                    "id":655786,
+                    "imageType":"jpg",
+                    "title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"
+                },
 
             },
 
@@ -79,7 +111,8 @@ $("#showMeals").on("click", function()
                             {   "mealDate":dbDate,
                                 "mealTime":mealType,
                                 //we need to parse name, image, recipe here and add new keys
-                                "meal": dbDatesArray[i][1],
+                                "mealTitle": dbDatesArray[i][1].value.title,
+                                "mealRecipeId" :dbDatesArray[i][1].value.id
                             //  "image":valuesarray[i][1].image 
                             });
                     }       
@@ -143,7 +176,7 @@ function createMealContainer(dayMealsArray)
         var mealType = $("<h5 class='mealType'>");
 
         mealType.text(dayMealsArray[i].mealTime);
-        mealName.text(dayMealsArray[i].meal.title);
+        mealName.text(dayMealsArray[i].meal);
         mealCardBody.append(mealType);
         mealCardBody.append(mealImage);
         mealCardBody.append(mealName);
