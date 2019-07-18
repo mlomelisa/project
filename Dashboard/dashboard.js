@@ -165,18 +165,18 @@ function createMealContainer(dayMealsArray)
         var mealCard = $('<div class="card">');
         var mealCardBody = $('<div class="card-body">');
         var mealImage = $('<img class="card-img-top" src="mealIcon.png" alt="Card image cap">');
-        mealCard.attr("recipeID",dayMealsArray[i].meal.rID);
+        mealCard.attr("recipeID",dayMealsArray[i].mealRecipeId);
         var mealName = $('<h5 class="card-title">');
         mealName.attr("onmouseover","showDescriptionModal(this)");
         mealCard.attr("onmouseover","hideDescriptionModal()");
         var viewButton= $('<a href="#" class="btn btn-primary">View recipe</a>');
         viewButton.attr("onclick","getRecipe(this)");
-        viewButton.attr("recipeID",dayMealsArray[i].meal.rID);
+        viewButton.attr("recipeID",dayMealsArray[i].mealRecipeId);
         var divMeal = $("<div class='meal col-xs-6 col-sm-6 col-md-3 col-lg-3'>");
         var mealType = $("<h5 class='mealType'>");
 
         mealType.text(dayMealsArray[i].mealTime);
-        mealName.text(dayMealsArray[i].meal);
+        mealName.text(dayMealsArray[i].mealTitle);
         mealCardBody.append(mealType);
         mealCardBody.append(mealImage);
         mealCardBody.append(mealName);
@@ -214,20 +214,21 @@ function getMealType (mealDate) {
         
 function getRecipe(el){
    var recipeID =  $(el).attr("recipeID");
-   getRecipeData(recipeID);
+   var object = data.getRecipeData(recipeID);
+   console.log(object);
    // add modal on click to show the recipe
 }
  
 
 //add meal brief descripion on hover depending on the recipe id
-function showDescriptionModal(el){
+/*function showDescriptionModal(el){
     var recipe =  $(el).attr("recipeID");
 
     
     $('.modal').modal({
         show: true
     });
-}
+}*/
 
 function buildMealDescription(recipeObject){
 

@@ -277,7 +277,7 @@ let data =
                         })
                         .then(function()
                         {
-                            return apidData;
+                            return apiData;
                         })
                         .catch(function(err)
                         {
@@ -423,7 +423,7 @@ let data =
                         })
                         .then(function()
                         {
-                            return apidData;
+                            return apiData;
                         })
                         .catch(function(err)
                         {
@@ -528,7 +528,7 @@ let data =
                         })
                         .then(function()
                         {
-                            return apidData;
+                            return apiData;
                         })
                         .catch(function(err)
                         {
@@ -563,7 +563,7 @@ let data =
                         })
                         .then(function()
                         {
-                            return apidData;
+                            return apiData;
                         })
                         .catch(function(err)
                         {
