@@ -4,17 +4,22 @@
         <title>iEat - Home page</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link rel="stylesheet" href="https://getbootstrap.com/docs/4.3/examples/carousel/carousel.css">
         <link href="https://fonts.googleapis.com/css?family=Merriweather&display=swap" rel="stylesheet">
         <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
         <link rel="stylesheet" href="landing.css">
         <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-        <script type="text/javascript" src="landing.js"></script>
+
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+        <!-- <script type="text/javascript" src="landing.js"></script> -->
     </head>
+
 
       </head>
     <body>
@@ -50,8 +55,12 @@
                         </ul>
                         
                         <span class="mt-2 mt-md-0">
-                            <button id="signIn"> Sign in </button><img id="userCabinet" src="Images/user-icon.png">
+
+                            <button id="signIn" data-toggle="modal" data-target="#loginModal"> Sign in </button><img id="userCabinet" src="./Images/user-icon.png">
+
+                          
                             
+
                         </span>
                     </div>
                 </nav>
@@ -88,76 +97,79 @@
 
                         
                     </div>  
-                   <!--Modal Diet Information-->
-                   <div class="modal" tabindex="-1" role="dialog" id="myModalDiet">
-                    <div class="modal-dialog" role="document">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title">Tell Us Your Diet</h5>
-            
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                          </button>
-                        </div>
-                        <div class="modal-body">
-                          <p></p>
-                          <form>
-      
-                               <label for="customRange3">Calories per Day</label> 
-                              <small> <button type='button' data-toggle="modal" data-target="#myModalCalories" class="btn btn-link">Need help?</button></small>
-                              
-                             <p>  <input type="range" class="custom-range" min="1000" max="3500" step="10" id="inputCalories" oninput="document.getElementById('caloriesPerDay').innerHTML = this.value" ><label id='caloriesPerDay'></label> </p>
-                              <select class="custom-select" id="dietOption" multiple>
-                                  <option selected value='balanced' >Any food</option>
-                                  <option value="vegetarian" >Vegetarian</option>
-                                  <option value="vegan" >Vegan</option>
-                                  <option value="paleo" >Paleo</option>
-                                  <option value="ketogenic" >Ketogenic</option>                      
-                                </select>
-                              <!-- <div class="form-group">
-                                <label for="exampleFormControlSelect2">Total Days</label>
-                                <select class="custom-select" id='inputDays'>                        
-                                    <option selected value="1" data-item="inputDays">1</option>
-                                    <option value="2" data-item="inputDays">2</option>
-                                    <option value="3" data-item="inputDays">3</option>
-                                    <option value="4" data-item="inputDays">4</option>
-                                    <option value="5" data-item="inputDays">5</option>
-                                    <option value="6" data-item="inputDays">6</option>
-                                    <option value="7" data-item="inputDays">7</option>
-                                  </select>
-                              </div> -->
-                              <br/>
-                              <div class="form-group">
-                                  <br/>
-                                <label for="exampleFormControlTextarea1">Add Exclusion</label>
-                                <div class="input-group">
-                                    <input class="form-control" aria-describedby="basic-addon1" aria-label="" type="text" id="inputExclusion">
-                                    <div class="input-group-append">
-                                      <button class="btn btn-success" type="button" id='btnAddExclusion'>Add</button>
-                                    </div>
-                                  </div>
-                                  <div class="list-Exclusion">
-                                      <ul id="listExclusion" class='list-group'>
-            
-                                        </ul>
-                                  </div>
-                            
-                                  
+
+                    
+
+                </div>
+            </div>
+        </div> 
+
+                        <!--Modal Diet Information-->
+                        <div class="modal" tabindex="-1" role="dialog" id="myModalDiet">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title">Tell Us Your Diet</h5>
+                  
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
                               </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-primary"id="btnCancel">Cancel</button>
-                          <button type="button" class="btn btn-primary" id="btnNext">Next</button>
-                          
-                        </div>
-                      </div>
-                    </div>
-                  </div>  
+                              <div class="modal-body">
+                                <p></p>
+                                <form>
+            
+                                     <label for="customRange3">Calories per Day</label> 
+                                    <small> <button id='needHelpBtn' type='button' data-toggle="modal" data-target="#myModalCalories"class="btn btn-link">Need help?</button></small>
+      
+                                    
+                                   <p>  <input type="range" class="custom-range" min="600" max="3000" step="10" id="inputCalories" oninput="document.getElementById('caloriesPerDay').innerHTML = this.value" ><label id='caloriesPerDay'></label> </p>
+                                   
+                            
+                                   
+                                   <select class="custom-select" id="dietOption" multiple>
+                                        <option selected value='balanced' >Any food</option>
+                                        <option value="vegetarian" >Vegetarian</option>
+                                        <option value="vegan" >Vegan</option>
+                                        <option value="paleo" >Paleo</option>
+                                        <option value="ketogenic" >Ketogenic</option>                      
+                                      </select>
+                                  
+                                    <br/>
+                                    <div class="form-group">
+                                        <br/>
+                                      <label for="exampleFormControlTextarea1">Add Exclusion</label>
+                                      <div class="input-group">
+                                          <input class="form-control" aria-describedby="basic-addon1" aria-label="" type="text" id="inputExclusion">
+                                          <div class="input-group-append">
+                                            <button class="btn btn-success" type="button" id='btnAddExclusion'>Add</button>
+                                          </div>
+                                        </div>
+                                        <div class="list-Exclusion">
+                                            <ul id="listExclusion" class='list-group'>
+                  
+                                              </ul>
+                                        </div>
+                                  
+                                        
+                                    </div>
+                                  </form>
+      
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-primary"id="btnCancel">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="btnNext">Next</button>
+                                
+                              </div>
+                            </div>
+                          </div>
+                        </div>  
+
+                           
 
                   <!--Modal Calories-->
-                  <div class="modal" tabindex="-1" role="dialog" id="myModalCalories">
-                      <div class="modal-dialog" role="document">
+                  <div class="modal" handleUpdate tabindex="-1" role="dialog" id="myModalCalories">
+                      <div class="modal-dialog  modal-lg" role="document">
                         <div class="modal-content">
                           <div class="modal-header">
                             <h5 class="modal-title">Tell Us About You</h5>
@@ -165,57 +177,63 @@
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                               <span aria-hidden="true">&times;</span>
                             </button>
-                          </div>
-                          <div class="modal-body">
-                            <p></p>
-                            <form>
-                              <div id="genderSection">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" data-id="radioGender" value="female">
-                                    <label class="form-check-label" for="radioFemale">Female</label>
-                                  </div>
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" data-id="radioGender" value="male">
-                                    <label class="form-check-label" for="radioMale">Male</label>
-                                  </div>
-                                  <div class="form-check form-check-inline">
-                                      <input class="form-check-input" type="radio" name="inlineRadioOptions" data-id="radioGender" value="other">
-                                      <label class="form-check-label" for="radioMale">Other</label>
-                                    </div>
-                                  <div>
-                                    </div>
-                                      <label for="age">Age:</label>
-                                      <input id="age" type="number" name="inputAge" step="1" min="0" max="100" required>
-                                      <span class="validity"></span>
-                              </div>
-
-                                <div class="form-group">
-                                  <div class="metersInputGroup">
-                                    <label for="meters">Height — meters:</label>
-                                    <input id="meters" type="number" name="meters" step="0.01" min="0" required>
-                                    <span class="validity"></span>
+                          </div> 
+                          
+                          
+                              <div class="gigacalculator" data-tool="/calculators/calorie-calculator.php"  data-weigth="450">
+                                <div class="gigacalctitle">Calorie Calculator</div>
+                                <div class="gigacalcfooter">
+                                  <a href="https://www.gigacalculator.com/calculators/calorie-calculator.php">Calorie Calculator</a> by <a class="gigacalclink" href="https://www.gigacalculator.com/">GIGAcalculator.com</a>
                                 </div>
-                                <div class="metersInputGroup">
-                                  <label for="kilograms">Weight — Kg:</label>
-                                  <input id="kilograms" type="number" name="kilograms" step="0.01" min="0" required>
-                                  <span class="validity"></span>
                               </div>
-                              
-                                    
-        
-                              </form>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" id="btnCancelCalories">Cancel</button>
-                            <button type="button" class="btn btn-primary" id="btnNextCalories">Next</button>
+                              <script async src="https://cdn.gigacalculator.com/embed.min.js"></script>  
                             
+                            
+
+                          </div>
+                      </div>
+                    </div> 
+                        <!-- Login Modal-->
+
+                        <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="signInTitle">Sign In</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                          
+                              </div>
+                              <div class="modal-body">
+                                  <div class="container">
+    
+
+                                      <div class="omb_login">
+                                      
+                                      <div class="row omb_row-sm-offset-3 omb_socialButtons">
+
+                                            <div class='col'>
+                                            <a  href="#" class="btn btn-lg btn-block omb_btn-google">
+                                                <i class="fa fa-google-plus visible-xs"></i>
+                                                <span id='googleLogin' class="hidden-xs">Google+</span>
+                                              </a>
+                                            </div>	
+                                            <div >
+                                                <hr class="omb_hrOr">
+                                                <span class="omb_spanOr">or</span>
+                                              </div>
+                                            <div class="col">
+                                            <button id='anonymousLogin' class="btn btn-lg btn-primary btn-block" type="submit">Anonymous</button>
+                                          </div>
+                                        </div>
+                                    </div>
+                                  </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>  
-                </div>
-            </div>
-        </div> 
-        <script src="./landing.js"></script>            
+        <script src="./landing.js"></script>
+            
     </body>
 </html>
