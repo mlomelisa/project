@@ -264,6 +264,7 @@ function getRecipe(el){
         var recipeImageURL = object.image;
         var recipeImage = $("<img>");
         recipeImage.attr("src",recipeImageURL);
+        $("h5#recipeTitle").text(objectRecipe.title);
 
         //creating ingredientsWidgetButton
         var ingredientsWidgetButton = $("<button>");
