@@ -1325,10 +1325,10 @@ let data =
     //JOBS
 
     //**TODO** PASS IN LOGIN METHOD - USE SWITCH TO FIREOFF PREFERRED CHOICE
-    "userLogin" : function()
+    "userLogin" : function(method)
     {
-        let response = window.confirm("Not Signed In: Sign in with Google?, hit yes to link your google account or cancel to remain anonymous. specifically I will be looking at: https://www.googleapis.com/auth/admin.directory.customer.readonly, https://www.googleapis.com/auth/analytics.readonly, https://www.googleapis.com/auth/adsense.readonly, https://www.googleapis.com/auth/contacts.readonly, even though I dont even know what kind of data this is structured as, also I am collecting all of your availble browser data, and I dont even know the legality of that... ")
-        if(response)
+        
+        if(method === 'google')
         {
             data.googleLogin()
                 .then(function ()
@@ -1336,6 +1336,7 @@ let data =
                     let currentUser = data.firebaseConfig.authInit.currentUser;
                     data.userCred.firebaseUserID = currentUser.uid;
                     data.userCred.anonymous = false;
+                    this.authAgent();
                 })
                 .catch(function (err)
                 {
@@ -1352,6 +1353,7 @@ let data =
                     let currentUser = data.firebaseConfig.authInit.currentUser;
                     this.userCred.firebaseUserID = currentUser.uid;
                     this.userCred.anonymous = true;
+                    this.authAgent();
                 })
                 .catch(function (err)
                 {
@@ -1484,30 +1486,29 @@ let landingFunctions = {
             if(bool === true)
             {
                 $('#btnNext').on('click', function(event){
-  
- 
                 event.preventDefault();
-                
-                 var calories = $('#inputCalories').val();
-                 var dietOptions = $('#dietOption').val();
-              
-                 
-                 data.userHealthProfile.dietarySelection = dietOptions;
-                 newUserHealthProfile.healthSettings.calTarget = calories;
-                 newUserHealthProfile.exclusionList = exclusionArray
-                  
-                  console.log(newUserHealthProfile);
-              
-              
-                  $('#myModalDiet').modal('hide');
-                  $('#inputCalories').val('');
-                  $('#dietOption option:selected').prop('selected', false);
-                  $('#dietOption :first').prop('selected', true);
-                  $('li').remove();
-                 
-                  $('#loginModal').modal('show');
-                  return data.userHealthProfile;
-                  
+                data.userLogin('anon')
+                    .this(function(){
+                        let newUserHealthProfile = data.userHealthProfile
+                        newUserHealthProfile.calories = $('#inputCalories').val();
+                        var dietOptions = $('#dietOption').val();
+                        data.userHealthProfile.dietarySelection = dietOptions;
+                        newUserHealthProfile.healthSettings.calTarget = calories;
+                        newUserHealthProfile.exclusionList = exclusionArray
+                        console.log(newUserHealthProfile);
+                        $('#myModalDiet').modal('hide');
+                        $('#inputCalories').val('');
+                        $('#dietOption option:selected').prop('selected', false);
+                        $('#dietOption :first').prop('selected', true);
+                        $('li').remove();
+                        $('#loginModal').modal('show');
+                    })
+                    .catch(err)
+                    {
+                        alert(`Error: ${err.message}`);
+                        console.log(`Error: ${err.message}`);
+                        console.log(`Error: ${err.stack}`);
+                    }
               });
             }
             else
@@ -1554,6 +1555,7 @@ let landingFunctions = {
         {
             $('#googleLogin').on('click', function(e){
                 e.preventDefault();
+                data.userLogin('google')
                 
               
                 $('#loginModal').modal('hide');
@@ -1633,12 +1635,19 @@ let landingFunctions = {
             landingFunctions.beingHealthyFunctions.onEatHealthyClick(true);
             landingFunctions.beingHealthyFunctions.onActiveClick(true);
         },
-        "endSession": function(){},
+        "endSession": function(){
+            landingFunctions.buttonFunctions.dietModalSubmit(false);
+            landingFunctions.buttonFunctions.dietModalAddExclusion(false);
+            landingFunctions.buttonFunctions.dietModalCancel(false);
+            landingFunctions.buttonFunctions.googleLogin(false);
+            landingFunctions.buttonFunctions.anonLogin(false);
+            landingFunctions.beingHealthyFunctions.onHomeClick(false);
+            landingFunctions.beingHealthyFunctions.onEatHealthyClick(false);
+            landingFunctions.beingHealthyFunctions.onActiveClick(false);
+        },
     }
 }
 
-
- 
 ////////////////////////LANDINGEND
 
 /////////////DashboardBegin
