@@ -45,18 +45,52 @@
                 <div class =" header-text">
                     <h1> Your very own meal calendar</h1>
                 </div>
-                <div class="input-group input-daterange datePick col-12">
-                    <button id="showMeals">Show meals</button>
+               <div class="input-group input-daterange datePick col-12">
+                 <!---  <input type="text" class="form-control" id = "fromDate" placeholder="mm/dd/yyyy">
+                    <input type="text" class="form-control" id = "toDate" placeholder="mm/dd/yyyy">
+                 -->  <button id="showMeals">Show meals</button>
                 </div>
 
-                <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true"><div class="modal-dialog modal-sm"><div class="modal-content">Lalalala</div></div></div>
-                
+                <!-- set up the modal to start hidden and fade in and out -->
+                <div id="myModal" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <div class= "recipe-modal"> </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!----end of modal-->
+
+                <div id="ingridientsWigdetModal" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <div class= "ingredients-modal"> </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="nutritionsWigdetModal" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <div class= "nutritions-modal"> </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class = 'container' id="meals-section">
                 </div>
             </div>
         </div>  
         <script src = "https://momentjs.com/downloads/moment.js"> </script>
-        <script src="dashboard.js"></script>
+        <script src="iEat.js"></script>
+       <!--- <script src="dashboard.js"></script>-->
         </script>           
     </body>
 </html>

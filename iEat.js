@@ -1,5 +1,5 @@
 'use strict';
-let data = 
+let data1 = 
 {
 
 
@@ -30,7 +30,7 @@ let data =
             },
             url: queryString,
             success: function(data) {
-              return data;
+              return JSON.parse(data);
             }
           });
     },
@@ -48,12 +48,33 @@ let data =
             },
             url: queryString,
             success: function(data) {
-                return data;
+                return JSON.parse(data);
             }
           });
         
         // .get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/products/22347")
         // return json 
+    },
+
+    "getNutritionDataAPI": function(recipeID)
+    {
+        let host = data.spoonifyConfig.url
+        let queryString = `${host}/recipes/${recipeID}/nutritionWidget.json`
+        
+        $.ajax({
+            type: "GET",
+            beforeSend: function(request) {
+              request.setRequestHeader("X-RapidAPI-Host", data.spoonifyConfig.host);
+              request.setRequestHeader("X-RapidAPI-Key", data.spoonifyConfig.key );
+            },
+            url: queryString,
+            success: function(data) {
+                return data;
+            }
+          });
+        
+        // .get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/{id}/nutritionWidget.json")
+        // return json
     },
 
     //widgetCalls
@@ -109,8 +130,8 @@ let data =
               request.setRequestHeader("X-RapidAPI-Key", data.spoonifyConfig.key );
             },
             url: queryString,
-            success: function(msg) {
-              $("#results").append("The result =" + StringifyPretty(msg));
+            success: function(data) {
+                return data;
             }
           });
         // .get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/menuItems/1003464/nutritionWidget")
@@ -124,86 +145,92 @@ let data =
         let host = data.spoonifyConfig.url
         let mealgenerator = "/recipes/mealplans/generate?";
         let queryString = `${host}${mealgenerator}timeFrame=${time}`
-        await appendCalories();
-        await appendDietString();
-        await appendExcludeString();
+            .then(function(){data.getMealPlanAPI.appendCalories();})
+            .then(function(){data.getMealPlanAPI.appendDietString();})
+            .then(function(){data.getMealPlanAPI.appendExcludeString();})
+            .then(function(){
+                $.ajax({
+                type: "GET",
+                beforeSend: function(request) {
+                request.setRequestHeader("X-RapidAPI-Host", data.spoonifyConfig.host);
+                request.setRequestHeader("X-RapidAPI-Key", data.spoonifyConfig.key );
+                },
+                url: queryString,
+                success: function(data) {
+                    return JSON.parse(data);
+                }
+            })})
+            .catch(function(err)
+            {
+                console.log(`Error: ${err.message}`);
+                console.log(`Error: ${err.stack}`);
+                console.log(`Error: ${err.code}`);
+                console.error('an issue occurred retrieving meal schedule');
+            })
         
-        $.ajax({
-            type: "GET",
-            beforeSend: function(request) {
-              request.setRequestHeader("X-RapidAPI-Host", data.spoonifyConfig.host);
-              request.setRequestHeader("X-RapidAPI-Key", data.spoonifyConfig.key );
-            },
-            url: queryString,
-            success: function(data) {
-                return data;
-            }
-          });
-
           //query builders
-          async function appendCalories()
-          {
-              let calorieTarget = data.userHealthProfile.healthSettings.calTarget
-              if(calorieTarget === 0)
-              {
-                  return;
-              }
-              else
-              {
-                let calories = caloriesTarget.toString();
-                queryString.concat(`&targetCalories=${calories}`)
-              }
-          }
-
-          async function appendDietString()
-          {
-            if(data.userHealthProfile.dietArray[0] === "null")
+        function appendCalories()
+        {
+            let calorieTarget = data.userHealthProfile.healthSettings.calTarget
+            if(calorieTarget === 0)
             {
                 return;
             }
             else
             {
-                let dietArray = data.userHealthProfile.dietarySelection;
-                let andOperator = '%2C+';
-                let dietString = `&diet=${dietArray[0]}`
-                
-                if(dietArray.length > 1)
-                {
-                    for(let i=1; i<dietArray.length; i++)
-                    {
-                        dietString.concat(andOperator + dietArray[i])
-                    }
-                }
-
-                queryString.concat(dietString)
+            let calories = caloriesTarget.toString();
+            queryString.concat(`&targetCalories=${calories}`)
             }
+        }
+
+        function appendDietString()
+        {
+        if(data.userHealthProfile.dietArray[0] === "null")
+        {
+            return;
+        }
+        else
+        {
+            let dietArray = data.userHealthProfile.dietarySelection;
+            let andOperator = '%2C+';
+            let dietString = `&diet=${dietArray[0]}`
             
-          }
-
-          async function appendExcludeString()
-          {
-            if(data.userHealthProfile.exclusionList[0] === "null")
+            if(dietArray.length > 1)
             {
-                return;
-            }
-            else
-            {
-                let excludeArray = data.userHealthProfile.exclusionList;
-                let andOperator = '%2C+';
-                let excludeString = `&exclude=${excludeArray[0]}`
-                
-                if(excludeArray.length > 1)
+                for(let i=1; i<dietArray.length; i++)
                 {
-                    for(let i=1; i<excludeArray.length; i++)
-                    {
-                        excludeString.concat(andOperator + excludeArray[i])
-                    }
+                    dietString.concat(andOperator + dietArray[i])
                 }
-
-                queryString.concat(excludeString)
             }
+
+            queryString.concat(dietString)
+        }
+        
+        }
+
+        function appendExcludeString()
+        {
+        if(data.userHealthProfile.exclusionList[0] === "null")
+        {
+            return;
+        }
+        else
+        {
+            let excludeArray = data.userHealthProfile.exclusionList;
+            let andOperator = '%2C+';
+            let excludeString = `&exclude=${excludeArray[0]}`
             
-          }
+            if(excludeArray.length > 1)
+            {
+                for(let i=1; i<excludeArray.length; i++)
+                {
+                    excludeString.concat(andOperator + excludeArray[i])
+                }
+            }
+
+            queryString.concat(excludeString)
+        }
+        }
         
         // "mealObject":
         // {
@@ -230,7 +257,7 @@ let data =
     },
     
 //DatabaseMain
-"database": firebase.database(),
+    "database": firebase.database(),
     
     //CONFIGS
     "firebaseConfig":
@@ -264,9 +291,9 @@ let data =
             {
                 if(snapshot.child(recipeID))
                 {
-                    return snapshot.recipeID;
+                    return JSON.parse(snapshot.recipeID);
                 }
-                else 
+                else
                 {
                     console.log(`Recipe not found in our database: ${recipeID}`)
                     let apiData = data.getRecipeDataAPI(recipeID)
@@ -472,6 +499,133 @@ let data =
         //     2:"https://spoonacular.com/productImages/22347-90x90.jpg"
         //     ]
         //     }
+    
+    "getNutritionData": function(recipeID)
+    {
+        this.firebaseConfig.databaseInit.InitFirebase();
+        this.firebaseConfig.databaseInit.ref('/nutritionData').once('value')
+            .then(function(snapshot)
+            {
+                if(snapshot.child(productID))
+                {
+                    return snapshot.productID;
+                }
+                else 
+                {
+                    console.log(`Product not found in our database: ${recipeID}`)
+                    let apiData = data.getNutritionDataAPI(recipeID)
+                        .then(function()
+                        {
+                            console.log(`Product Data from Spoonify API: ${recipeID}`)
+                            data.writeNutritionData(productID, apiData)
+                        })
+                        .then(function()
+                        {
+                            return apiData;
+                        })
+                        .catch(function(err)
+                        {
+                            console.log(`Error: ${err.message}`);
+                            console.log(`Error: ${err.stack}`);
+                            console.log(`Error: ${err.code}`);
+                            console.error('an issue occurred retrieving product object');
+                        }) 
+                }
+            })
+    },
+    // {8 items
+    //     "calories":"316"
+    //     "carbs":"49g"
+    //     "fat":"12g"
+    //     "protein":"3g"
+    //     "bad":[7 items
+    //     0:{4 items
+    //     "title":"Calories"
+    //     "amount":"316"
+    //     "indented":false
+    //     "percentOfDailyNeeds":15.84
+    //     }
+    //     1:{4 items
+    //     "title":"Fat"
+    //     "amount":"12g"
+    //     "indented":false
+    //     "percentOfDailyNeeds":18.51
+    //     }
+    //     2:{4 items
+    //     "title":"Saturated Fat"
+    //     "amount":"3g"
+    //     "indented":true
+    //     "percentOfDailyNeeds":24.88
+    //     }
+    //     3:{...
+    //     }4 items
+    //     4:{...
+    //     }4 items
+    //     5:{...
+    //     }4 items
+    //     6:{...
+    //     }4 items
+    //     ]
+    //     "good":[21 items
+    //     0:{4 items
+    //     "title":"Protein"
+    //     "amount":"3g"
+    //     "indented":false
+    //     "percentOfDailyNeeds":7.57
+    //     }
+    //     1:{4 items
+    //     "title":"Vitamin K"
+    //     "amount":"19µg"
+    //     "indented":false
+    //     "percentOfDailyNeeds":18.76
+    //     }
+    //     2:{4 items
+    //     "title":"Manganese"
+    //     "amount":"0.37mg"
+    //     "indented":false
+    //     "percentOfDailyNeeds":18.69
+    //     }
+    //     3:{...
+    //     }4 items
+    //     4:{...
+    //     }4 items
+    //     5:{...
+    //     }4 items
+    //     6:{...
+    //     }4 items
+    //     7:{...
+    //     }4 items
+    //     8:{...
+    //     }4 items
+    //     9:{...
+    //     }4 items
+    //     10:{...
+    //     }4 items
+    //     11:{...
+    //     }4 items
+    //     12:{...
+    //     }4 items
+    //     13:{...
+    //     }4 items
+    //     14:{...
+    //     }4 items
+    //     15:{...
+    //     }4 items
+    //     16:{...
+    //     }4 items
+    //     17:{...
+    //     }4 items
+    //     18:{...
+    //     }4 items
+    //     19:{...
+    //     }4 items
+    //     20:{...
+    //     }4 items
+    //     ]
+    //     "expires":1554645762291
+    //     "isStale":true
+    //     }
+    
     "getIngredientWidget": function(recipeID)
     {
         this.firebaseConfig.databaseInit.InitFirebase();
@@ -596,6 +750,63 @@ let data =
            
     },
 
+    "UserCalenderGen":
+    {
+        "addMealArray": function(timekeystring, mealObject)
+        {
+            data.userCalender.schedule[timekeystring] = mealObject;
+        },
+
+        "parseAPIResponse": function(response)
+        {
+            if(response.items.length > 3)
+            {
+               
+            
+            }
+            
+        },
+
+        "newCalender": function(userID)
+        {
+            if(!(userID)){userID = data.userCred.firebaseUserID;};
+            data.userCalender.userID = userID;
+
+        },
+        "refreshCalender": function()
+        {
+            data.userCalender.starts = data.userCalenderFunctions.getFirstEntryDate();
+            data.userCalender.expires = data.userCalenderFunctions.getLastEntryDate();
+            data.userCalender.availableRecipes = data.userCalenderFunctions.getAllScheduleRecipes();
+        },
+
+
+          // "mealObject":
+        // {
+        //     "day":1
+        //     "mealPlanId":0
+        //     "slot":1
+        //     "position":0
+        //     "type":"RECIPE"
+        //     "value":"{"id":655786,"imageType":"jpg","title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"}"
+        // },
+        //mealplan response
+        
+        // "name":"MealPlan 1563076260336"
+        // "publishAsPublic":true
+        // "items":[12 items
+        // 0:{6 items
+        // "day":1
+        // "mealPlanId":0
+        // "slot":1
+        // "position":0
+        // "type":"RECIPE"
+        // "value":"{"id":655786,"imageType":"jpg","title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"}"
+        // }
+
+
+    },
+
     "userHealthProfileAgent": function(userID)
     {
         this.firebaseConfig.databaseInit.InitFirebase();
@@ -644,6 +855,22 @@ let data =
             }
     },
 
+    "writeNutritionData": function(recipeID, jsonObj)
+    {
+        this.firebaseConfig.databaseInit.InitFirebase();
+        this.firebaseConfig.databaseInit.getInstance().getReference()
+            .then(function(snapshot){
+                snapshot.child(nutritionData).child(recipeID).setValue(jsonObj)
+            })
+            .catch(err)
+            {
+                console.log(`Error: ${err.message}`)
+                console.log(`Error: ${err.stack}`)
+                console.log(`Error: ${err.code}`)
+                console.log("There was an issue with saving Nutrition Data to our Database")
+            }
+    },
+
     "writeUserCalender": function(userID, jsonObj)
     {
         this.firebaseConfig.databaseInit.InitFirebase();
@@ -662,7 +889,7 @@ let data =
 
     "writeUserHealthProfile": function(userID, jsonObj)
     {
-        let msDate = new Date(milliseconds);
+        let Date = new Date().getTime()
         this.firebaseConfig.databaseInit.InitFirebase();
         this.firebaseConfig.databaseInit.getInstance().getReference()
             .then(function(snapshot){
@@ -679,7 +906,7 @@ let data =
 
     "writeUserList": function(userID)
     {
-        let msDate = new Date(milliseconds);
+        let Date = new Date().getTime()
         this.firebaseConfig.databaseInit.InitFirebase();
         this.firebaseConfig.databaseInit.getInstance().getReference()
             .then(function(snapshot){
@@ -743,37 +970,32 @@ let data =
     },
 
     
+
+    
 //ACCESSIBLE DATA OBJECTS  
     "userCalender" : 
     {
-        "userID": "id",
-        "created": "msdate",
+        "userID": "",
         //first 
-        "starts": "msdate",
+        "starts": "",
         //the last localized date time schedules, key/values.
-        "expires": "msdate",
+        "expires": "",
         //this a returned from an API Call which is all the recipe id's returned in meal query.
-        "availableRecipes" : ["recipid", "recipeid"],
-        //this is an array of recipes which a user can specify in advanced dashboard settings
-        "chosenRecipes" : ["recipeid", "recipeid"],
-        
-        "schedule" : 
-        {
-            //this localizedDateTime represents when the recipe occurs:
-            "localizedDateTime": "mealObject",
-            "localizedDateTime2": "mealObject",
-        }
+        "availableRecipes" : [],
+        //key = datelocal value = mealObject
+        "schedule" : {},
     },
 
     "userHealthProfile" : 
     {
-        "userID": "id",
-        "created": "msdate",
+        "userID": "",
+        "created": "",
         "height" : "",
         "weight" : "",
         "age" : "",
-        "dietarySelection" : ["null"],
-        "exclusionList" : ["null"],
+        "gender" : "",
+        "dietarySelection" : [],
+        "exclusionList" : [],
         "healthSettings" : {
             "calTarget": 0,
             "proteinTarget": 0,
@@ -781,7 +1003,127 @@ let data =
             "fatTarget": 0,
         }
     },
+    //
+    "userCalenderFunctions":
+   {
+       //schedule queries
+       "getFirstEntryDate" : function(){
+           let key = Object.keys(data.userCalender.schedule)[0];
+           let date = new Date(key);
+           return date;
+       },
 
+       "getLastEntryDate" : function(){
+           let keyID = Math.floor(Object.keys(data.userCalender.schedule).length - 1);
+           let key = Object.keys(data.userCalender.schedule)[keyID];
+           let date = new Date(key);
+           return date;
+       },
+
+       "getLastRefreshDate": function(){
+           let expireDate = this.getLastEntryDate();
+           let expireDateMS = this.convertToEpoch(expireDate);
+           let msweek = Math.floor(8.64e+7 * 7);
+           let expireDateInt = this.convertDatetoNum(expireDateMS);
+           let lastRefreshDatemsInt = Math.floor(expireDateInt - msweek);
+           let lastRefreshDatems = this.convertNumtoDate(lastRefreshDatemsInt);
+           let lastRefreshDate = this.convertToMomentL(lastRefreshDatems);
+           return lastRefreshDate;
+       },
+
+       "getCurrentMealObject": function(){
+           let date = new Date();
+           let locDate = this.convertToMomentL(date);
+           let key = locDate.toString();
+
+           if(data.userCalender.schedule[key])
+           {
+               return data.userCalender.schedule[key];
+           }
+           else
+           {
+               console.log("an entry does not exist in the schedule for " + key);
+               console.log(data.userCalender.schedule);
+               return;
+           }
+       },
+
+       "getNextMealObject": function(){
+           let date = new Date();
+           let nextDay = this.addMillisecondDay(date)
+           let nextDayloc = this.convertToMomentL(nextDay)
+           let key = nextDayloc.toString()
+           return this.userCalender.schedule[key]
+
+
+       },
+
+       "convertToMomentL": function(datetime){
+           return moment(datetime).format('L');
+       },
+
+       "convertToEpoch": function(datetime){
+            let time = moment(datetime).toDate();
+            return time.getTime();
+       },
+
+       "convertDatetoNum": function(date){
+           return Date.parse(date);
+       },
+
+       "convertNumtoDate": function(num){
+           return new Date(num);
+       },
+
+       "addMillisecondDay" : function(datetime){
+           let dateTimeNum = this.convertDatetoNum(datetime);
+           let newDateTimeNum = Math.floor(dateTimeNum + 8.64e+7);
+           let newDateTime = this.convertNumtoDate(newDateTimeNum)
+           return newDateTime;
+       },
+
+       "getAllScheduleRecipes" : function()
+       {
+           if (Object.keys(data.userCalender.schedule).length === 0)
+           {
+               Console.log("userCalender does not have any schedule data");
+               return;
+           }
+
+           else
+           {
+               let recipeIDArray = [];
+               for(let i = 0;i < Object.keys(data.userCalender.schedule).length; i++)
+               {
+
+                   let key = Object.key(data.userCalender.schedule)[i];
+                   let recipeID = data.userCalender.schedule[key].value.id;
+                   recipeIDArray.push(recipeID);
+               }
+               return recipeIDArray;
+           }
+       },
+
+       "getRecipe" : function(key)
+       {
+           if(!(typeof key === 'stringValue' || key instanceof String))
+           {
+               key = key.toString();
+           }
+
+           if (!(data.userCalender.schedule[key]))
+           {
+               Console.log("userCalender does not contain an entry of " + key);
+               return;
+           }
+
+           else
+           {
+               let recipeID = data.userCalender.schedule[key].value.id;
+               return recipeID;
+           }
+       }
+    },
     //object saved as child to msdate:obj 
     "userCred":
     {
@@ -923,7 +1265,7 @@ let data =
     "writeUserCred": function(userID)
     {
         this.firebaseConfig.databaseInit.InitFirebase();
-        let msDate = new Date(milliseconds);
+        let Date = new Date().getTime()
         let currentUser = this.firebaseConfig.authInit.currentUser;
         this.userCred.firebaseDisplayName = currentUser.displayName;
         this.userCred.email = currentUser.email;
@@ -955,7 +1297,7 @@ let data =
         window.localStorage.setItem(userID, JSON.stringify(data.userCred))
         if (this.browserData.cookiesEnabled)
         {
-            let date = new Date(milliseconds)
+            let Date = new Date().getTime()
             let expireDate = date + 2.628e+9 | 0
             window.document.cookie = (userID + '=' + (JSON.stringify(data.userCred)) + '; expires=' + expireDate);
         }
@@ -1131,9 +1473,406 @@ let data =
                 console.log(`Error: ${err.code}`)
             }
         )
-    },
-
-    
-
-    
+    },    
 }
+
+////////////////////////LANDING
+
+// data.writeUserHealthProfile(newUserHealthProfile)
+
+//mockdata do not include in pr
+var data = {"userHealthProfile" :
+{
+    "userID": "id",
+    "created": "msdate",
+    "height" : "",
+    "weight" : "",
+    "age" : "",
+    "dietarySelection" : ["null"],
+    "exclusionList" : ["null"],
+    "healthSettings" : {
+        "calTarget": 0,
+        "proteinTarget": 0,
+        "carbTarget": 0,
+        "fatTarget": 0,
+    }
+  },
+};
+//mockdata do not include in pr
+ let newUserHealthProfile = data.userHealthProfile;
+
+ var exclusionArray = [];
+
+
+// data.writeUserHealthProfile(newUserHealthProfile)
+
+
+
+$('#btnNext').on('click', function(event){
+  
+ 
+  event.preventDefault();
+  
+   var calories = $('#inputCalories').val();
+   var dietOptions = $('#dietOption').val();
+
+   
+   newUserHealthProfile.dietarySelection = dietOptions;
+   newUserHealthProfile.healthSettings.calTarget = calories;
+   newUserHealthProfile.exclusionList = exclusionArray
+    
+    console.log(newUserHealthProfile);
+
+
+    $('#myModalDiet').modal('hide');
+    $('#inputCalories').val('');
+    $('#dietOption option:selected').prop('selected', false);
+    $('#dietOption :first').prop('selected', true);
+    $('li').remove();
+   
+    $('#loginModal').modal('show');
+    return data.userHealthProfilee;
+    
+});
+
+// Add Exclusion to list
+$('#btnAddExclusion').on('click',function(e){
+  
+   e.preventDefault();
+   var exclusion = $('#inputExclusion').val().toLowerCase().trim();
+  
+
+  exclusionArray.push(exclusion);
+   
+       var exclusionList = $('<li>').addClass('list-group').text(exclusion);
+   
+      $('#listExclusion').prepend(exclusionList);
+ 
+
+  $('#inputExclusion').val('');
+  return  exclusionArray;
+  });
+
+  // Cancel button
+  $('#btnCancel').on('click',function(e){
+    e.preventDefault();
+    $('#inputCalories').val('');
+    $('#inputExclusion').val('');
+    $('#dietOption option:selected').prop('selected', false);
+    $('#dietOption :first').prop('selected', true);
+    $('li').remove();
+    $('#myModalDiet').modal('hide');
+
+  });
+
+
+// Login Section with Google account or Anonymus
+
+$('#googleLogin').on('click', function(e){
+  e.preventDefault();
+  
+
+  $('#loginModal').modal('hide');
+  // $('#myModalDiet').modal('show');
+ 
+});
+
+$('#anonymousLogin').click(function(e){
+  e.preventDefault();
+  $('#loginModal').modal('hide');
+  // $('#myModalDiet').modal('show');
+ 
+ });
+
+ /* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+function onEatHealthy_function() {
+document.getElementById("myCarousel").style.visibility ="collapse";
+document.getElementById("eatRightDiv1").style.visibility ="visible";
+ document.getElementById("eatRightDiv1").style.height ="80%";
+ document.getElementById("eatRightDiv1").setAttribute("src","https://www.youtube.com/embed/28CIFOhkKrU")
+ 
+ 
+}
+function onActive_function(){
+    document.getElementById("myCarousel").style.visibility ="collapse";
+document.getElementById("eatRightDiv1").style.visibility ="visible";
+ document.getElementById("eatRightDiv1").style.height ="80%";
+ document.getElementById("eatRightDiv1").setAttribute("src","Images/active.jpg")
+ 
+}
+
+function onHomeClick(){
+    document.getElementById("myCarousel").style.visibility ="visible";
+    document.getElementById("eatRightDiv1").style.visibility ="collapse";
+    document.getElementById("eatRightDiv1").style.height ="0%";
+    document.getElementById("eatRightDiv1").setAttribute("src",null);
+}
+
+function filterFunction() {
+ var input, filter, ul, li, a, i;
+   input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  div = document.getElementById("myDropdown");
+  a = div.getElementsByTagName("a");
+  for (i = 0; i < a.length; i++) {
+    txtValue = a[i].textContent || a[i].innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      a[i].style.display = "";
+    } else {
+      a[i].style.display = "none";
+    }
+
+  }
+}
+ 
+
+
+////////////////////////LANDINGEND
+
+
+
+/////////////DashboardBegin
+
+////////////////////////////////////
+//delete before  merging
+
+var data =
+{
+    "userCalender" : 
+    {
+        "userID": "nata",
+        "created": "msdate",
+        "starts": "fromDateUnix",
+        "expires": "toDateUnix",
+        "availableRecipes" : ["recipid", "recipeid"],
+        "chosenRecipes" : ["recipid", "recipeid"],
+        "schedule" : 
+        {
+            "1562928437": {
+ 
+                "day":1, 
+                "mealPlanId":0,
+                "slot":1, 
+                "position":0,
+                "type":"RECIPE",
+                "value":    {
+                    "id":655786,
+                    "imageType":"jpg",
+                    "title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"
+                },
+            },
+            "1562962020": {
+                "day":1, 
+                "mealPlanId":0,
+                "slot":1, 
+                "position":0,
+                "type":"RECIPE",
+                "value":    {
+                    "id":655786,
+                    "imageType":"jpg",
+                    "title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"
+                },
+            },
+            "1562962030": {
+                "day":1, 
+                "mealPlanId":0,
+                "slot":1, 
+                "position":0,
+                "type":"RECIPE",
+                "value":    {
+                    "id":655786,
+                    "imageType":"jpg",
+                    "title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"
+                },
+            },
+            "1563014837": {
+                "day":1, 
+                "mealPlanId":0,
+                "slot":1, 
+                "position":0,
+                "type":"RECIPE",
+                "value":    {
+                    "id":655786,
+                    "imageType":"jpg",
+                    "title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"
+                },
+
+            },
+
+
+        }
+    }
+}
+
+//ms time 1562928437000 morning 07/12
+//ms time 1562939237000 lunch 07/12
+//ms time 1563014837000 morning 07/13
+//ms time 1563025637000 lunch 07/13
+//ms time 1563050837000 dinner 07/13
+//convert to unix time
+//////////////////////////////////
+
+
+$("#showMeals").on("click", function()
+{   
+    //clear previous selection range before displaying new 
+   $("#meals-section").empty();
+
+   var dbDatesArray = (Object.entries(data.userCalender.schedule));
+
+   var fromDate = moment.unix(dbDatesArray[0][0]).format('L');
+   var toDate = moment.unix(dbDatesArray[dbDatesArray.length-1][0]).format('L');
+
+   // var fromDate = "07/12/2019";
+   // var toDate = "07/13/2019";
+
+  
+        let rangeDates = enumerateDaysBetweenDates(fromDate,toDate);
+ 
+  
+
+
+            for (let j =0; j<rangeDates.length; j++)
+            {
+                var arrayOfMealsPerDay=[];
+
+                for (let i=0; i<dbDatesArray.length;i++){
+                
+                    var dbDate = moment.unix(dbDatesArray[i][0]).format("MM/DD/YYYY");
+                    var mealType = getMealType(moment.unix(dbDatesArray[i][0]));
+                    if(rangeDates[j]===dbDate)
+                    {
+                        arrayOfMealsPerDay.push(
+                            {   "mealDate":dbDate,
+                                "mealTime":mealType,
+                                //we need to parse name, image, recipe here and add new keys
+                                "mealTitle": dbDatesArray[i][1].value.title,
+                                "mealRecipeId" :dbDatesArray[i][1].value.id
+                            //  "image":valuesarray[i][1].image 
+                            });
+                    }       
+                }
+            createMealContainer(arrayOfMealsPerDay);
+            }
+        
+    
+});
+
+function  enumerateDaysBetweenDates (startDate, endDate) {
+
+    var dates = [];
+    var currDate = moment(startDate).startOf('day');
+    var lastDate = moment(endDate).startOf('day');
+
+    dates.push(moment(startDate).format("MM/DD/YYYY"));
+
+    while(currDate.add(1, 'days').diff(lastDate) < 0) 
+    {
+        dates.push(moment(currDate.clone().toDate()).format("MM/DD/YYYY"));
+    }
+
+    dates.push(moment(endDate).format("MM/DD/YYYY"));
+
+    return dates;
+};
+
+
+function createMealContainer(dayMealsArray)
+{
+    var divDay = $("<div id='mealDay' class='row'>");
+    var mealDate = $("<div class='mealDate col-12'>");
+
+    if(dayMealsArray[0] === undefined)
+    {
+
+        divDay.text("no meals selected for this day");
+    } else
+    {
+        mealDate.text(moment(dayMealsArray[0].mealDate).format('dddd, MMMM D, YYYY'));
+        divDay.append(mealDate);
+    }
+
+
+
+    for (let i=0; i<dayMealsArray.length; i++)
+    {
+
+        var mealCard = $('<div class="card">');
+        var mealCardBody = $('<div class="card-body">');
+        var mealImage = $('<img class="card-img-top" src="mealIcon.png" alt="Card image cap">');
+        mealCard.attr("recipeID",dayMealsArray[i].meal.rID);
+        var mealName = $('<h5 class="card-title">');
+        mealName.attr("onmouseover","showDescriptionModal(this)");
+        mealCard.attr("onmouseover","hideDescriptionModal()");
+        var viewButton= $('<a href="#" class="btn btn-primary">View recipe</a>');
+        viewButton.attr("onclick","getRecipe(this)");
+        viewButton.attr("recipeID",dayMealsArray[i].meal.rID);
+        var divMeal = $("<div class='meal col-xs-6 col-sm-6 col-md-3 col-lg-3'>");
+        var mealType = $("<h5 class='mealType'>");
+
+        mealType.text(dayMealsArray[i].mealTime);
+        mealName.text(dayMealsArray[i].meal);
+        mealCardBody.append(mealType);
+        mealCardBody.append(mealImage);
+        mealCardBody.append(mealName);
+        mealCardBody.append(viewButton);
+        mealCard.html(mealCardBody);
+        divMeal.append(mealCard);
+        divDay.append(divMeal);
+    
+    }
+
+    $("#meals-section").append(divDay);
+}
+
+
+function getMealType (mealDate) {
+	var type = null; 
+	
+	var split_afternoon = 12 //24hr time to split the afternoon
+	var split_evening = 17 //24hr time to split the evening
+	var currentHour = parseFloat(moment(mealDate).format("HH"));
+	
+	if(currentHour >= split_afternoon && currentHour <= split_evening) {
+		type = "Lunch";
+	} else if(currentHour >= split_evening) {
+		type = "Dinner";
+	} else {
+		type = "Breakfast";
+	}
+	
+	return type;
+}
+
+
+
+        
+function getRecipe(el){
+   var recipeID =  $(el).attr("recipeID");
+   getRecipeData(recipeID);
+   // add modal on click to show the recipe
+}
+ 
+
+//add meal brief descripion on hover depending on the recipe id
+function showDescriptionModal(el){
+    var recipe =  $(el).attr("recipeID");
+
+    
+    $('.modal').modal({
+        show: true
+    });
+}
+
+function buildMealDescription(recipeObject){
+
+
+}
+
+
+///////////////////////////Dashboard End
