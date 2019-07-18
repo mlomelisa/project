@@ -145,86 +145,92 @@ let data =
         let host = data.spoonifyConfig.url
         let mealgenerator = "/recipes/mealplans/generate?";
         let queryString = `${host}${mealgenerator}timeFrame=${time}`
-        await appendCalories();
-        await appendDietString();
-        await appendExcludeString();
+            .then(function(){data.getMealPlanAPI.appendCalories();})
+            .then(function(){data.getMealPlanAPI.appendDietString();})
+            .then(function(){data.getMealPlanAPI.appendExcludeString();})
+            .then(function(){
+                $.ajax({
+                type: "GET",
+                beforeSend: function(request) {
+                request.setRequestHeader("X-RapidAPI-Host", data.spoonifyConfig.host);
+                request.setRequestHeader("X-RapidAPI-Key", data.spoonifyConfig.key );
+                },
+                url: queryString,
+                success: function(data) {
+                    return JSON.parse(data);
+                }
+            })})
+            .catch(function(err)
+            {
+                console.log(`Error: ${err.message}`);
+                console.log(`Error: ${err.stack}`);
+                console.log(`Error: ${err.code}`);
+                console.error('an issue occurred retrieving meal schedule');
+            })
         
-        $.ajax({
-            type: "GET",
-            beforeSend: function(request) {
-              request.setRequestHeader("X-RapidAPI-Host", data.spoonifyConfig.host);
-              request.setRequestHeader("X-RapidAPI-Key", data.spoonifyConfig.key );
-            },
-            url: queryString,
-            success: function(data) {
-                return JSON.parse(data);
-            }
-          });
-
           //query builders
-          function appendCalories()
-          {
-              let calorieTarget = data.userHealthProfile.healthSettings.calTarget
-              if(calorieTarget === 0)
-              {
-                  return;
-              }
-              else
-              {
-                let calories = caloriesTarget.toString();
-                queryString.concat(`&targetCalories=${calories}`)
-              }
-          }
-
-          function appendDietString()
-          {
-            if(data.userHealthProfile.dietArray[0] === "null")
+        function appendCalories()
+        {
+            let calorieTarget = data.userHealthProfile.healthSettings.calTarget
+            if(calorieTarget === 0)
             {
                 return;
             }
             else
             {
-                let dietArray = data.userHealthProfile.dietarySelection;
-                let andOperator = '%2C+';
-                let dietString = `&diet=${dietArray[0]}`
-                
-                if(dietArray.length > 1)
-                {
-                    for(let i=1; i<dietArray.length; i++)
-                    {
-                        dietString.concat(andOperator + dietArray[i])
-                    }
-                }
-
-                queryString.concat(dietString)
+            let calories = caloriesTarget.toString();
+            queryString.concat(`&targetCalories=${calories}`)
             }
+        }
+
+        function appendDietString()
+        {
+        if(data.userHealthProfile.dietArray[0] === "null")
+        {
+            return;
+        }
+        else
+        {
+            let dietArray = data.userHealthProfile.dietarySelection;
+            let andOperator = '%2C+';
+            let dietString = `&diet=${dietArray[0]}`
             
-          }
-
-          function appendExcludeString()
-          {
-            if(data.userHealthProfile.exclusionList[0] === "null")
+            if(dietArray.length > 1)
             {
-                return;
-            }
-            else
-            {
-                let excludeArray = data.userHealthProfile.exclusionList;
-                let andOperator = '%2C+';
-                let excludeString = `&exclude=${excludeArray[0]}`
-                
-                if(excludeArray.length > 1)
+                for(let i=1; i<dietArray.length; i++)
                 {
-                    for(let i=1; i<excludeArray.length; i++)
-                    {
-                        excludeString.concat(andOperator + excludeArray[i])
-                    }
+                    dietString.concat(andOperator + dietArray[i])
                 }
-
-                queryString.concat(excludeString)
             }
+
+            queryString.concat(dietString)
+        }
+        
+        }
+
+        function appendExcludeString()
+        {
+        if(data.userHealthProfile.exclusionList[0] === "null")
+        {
+            return;
+        }
+        else
+        {
+            let excludeArray = data.userHealthProfile.exclusionList;
+            let andOperator = '%2C+';
+            let excludeString = `&exclude=${excludeArray[0]}`
             
-          }
+            if(excludeArray.length > 1)
+            {
+                for(let i=1; i<excludeArray.length; i++)
+                {
+                    excludeString.concat(andOperator + excludeArray[i])
+                }
+            }
+
+            queryString.concat(excludeString)
+        }
+        }
         
         // "mealObject":
         // {
@@ -251,7 +257,7 @@ let data =
     },
     
 //DatabaseMain
-"database": firebase.database(),
+    "database": firebase.database(),
     
     //CONFIGS
     "firebaseConfig":
@@ -744,6 +750,63 @@ let data =
            
     },
 
+    "UserCalenderGen":
+    {
+        "addMealArray": function(timekeystring, mealObject)
+        {
+            data.userCalender.schedule[timekeystring] = mealObject;
+        },
+
+        "parseAPIResponse": function(response)
+        {
+            if(response.items.length > 3)
+            {
+               
+            
+            }
+            
+        },
+
+        "newCalender": function(userID)
+        {
+            if(!(userID)){userID = data.userCred.firebaseUserID;};
+            data.userCalender.userID = userID;
+
+        },
+        "refreshCalender": function()
+        {
+            data.userCalender.starts = data.userCalenderFunctions.getFirstEntryDate();
+            data.userCalender.expires = data.userCalenderFunctions.getLastEntryDate();
+            data.userCalender.availableRecipes = data.userCalenderFunctions.getAllScheduleRecipes();
+        },
+
+
+          // "mealObject":
+        // {
+        //     "day":1
+        //     "mealPlanId":0
+        //     "slot":1
+        //     "position":0
+        //     "type":"RECIPE"
+        //     "value":"{"id":655786,"imageType":"jpg","title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"}"
+        // },
+        //mealplan response
+        
+        // "name":"MealPlan 1563076260336"
+        // "publishAsPublic":true
+        // "items":[12 items
+        // 0:{6 items
+        // "day":1
+        // "mealPlanId":0
+        // "slot":1
+        // "position":0
+        // "type":"RECIPE"
+        // "value":"{"id":655786,"imageType":"jpg","title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"}"
+        // }
+
+
+    },
+
     "userHealthProfileAgent": function(userID)
     {
         this.firebaseConfig.databaseInit.InitFirebase();
@@ -942,70 +1005,124 @@ let data =
     },
     //
     "userCalenderFunctions":
-    {
-        //schedule queries
-        "getFirstEntryDate" : function(){
-            let key = Object.keys(data.userCalender.schedule)[0];
-            let date = new Date(key);
-            return date;
-        },
-        
-        "getLastEntryDate" : function(){
-            let keyID = Math.floor(Object.keys(data.userCalender.schedule).length - 1);
-            let key = Object.keys(data.userCalender.schedule)[keyID];
-            let date = new Date(key);
-            return date;
-        },
-        
-        "getLastRefreshDate": function(){
-            let expireDate = this.getLastEntryDate();
-            let expireDateMS = this.convertToEpoch(expireDate);
-            let msweek = Math.floor(8.64e+7 * 7);
-            let expireDateInt = Date.parse(expireDateMS);
-            let lastRefreshDatemsInt = Math.floor(expireDateInt - msweek);
-            let lastRefreshDatems = new Date(lastRefreshDatemsInt);
-            let lastRefreshDate = this.convertToMomentL(lastRefreshDatems);
-            return lastRefreshDate;
-        },
-        
-        "getCurrentMealObject": function(){},
-        
-        "getNextMealObject": function(){},
+   {
+       //schedule queries
+       "getFirstEntryDate" : function(){
+           let key = Object.keys(data.userCalender.schedule)[0];
+           let date = new Date(key);
+           return date;
+       },
 
-        "convertToMomentL": function(datetime){
-            return moment(datetime).format('L');
-        },
+       "getLastEntryDate" : function(){
+           let keyID = Math.floor(Object.keys(data.userCalender.schedule).length - 1);
+           let key = Object.keys(data.userCalender.schedule)[keyID];
+           let date = new Date(key);
+           return date;
+       },
 
-        "convertToEpoch": function(datetime){
-             let time = moment(datetime).toDate();
-             return time.getTime();
-        },
+       "getLastRefreshDate": function(){
+           let expireDate = this.getLastEntryDate();
+           let expireDateMS = this.convertToEpoch(expireDate);
+           let msweek = Math.floor(8.64e+7 * 7);
+           let expireDateInt = this.convertDatetoNum(expireDateMS);
+           let lastRefreshDatemsInt = Math.floor(expireDateInt - msweek);
+           let lastRefreshDatems = this.convertNumtoDate(lastRefreshDatemsInt);
+           let lastRefreshDate = this.convertToMomentL(lastRefreshDatems);
+           return lastRefreshDate;
+       },
 
-        "addMillisecondDay" : function(datetime){
-            return datetime + 8.64e+7 | 0;
-        },
+       "getCurrentMealObject": function(){
+           let date = new Date();
+           let locDate = this.convertToMomentL(date);
+           let key = locDate.toString();
 
-        "getRecipes" : function()
-        {
-            if (Object.keys(data.userCalender.schedule).length === 0)
-            {
-                Console.log("userCalender does not have any schedule data");
-                return;
-            }
+           if(data.userCalender.schedule[key])
+           {
+               return data.userCalender.schedule[key];
+           }
+           else
+           {
+               console.log("an entry does not exist in the schedule for " + key);
+               console.log(data.userCalender.schedule);
+               return;
+           }
+       },
 
-            else
-            {
-                let recipeIDArray = [];
-                for(let i = 0;i < Object.keys(data.userCalender.schedule).length; i++)
-                {
-                    
-                    let key = Object.key(data.userCalender.schedule)[i];
-                    let recipeID = data.userCalender.schedule[key].value.id;
-                    recipeIDArray.push(recipeID);
-                }
-                return recipeIDArray;
-            }
-        }
+       "getNextMealObject": function(){
+           let date = new Date();
+           let nextDay = this.addMillisecondDay(date)
+           let nextDayloc = this.convertToMomentL(nextDay)
+           let key = nextDayloc.toString()
+           return this.userCalender.schedule[key]
+
+
+       },
+
+       "convertToMomentL": function(datetime){
+           return moment(datetime).format('L');
+       },
+
+       "convertToEpoch": function(datetime){
+            let time = moment(datetime).toDate();
+            return time.getTime();
+       },
+
+       "convertDatetoNum": function(date){
+           return Date.parse(date);
+       },
+
+       "convertNumtoDate": function(num){
+           return new Date(num);
+       },
+
+       "addMillisecondDay" : function(datetime){
+           let dateTimeNum = this.convertDatetoNum(datetime);
+           let newDateTimeNum = Math.floor(dateTimeNum + 8.64e+7);
+           let newDateTime = this.convertNumtoDate(newDateTimeNum)
+           return newDateTime;
+       },
+
+       "getAllScheduleRecipes" : function()
+       {
+           if (Object.keys(data.userCalender.schedule).length === 0)
+           {
+               Console.log("userCalender does not have any schedule data");
+               return;
+           }
+
+           else
+           {
+               let recipeIDArray = [];
+               for(let i = 0;i < Object.keys(data.userCalender.schedule).length; i++)
+               {
+
+                   let key = Object.key(data.userCalender.schedule)[i];
+                   let recipeID = data.userCalender.schedule[key].value.id;
+                   recipeIDArray.push(recipeID);
+               }
+               return recipeIDArray;
+           }
+       },
+
+       "getRecipe" : function(key)
+       {
+           if(!(typeof key === 'stringValue' || key instanceof String))
+           {
+               key = key.toString();
+           }
+
+           if (!(data.userCalender.schedule[key]))
+           {
+               Console.log("userCalender does not contain an entry of " + key);
+               return;
+           }
+
+           else
+           {
+               let recipeID = data.userCalender.schedule[key].value.id;
+               return recipeID;
+           }
+       }
     },
     //object saved as child to msdate:obj 
     "userCred":
@@ -1356,11 +1473,5 @@ let data =
                 console.log(`Error: ${err.code}`)
             }
         )
-    },
-
-//Generators
-
-    "generateUserCalender" : function()
-
-    
+    },    
 }
