@@ -2,7 +2,6 @@
 let data = 
 {
 
-
 //API
     
     //APICONFIGS
@@ -26,7 +25,6 @@ let data =
             type: "GET",
             beforeSend: function(request) {
               request.setRequestHeader("X-RapidAPI-Host", data.spoonifyConfig.host);
-              request.setRequestHeader("X-RapidAPI-Key", data.spoonifyConfig.key );
             },
             url: queryString,
             success: function(data) {
@@ -257,8 +255,6 @@ let data =
     },
     
 //DatabaseMain
-    "database": firebase.database(),
-    
     //CONFIGS
     "firebaseConfig":
     {
@@ -269,15 +265,13 @@ let data =
         storageBucket: "",
         messagingSenderId: "791706584965",
         appId: "1:791706584965:web:bd04f2511e920ae8", 
-        databaseInit: firebase.database(),
-        AuthInit: firebase.auth()
     },
 
     //Init
     "InitFirebase": function()
     {
         let config = this.firebaseConfig
-        this.config.databaseInit.initializeApp(config)
+        firebase.database().initializeApp(config)
     },
 
 //FirebaseDataQueries
@@ -285,8 +279,8 @@ let data =
     
     "getRecipeData":  function(recipeID)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.ref('/recipeData').once('value')
+        this.InitFirebase();
+        firebase.database().ref('/recipeData').once('value')
             .then(function(snapshot)
             {
                 if(snapshot.child(recipeID))
@@ -431,8 +425,8 @@ let data =
         //     }
     "getProductData": function(productID)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.ref('/productData').once('value')
+        this.InitFirebase();
+        firebase.database().ref('/productData').once('value')
             .then(function(snapshot)
             {
                 if(snapshot.child(productID))
@@ -502,8 +496,8 @@ let data =
     
     "getNutritionData": function(recipeID)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.ref('/nutritionData').once('value')
+        this.InitFirebase();
+        firebase.database().ref('/nutritionData').once('value')
             .then(function(snapshot)
             {
                 if(snapshot.child(productID))
@@ -628,8 +622,8 @@ let data =
     
     "getIngredientWidget": function(recipeID)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.ref('/ingredientDisplayWidget').once('value')
+        this.InitFirebase();
+        firebase.database().ref('/ingredientDisplayWidget').once('value')
             .then(function(snapshot)
             {
                 if(snapshot.child(recipeID))
@@ -663,8 +657,8 @@ let data =
 
     "getNutritionWidget": function(recipeID)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.ref('/nutritionDisplayWidget').once('value')
+        this.InitFirebase();
+        firebase.database().ref('/nutritionDisplayWidget').once('value')
             .then(function(snapshot)
             {
                 if(snapshot.child(recipeID))
@@ -698,8 +692,8 @@ let data =
     
     "getPriceWidget": function(recipeID)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.ref('/priceDisplayWidget').once('value')
+        this.InitFirebase();
+        firebase.database().ref('/priceDisplayWidget').once('value')
             .then(function(snapshot)
             {
                 if(snapshot.child(recipeID))
@@ -735,8 +729,8 @@ let data =
 
     "userCalenderAgent": function(userID)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        userNode = this.firebaseConfig.databaseInit.ref('/userCalender/' + userID)
+        this.InitFirebase();
+        userNode = firebase.database().ref('/userCalender/' + userID)
         userNode.on('child_changed', function(newCalender)
         {
             data.userCalender = newCalender;
@@ -809,8 +803,8 @@ let data =
 
     "userHealthProfileAgent": function(userID)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        userNode = this.firebaseConfig.databaseInit.ref('/userHealthProfile/' + userID)
+        this.InitFirebase();
+        userNode = firebase.database().ref('/userHealthProfile/' + userID)
         userNode.on('child_changed', function(newSettings)
         {
             data.userHealthProfile = newSettings;
@@ -825,8 +819,8 @@ let data =
 //FirebaseWrite
     "writeRecipeData": function(recipeID, jsonObj)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.getInstance().getReference()
+        this.InitFirebase();
+        firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(recipeData).child(recipeID).setValue(jsonObj)
             })
@@ -841,8 +835,8 @@ let data =
 
     "writeProductData": function(productID, jsonObj)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.getInstance().getReference()
+        this.InitFirebase();
+        firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(productData).child(productID).setValue(jsonObj)
             })
@@ -857,8 +851,8 @@ let data =
 
     "writeNutritionData": function(recipeID, jsonObj)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.getInstance().getReference()
+        this.InitFirebase();
+        firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(nutritionData).child(recipeID).setValue(jsonObj)
             })
@@ -873,8 +867,8 @@ let data =
 
     "writeUserCalender": function(userID, jsonObj)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.getInstance().getReference()
+        this.InitFirebase();
+        firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(userCalender).child(userID).setValue(jsonObj)
             })
@@ -890,8 +884,8 @@ let data =
     "writeUserHealthProfile": function(userID, jsonObj)
     {
         let Date = new Date().getTime()
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.getInstance().getReference()
+        this.InitFirebase();
+        firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(userHealthProfile).child(userID).child(msDate).setValue(jsonObj)
             })
@@ -907,8 +901,8 @@ let data =
     "writeUserList": function(userID)
     {
         let Date = new Date().getTime()
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.getInstance().getReference()
+        this.InitFirebase();
+        firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(userHealthProfile).child(userID).child(msDate).setValue(jsonObj)
             })
@@ -923,8 +917,8 @@ let data =
 
     "writeIngredientDisplayWidget": function(recipeID, string)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.getInstance().getReference()
+        this.InitFirebase();
+        firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(ingredientDisplayWidget).child(recipeID).setValue(string)
             })
@@ -939,8 +933,8 @@ let data =
 
     "writeNutritionDisplayWidget": function(recipeID, string)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.getInstance().getReference()
+        this.InitFirebase();
+        firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(nutrientDisplayWidget).child(recipeID).setValue(string)
             })
@@ -955,8 +949,8 @@ let data =
 
     "writePriceDisplayWidget": function(recipeID, string)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.getInstance().getReference()
+        this.InitFirebase();
+        firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(priceDisplayWidget).child(recipeID).setValue(string)
             })
@@ -1169,9 +1163,10 @@ let data =
     //AGENTS
     "authAgent": function()
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
+        this.InitFirebase();
         this.refreshBrowserData();
-        this.firebaseConfig.AuthInit.onAuthStateChanged(function(user){
+        firebase.auth().onAuthStateChanged(function(user){
+            console.log("userDetected: " + user)
             newID = user;
             previousID = data.userCred.firebaseUserID;
             userLogout(previousID)
@@ -1200,7 +1195,7 @@ let data =
 
     "enableUserCredAgent": function(id)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
+        this.InitFirebase();
         this.userCred.active = true;
         
         //if data exists turn on agent
@@ -1248,8 +1243,8 @@ let data =
 
     "userCredAgent": function(userID)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        userNode = this.firebaseConfig.databaseInit.ref('/userCred/' + userID)
+        this.InitFirebase();
+        userNode = firebase.database().ref('/userCred/' + userID)
         userNode.on('child_added', function(storedCredential)
         {
             data.userCred = storedCredential
@@ -1264,15 +1259,15 @@ let data =
     //WRITEDATA
     "writeUserCred": function(userID)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
+        this.InitFirebase();
         let Date = new Date().getTime()
-        let currentUser = this.firebaseConfig.authInit.currentUser;
+        let currentUser = firebase.auth().currentUser;
         this.userCred.firebaseDisplayName = currentUser.displayName;
         this.userCred.email = currentUser.email;
         this.userCred.refreshToken = currentUser.refreshToken;
         this.userCred.lastSignIn = msDate
 
-        this.firebaseConfig.databaseInit.getInstance().getReference()
+        firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(userList).child(userID).setValue(msDate)
             })
@@ -1307,8 +1302,8 @@ let data =
 
     "userIDExists": function(userID)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        this.firebaseConfig.databaseInit.ref('/userList').once('userlist')
+        this.InitFirebase();
+        firebase.database().ref('/userList').once('userlist')
             .then(function(snapshot)
             {
                 if(snapshot.child(userID))
@@ -1327,16 +1322,31 @@ let data =
     //**TODO** PASS IN LOGIN METHOD - USE SWITCH TO FIREOFF PREFERRED CHOICE
     "userLogin" : function(method)
     {
-        
-        if(method === 'google')
+        if(method === 'googlePopIn')
         {
-            data.googleLogin()
+            data.googleLoginPopUp()
                 .then(function ()
                 {
                     let currentUser = data.firebaseConfig.authInit.currentUser;
                     data.userCred.firebaseUserID = currentUser.uid;
                     data.userCred.anonymous = false;
                     this.authAgent();
+                })
+                .catch(function (err)
+                {
+                    alert(`Error: ${err.message}`);
+                    console.log(`Error: ${err.message}`)
+                    console.log(`Error: ${err.stack}`)
+                })
+        }
+        else if(method === 'googleRedirect')
+        {
+            data.googleLoginRedirect()
+                .then(function ()
+                {
+                    let currentUser = data.firebaseConfig.authInit.currentUser;
+                    data.userCred.firebaseUserID = currentUser.uid;
+                    data.userCred.anonymous = false;
                 })
                 .catch(function (err)
                 {
@@ -1353,7 +1363,6 @@ let data =
                     let currentUser = data.firebaseConfig.authInit.currentUser;
                     this.userCred.firebaseUserID = currentUser.uid;
                     this.userCred.anonymous = true;
-                    this.authAgent();
                 })
                 .catch(function (err)
                 {
@@ -1367,8 +1376,8 @@ let data =
 
     "userLogout" : function(userID)
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
-        userNode = this.firebaseConfig.databaseInit.ref('/UserCreds/' + userID)
+        this.InitFirebase();
+        userNode = firebase.database().ref('/UserCreds/' + userID)
         userNode.off('child_added')
         this.userCred.active = false;
         this.writeUserCredLocal(userID);
@@ -1448,9 +1457,9 @@ let data =
         }
     },
 
-    "googleLogin": function()
+    "googleAccessPrep": function()
     {
-        this.firebaseConfig.databaseInit.InitFirebase();
+        this.InitFirebase();
         var provider = new firebase.auth.googleAuthProvider();
         provider.addScope('profile');
         provider.addScope('email');
@@ -1458,120 +1467,209 @@ let data =
         provider.addScope("https://www.googleapis.com/auth/analytics.readonly")
         provider.addScope("https://www.googleapis.com/auth/adsense.readonly")
         provider.addScope('https://www.googleapis.com/auth/contacts.readonly')
-        this.firebaseConfig.authInit.useDeviceLanguage();
-        this.firebaseConfig.authInit.signInWithPopup(provider)
-            .then(function(result)
+        firebase.auth().useDeviceLanguage();
+    },
+    
+    "googleLoginPopUp": function()
+    {
+        this.googleAccessPrep()
+        .then(function()
+        {
+            firebase.auth().signInWithPopup(provider)
+        })
+        .then(function(result)
+        {
+            if(result.credential)
             {
+                //userInfo
                 data.userCred.googUserInfo = result.user;
+                //used to access googles other API functionality for user
                 data.userCred.googAcsTkn = result.credential.accessToken;
-            })
-            .catch(function(err)
-            {
-                alert(`Error: ${err.message}`);
-                console.log(`Error: ${err.email}`)
-                console.log(`Error: ${err.credential}`)
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-                console.log(`Error: ${err.code}`)
             }
+            else{
+                break;
+            }
+        })
+        .catch(function(err)
+        {
+            alert(`Error: ${err.message}`);
+            console.log(`Error: ${err.email}`)
+            console.log(`Error: ${err.credential}`)
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+            console.log(`Error: ${err.code}`)
+        }
         )
-    },    
+    },
+    
+    "googleLoginRedirect" : function()
+    {
+        
+        this.googleAccessPrep()
+        .then(function()
+        {
+            firebase.auth().signInWithRedirect(provider)
+        })
+        .then(function()
+        {
+            firebase.auth().getRedirectResult()
+            .then(function(result){
+                if(result.credential)
+                {
+                     //userInfo
+                    data.userCred.googUserInfo = result.user;
+                    //used to access googles other API functionality for user
+                    data.userCred.googAcsTkn = result.credential.accessToken;
+                }
+                else{
+                    break;
+                }
+            }
+            )
+        })
+        .catch(function(err)
+        {
+            alert(`Error: ${err.message}`);
+            console.log(`Error: ${err.email}`)
+            console.log(`Error: ${err.credential}`)
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+            console.log(`Error: ${err.code}`)
+        }
+        )
+    },
 }
 
 ////////////////////////LANDING
-let landingFunctions = {
+
+////////////////////MAIN
+let landingPageFunctions = {
     "buttonFunctions": {
+        "activate": function()
+        {
+            this.dietModalSubmit(true)
+            this.dietModalCancel(true)
+            this.googleLogin(true)
+            this.anonLogin(true)
+        },
+
+        "deactivate": function()
+        {
+            this.dietModalSubmit(false)
+            this.dietModalCancel(false)
+            this.googleLogin(false)
+            this.anonLogin(false)
+        },
+        
         "dietModalSubmit": function(bool)
         {
-            if(bool === true)
+            if(bool)
             {
+                //todo allow multiple options
                 $('#btnNext').on('click', function(event){
-                event.preventDefault();
-                data.userLogin('anon')
-                    .this(function(){
-                        let newUserHealthProfile = data.userHealthProfile
-                        newUserHealthProfile.calories = $('#inputCalories').val();
-                        var dietOptions = $('#dietOption').val();
-                        data.userHealthProfile.dietarySelection = dietOptions;
-                        newUserHealthProfile.healthSettings.calTarget = calories;
-                        newUserHealthProfile.exclusionList = exclusionArray
-                        console.log(newUserHealthProfile);
-                        $('#myModalDiet').modal('hide');
-                        $('#inputCalories').val('');
-                        $('#dietOption option:selected').prop('selected', false);
-                        $('#dietOption :first').prop('selected', true);
-                        $('li').remove();
-                        $('#loginModal').modal('show');
-                    })
-                    .catch(err)
-                    {
-                        alert(`Error: ${err.message}`);
-                        console.log(`Error: ${err.message}`);
-                        console.log(`Error: ${err.stack}`);
-                    }
-              });
+                    console.log("dietModal SubmitButton EventRegistered:")
+                    event.preventDefault();
+                    data.userLogin('anon')
+                        .this(function(){
+                            let newUserHealthProfile = data.userHealthProfile;
+                            newUserHealthProfile.calories = $('#inputCalories').val();
+                            var dietOptions = $('#dietOption').val();
+                            let excVal = $('#inputExclusion').val().toLowerCase()
+                            let excArr = convertExclusionValuetoArray(excVal)
+                            newUserHealthProfile.dietarySelection = dietOptions;
+                            newUserHealthProfile.healthSettings.calTarget = calories;
+                            newUserHealthProfile.exclusionList = excArr
+                            console.log(newUserHealthProfile);
+                            $('#myModalDiet').modal('hide');
+                            $('#inputCalories').val('');
+                            $('#dietOption option:selected').prop('selected', false);
+                            $('#dietOption :first').prop('selected', true);
+                            $('li').remove();
+                            $('#loginModal').modal('show');
+                        })
+                        .catch(err)
+                        {
+                            alert(`Error: ${err.message}`);
+                            console.log(`Error: ${err.message}`);
+                            console.log(`Error: ${err.stack}`);
+                        }
+                });
             }
             else
             {
-                $('#btnNext').off;
+                $('#btnNext').off('click')
+            }
+
+            function convertExclusionValuetoArray(input)
+            {
+                if (input.includes(','))
+                {
+                    return input.split(',')
+                }
+                else
+                {
+                    return input.trim();
+                }
             }
         },
 
-        "dietModalAddExclusion" : function()
+        "dietModalCancel" : function(bool)
         {
-           // Add Exclusion to list
-            $('#btnAddExclusion').on('click',function(e){
-            
-                e.preventDefault();
-                var exclusion = $('#inputExclusion').val().toLowerCase().trim();
-            
-            
-            exclusionArray.push(exclusion);
-                
-                    var exclusionList = $('<li>').addClass('list-group').text(exclusion);
-                
-                $('#listExclusion').prepend(exclusionList);
-            
-            
-            $('#inputExclusion').val('');
-            return  exclusionArray;
-            });
-        },
-        
-        "dietModalCancel" : function()
-        {
-            $('#btnCancel').on('click',function(e){
-                e.preventDefault();
-                $('#inputCalories').val('');
-                $('#inputExclusion').val('');
-                $('#dietOption option:selected').prop('selected', false);
-                $('#dietOption :first').prop('selected', true);
-                $('li').remove();
-                $('#myModalDiet').modal('hide');
-            });
+            if(bool)
+            {
+                $('#btnCancel').on('click',function(e){
+                    e.preventDefault();
+                    console.log("dietModal CancelButton EventRegistered:")
+                    $('#inputCalories').val('');
+                    $('#inputExclusion').val('');
+                    $('#dietOption option:selected').prop('selected', false);
+                    $('#dietOption :first').prop('selected', true);
+                    $('li').remove();
+                    $('#myModalDiet').modal('hide');
+                });
+            }
+            else
+            {
+                $('#btnCancel').off('click')
+            }
         },
 
-        "googleLogin" : function()
+        "googleLogin" : function(bool)
         {
-            $('#googleLogin').on('click', function(e){
-                e.preventDefault();
-                data.userLogin('google')
+           if(bool)
+           {
+                $('#googleLogin').on('click', function(e){
+                    e.preventDefault();
+                    console.log("LandingPage Google Sign-in Button EventRegistered:")
+                    data.userLogin('googlePopIn');
+                    $('#loginModal').modal('hide');
+                    // $('#myModalDiet').modal('show');
                 
-              
-                $('#loginModal').modal('hide');
-                // $('#myModalDiet').modal('show');
-               
-            });
+                });
+           }
+           else
+           {
+            $('#googleLogin').off('click')
+           }
         },
         
         "anonLogin" : function()
         {
-            $('#anonymousLogin').click(function(e){
+            if(bool)
+            {
+                $('#anonymousLogin').on('click', function(e){
                 e.preventDefault();
+                console.log("LandingPage Anon Sign-in Button EventRegistered:")
+                data.userLogin('anon');
                 $('#loginModal').modal('hide');
                 // $('#myModalDiet').modal('show');
                
-            });
+                });
+            }
+            else
+            {
+                $('#anonymousLogin').off('click')
+            }
         } 
     },
 
@@ -1623,270 +1721,224 @@ let landingFunctions = {
         }
     },
 
-    "landingSessionControl":
+}
+
+let dashboardPageFunctions = {
+    "buttonFunctions":
     {
-        "startSession": function(){
-            landingFunctions.buttonFunctions.dietModalSubmit(true);
-            landingFunctions.buttonFunctions.dietModalAddExclusion(true);
-            landingFunctions.buttonFunctions.dietModalCancel(true);
-            landingFunctions.buttonFunctions.googleLogin(true);
-            landingFunctions.buttonFunctions.anonLogin(true);
-            landingFunctions.beingHealthyFunctions.onHomeClick(true);
-            landingFunctions.beingHealthyFunctions.onEatHealthyClick(true);
-            landingFunctions.beingHealthyFunctions.onActiveClick(true);
-        },
-        "endSession": function(){
-            landingFunctions.buttonFunctions.dietModalSubmit(false);
-            landingFunctions.buttonFunctions.dietModalAddExclusion(false);
-            landingFunctions.buttonFunctions.dietModalCancel(false);
-            landingFunctions.buttonFunctions.googleLogin(false);
-            landingFunctions.buttonFunctions.anonLogin(false);
-            landingFunctions.beingHealthyFunctions.onHomeClick(false);
-            landingFunctions.beingHealthyFunctions.onEatHealthyClick(false);
-            landingFunctions.beingHealthyFunctions.onActiveClick(false);
-        },
+        "activate":function(){},
+        "deactivate":function(){}
     }
 }
 
+let sessionManager = {
+    "detectPage": function()
+    {
+        let loc = getLoc()
+        if (loc === 'landing.html')
+        {
+            data.authAgent(true);
+            dashboardPageFunctions.buttonFunctions.deactivate;
+            landingPageFunctions.buttonFunctions.activate;
+        }
+        else if(loc === 'dashboard.html')
+        {
+            data.authAgent(true);
+            landingPageFunctions.buttonFunctions.deactivate;
+            dashboardPageFunctions.buttonFunctions.activate;
+        }
+        //additional adds for additional html files.
+        //else if(loc === '')
+
+        else
+        {
+            data.authAgent(false);
+            console.error("session Manager detected invalid document: " + loc)
+        }
+        function getLoc()
+        {
+            var path = window.location.pathname;
+            var page = path.split("/").pop();
+            return page;
+        } 
+    },
+    
+    
+}
+///////////////MAIN ENTRY
+$( document ).ready(function() {
+    sessionManager.detectPage();
+});
+
+
+
 ////////////////////////LANDINGEND
 
-/////////////DashboardBegin
+
+
+
+
+////////////DashboardBegin
 
 ////////////////////////////////////
 //delete before  merging
 
-var data =
-{
-    "userCalender" : 
-    {
-        "userID": "nata",
-        "created": "msdate",
-        "starts": "fromDateUnix",
-        "expires": "toDateUnix",
-        "availableRecipes" : ["recipid", "recipeid"],
-        "chosenRecipes" : ["recipid", "recipeid"],
-        "schedule" : 
-        {
-            "1562928437": {
- 
-                "day":1, 
-                "mealPlanId":0,
-                "slot":1, 
-                "position":0,
-                "type":"RECIPE",
-                "value":    {
-                    "id":655786,
-                    "imageType":"jpg",
-                    "title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"
-                },
-            },
-            "1562962020": {
-                "day":1, 
-                "mealPlanId":0,
-                "slot":1, 
-                "position":0,
-                "type":"RECIPE",
-                "value":    {
-                    "id":655786,
-                    "imageType":"jpg",
-                    "title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"
-                },
-            },
-            "1562962030": {
-                "day":1, 
-                "mealPlanId":0,
-                "slot":1, 
-                "position":0,
-                "type":"RECIPE",
-                "value":    {
-                    "id":655786,
-                    "imageType":"jpg",
-                    "title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"
-                },
-            },
-            "1563014837": {
-                "day":1, 
-                "mealPlanId":0,
-                "slot":1, 
-                "position":0,
-                "type":"RECIPE",
-                "value":    {
-                    "id":655786,
-                    "imageType":"jpg",
-                    "title":"Persimmons Pumpkin Orange Smoothie With Chia Seeds"
-                },
 
-            },
+// $("#showMeals").on("click", function()
+// {   
+//     //clear previous selection range before displaying new 
+//    $("#meals-section").empty();
 
+//    var dbDatesArray = (Object.entries(data.userCalender.schedule));
 
-        }
-    }
-}
+//    var fromDate = moment.unix(dbDatesArray[0][0]).format('L');
+//    var toDate = moment.unix(dbDatesArray[dbDatesArray.length-1][0]).format('L');
 
-//ms time 1562928437000 morning 07/12
-//ms time 1562939237000 lunch 07/12
-//ms time 1563014837000 morning 07/13
-//ms time 1563025637000 lunch 07/13
-//ms time 1563050837000 dinner 07/13
-//convert to unix time
-//////////////////////////////////
-
-
-$("#showMeals").on("click", function()
-{   
-    //clear previous selection range before displaying new 
-   $("#meals-section").empty();
-
-   var dbDatesArray = (Object.entries(data.userCalender.schedule));
-
-   var fromDate = moment.unix(dbDatesArray[0][0]).format('L');
-   var toDate = moment.unix(dbDatesArray[dbDatesArray.length-1][0]).format('L');
-
-   // var fromDate = "07/12/2019";
-   // var toDate = "07/13/2019";
+//    // var fromDate = "07/12/2019";
+//    // var toDate = "07/13/2019";
 
   
-        let rangeDates = enumerateDaysBetweenDates(fromDate,toDate);
+//         let rangeDates = enumerateDaysBetweenDates(fromDate,toDate);
  
   
 
 
-            for (let j =0; j<rangeDates.length; j++)
-            {
-                var arrayOfMealsPerDay=[];
+//             for (let j =0; j<rangeDates.length; j++)
+//             {
+//                 var arrayOfMealsPerDay=[];
 
-                for (let i=0; i<dbDatesArray.length;i++){
+//                 for (let i=0; i<dbDatesArray.length;i++){
                 
-                    var dbDate = moment.unix(dbDatesArray[i][0]).format("MM/DD/YYYY");
-                    var mealType = getMealType(moment.unix(dbDatesArray[i][0]));
-                    if(rangeDates[j]===dbDate)
-                    {
-                        arrayOfMealsPerDay.push(
-                            {   "mealDate":dbDate,
-                                "mealTime":mealType,
-                                //we need to parse name, image, recipe here and add new keys
-                                "mealTitle": dbDatesArray[i][1].value.title,
-                                "mealRecipeId" :dbDatesArray[i][1].value.id
-                            //  "image":valuesarray[i][1].image 
-                            });
-                    }       
-                }
-            createMealContainer(arrayOfMealsPerDay);
-            }
+//                     var dbDate = moment.unix(dbDatesArray[i][0]).format("MM/DD/YYYY");
+//                     var mealType = getMealType(moment.unix(dbDatesArray[i][0]));
+//                     if(rangeDates[j]===dbDate)
+//                     {
+//                         arrayOfMealsPerDay.push(
+//                             {   "mealDate":dbDate,
+//                                 "mealTime":mealType,
+//                                 //we need to parse name, image, recipe here and add new keys
+//                                 "mealTitle": dbDatesArray[i][1].value.title,
+//                                 "mealRecipeId" :dbDatesArray[i][1].value.id
+//                             //  "image":valuesarray[i][1].image 
+//                             });
+//                     }       
+//                 }
+//             createMealContainer(arrayOfMealsPerDay);
+//             }
         
     
-});
+// });
 
-function  enumerateDaysBetweenDates (startDate, endDate) {
+// function  enumerateDaysBetweenDates (startDate, endDate) {
 
-    var dates = [];
-    var currDate = moment(startDate).startOf('day');
-    var lastDate = moment(endDate).startOf('day');
+//     var dates = [];
+//     var currDate = moment(startDate).startOf('day');
+//     var lastDate = moment(endDate).startOf('day');
 
-    dates.push(moment(startDate).format("MM/DD/YYYY"));
+//     dates.push(moment(startDate).format("MM/DD/YYYY"));
 
-    while(currDate.add(1, 'days').diff(lastDate) < 0) 
-    {
-        dates.push(moment(currDate.clone().toDate()).format("MM/DD/YYYY"));
-    }
+//     while(currDate.add(1, 'days').diff(lastDate) < 0) 
+//     {
+//         dates.push(moment(currDate.clone().toDate()).format("MM/DD/YYYY"));
+//     }
 
-    dates.push(moment(endDate).format("MM/DD/YYYY"));
+//     dates.push(moment(endDate).format("MM/DD/YYYY"));
 
-    return dates;
-};
-
-
-function createMealContainer(dayMealsArray)
-{
-    var divDay = $("<div id='mealDay' class='row'>");
-    var mealDate = $("<div class='mealDate col-12'>");
-
-    if(dayMealsArray[0] === undefined)
-    {
-
-        divDay.text("no meals selected for this day");
-    } else
-    {
-        mealDate.text(moment(dayMealsArray[0].mealDate).format('dddd, MMMM D, YYYY'));
-        divDay.append(mealDate);
-    }
+//     return dates;
+// };
 
 
+// function createMealContainer(dayMealsArray)
+// {
+//     var divDay = $("<div id='mealDay' class='row'>");
+//     var mealDate = $("<div class='mealDate col-12'>");
 
-    for (let i=0; i<dayMealsArray.length; i++)
-    {
+//     if(dayMealsArray[0] === undefined)
+//     {
 
-        var mealCard = $('<div class="card">');
-        var mealCardBody = $('<div class="card-body">');
-        var mealImage = $('<img class="card-img-top" src="mealIcon.png" alt="Card image cap">');
-        mealCard.attr("recipeID",dayMealsArray[i].meal.rID);
-        var mealName = $('<h5 class="card-title">');
-        mealName.attr("onmouseover","showDescriptionModal(this)");
-        mealCard.attr("onmouseover","hideDescriptionModal()");
-        var viewButton= $('<a href="#" class="btn btn-primary">View recipe</a>');
-        viewButton.attr("onclick","getRecipe(this)");
-        viewButton.attr("recipeID",dayMealsArray[i].meal.rID);
-        var divMeal = $("<div class='meal col-xs-6 col-sm-6 col-md-3 col-lg-3'>");
-        var mealType = $("<h5 class='mealType'>");
+//         divDay.text("no meals selected for this day");
+//     } else
+//     {
+//         mealDate.text(moment(dayMealsArray[0].mealDate).format('dddd, MMMM D, YYYY'));
+//         divDay.append(mealDate);
+//     }
 
-        mealType.text(dayMealsArray[i].mealTime);
-        mealName.text(dayMealsArray[i].meal);
-        mealCardBody.append(mealType);
-        mealCardBody.append(mealImage);
-        mealCardBody.append(mealName);
-        mealCardBody.append(viewButton);
-        mealCard.html(mealCardBody);
-        divMeal.append(mealCard);
-        divDay.append(divMeal);
+
+
+//     for (let i=0; i<dayMealsArray.length; i++)
+//     {
+
+//         var mealCard = $('<div class="card">');
+//         var mealCardBody = $('<div class="card-body">');
+//         var mealImage = $('<img class="card-img-top" src="mealIcon.png" alt="Card image cap">');
+//         mealCard.attr("recipeID",dayMealsArray[i].meal.rID);
+//         var mealName = $('<h5 class="card-title">');
+//         mealName.attr("onmouseover","showDescriptionModal(this)");
+//         mealCard.attr("onmouseover","hideDescriptionModal()");
+//         var viewButton= $('<a href="#" class="btn btn-primary">View recipe</a>');
+//         viewButton.attr("onclick","getRecipe(this)");
+//         viewButton.attr("recipeID",dayMealsArray[i].meal.rID);
+//         var divMeal = $("<div class='meal col-xs-6 col-sm-6 col-md-3 col-lg-3'>");
+//         var mealType = $("<h5 class='mealType'>");
+
+//         mealType.text(dayMealsArray[i].mealTime);
+//         mealName.text(dayMealsArray[i].meal);
+//         mealCardBody.append(mealType);
+//         mealCardBody.append(mealImage);
+//         mealCardBody.append(mealName);
+//         mealCardBody.append(viewButton);
+//         mealCard.html(mealCardBody);
+//         divMeal.append(mealCard);
+//         divDay.append(divMeal);
     
-    }
+//     }
 
-    $("#meals-section").append(divDay);
-}
+//     $("#meals-section").append(divDay);
+// }
 
 
-function getMealType (mealDate) {
-	var type = null; 
+// function getMealType (mealDate) {
+// 	var type = null; 
 	
-	var split_afternoon = 12 //24hr time to split the afternoon
-	var split_evening = 17 //24hr time to split the evening
-	var currentHour = parseFloat(moment(mealDate).format("HH"));
+// 	var split_afternoon = 12 //24hr time to split the afternoon
+// 	var split_evening = 17 //24hr time to split the evening
+// 	var currentHour = parseFloat(moment(mealDate).format("HH"));
 	
-	if(currentHour >= split_afternoon && currentHour <= split_evening) {
-		type = "Lunch";
-	} else if(currentHour >= split_evening) {
-		type = "Dinner";
-	} else {
-		type = "Breakfast";
-	}
+// 	if(currentHour >= split_afternoon && currentHour <= split_evening) {
+// 		type = "Lunch";
+// 	} else if(currentHour >= split_evening) {
+// 		type = "Dinner";
+// 	} else {
+// 		type = "Breakfast";
+// 	}
 	
-	return type;
-}
+// 	return type;
+// }
 
 
 
         
-function getRecipe(el){
-   var recipeID =  $(el).attr("recipeID");
-   getRecipeData(recipeID);
-   // add modal on click to show the recipe
-}
+// function getRecipe(el){
+//    var recipeID =  $(el).attr("recipeID");
+//    getRecipeData(recipeID);
+//    // add modal on click to show the recipe
+// }
  
 
-//add meal brief descripion on hover depending on the recipe id
-function showDescriptionModal(el){
-    var recipe =  $(el).attr("recipeID");
+// //add meal brief descripion on hover depending on the recipe id
+// function showDescriptionModal(el){
+//     var recipe =  $(el).attr("recipeID");
 
     
-    $('.modal').modal({
-        show: true
-    });
-}
+//     $('.modal').modal({
+//         show: true
+//     });
+// }
 
-function buildMealDescription(recipeObject){
+// function buildMealDescription(recipeObject){
 
 
-}
+// }
 
 
 ///////////////////////////Dashboard End
