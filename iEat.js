@@ -271,7 +271,7 @@ let data =
     "InitFirebase": function()
     {
         let config = this.firebaseConfig
-        firebase.database().initializeApp(config)
+        firebase.initializeApp(config)
     },
 
 //FirebaseDataQueries
@@ -279,7 +279,6 @@ let data =
     
     "getRecipeData":  function(recipeID)
     {
-        this.InitFirebase();
         firebase.database().ref('/recipeData').once('value')
             .then(function(snapshot)
             {
@@ -425,7 +424,6 @@ let data =
         //     }
     "getProductData": function(productID)
     {
-        this.InitFirebase();
         firebase.database().ref('/productData').once('value')
             .then(function(snapshot)
             {
@@ -496,7 +494,6 @@ let data =
     
     "getNutritionData": function(recipeID)
     {
-        this.InitFirebase();
         firebase.database().ref('/nutritionData').once('value')
             .then(function(snapshot)
             {
@@ -622,7 +619,6 @@ let data =
     
     "getIngredientWidget": function(recipeID)
     {
-        this.InitFirebase();
         firebase.database().ref('/ingredientDisplayWidget').once('value')
             .then(function(snapshot)
             {
@@ -657,7 +653,6 @@ let data =
 
     "getNutritionWidget": function(recipeID)
     {
-        this.InitFirebase();
         firebase.database().ref('/nutritionDisplayWidget').once('value')
             .then(function(snapshot)
             {
@@ -692,7 +687,6 @@ let data =
     
     "getPriceWidget": function(recipeID)
     {
-        this.InitFirebase();
         firebase.database().ref('/priceDisplayWidget').once('value')
             .then(function(snapshot)
             {
@@ -729,7 +723,6 @@ let data =
 
     "userCalenderAgent": function(userID)
     {
-        this.InitFirebase();
         userNode = firebase.database().ref('/userCalender/' + userID)
         userNode.on('child_changed', function(newCalender)
         {
@@ -803,7 +796,6 @@ let data =
 
     "userHealthProfileAgent": function(userID)
     {
-        this.InitFirebase();
         userNode = firebase.database().ref('/userHealthProfile/' + userID)
         userNode.on('child_changed', function(newSettings)
         {
@@ -819,7 +811,6 @@ let data =
 //FirebaseWrite
     "writeRecipeData": function(recipeID, jsonObj)
     {
-        this.InitFirebase();
         firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(recipeData).child(recipeID).setValue(jsonObj)
@@ -835,7 +826,6 @@ let data =
 
     "writeProductData": function(productID, jsonObj)
     {
-        this.InitFirebase();
         firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(productData).child(productID).setValue(jsonObj)
@@ -851,7 +841,6 @@ let data =
 
     "writeNutritionData": function(recipeID, jsonObj)
     {
-        this.InitFirebase();
         firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(nutritionData).child(recipeID).setValue(jsonObj)
@@ -867,7 +856,6 @@ let data =
 
     "writeUserCalender": function(userID, jsonObj)
     {
-        this.InitFirebase();
         firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(userCalender).child(userID).setValue(jsonObj)
@@ -884,7 +872,6 @@ let data =
     "writeUserHealthProfile": function(userID, jsonObj)
     {
         let Date = new Date().getTime()
-        this.InitFirebase();
         firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(userHealthProfile).child(userID).child(msDate).setValue(jsonObj)
@@ -901,7 +888,6 @@ let data =
     "writeUserList": function(userID)
     {
         let Date = new Date().getTime()
-        this.InitFirebase();
         firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(userHealthProfile).child(userID).child(msDate).setValue(jsonObj)
@@ -917,7 +903,6 @@ let data =
 
     "writeIngredientDisplayWidget": function(recipeID, string)
     {
-        this.InitFirebase();
         firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(ingredientDisplayWidget).child(recipeID).setValue(string)
@@ -933,7 +918,6 @@ let data =
 
     "writeNutritionDisplayWidget": function(recipeID, string)
     {
-        this.InitFirebase();
         firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(nutrientDisplayWidget).child(recipeID).setValue(string)
@@ -949,7 +933,6 @@ let data =
 
     "writePriceDisplayWidget": function(recipeID, string)
     {
-        this.InitFirebase();
         firebase.database().getInstance().getReference()
             .then(function(snapshot){
                 snapshot.child(priceDisplayWidget).child(recipeID).setValue(string)
@@ -1141,13 +1124,8 @@ let data =
     "browserData": 
     {
         "browserName": "null",
-        "browserEngine": "null",
-        "browserVersion1a": "null",
+        "browserVersion": "null",
         "browserLanguage": "null",
-        "browserName": "null",
-        "browserEngine": "null",
-        "browserPlatform": "null",
-        "browserOnline": false,
         "cookiesEnabled": false,
         "sizeScreenW" : "unknown",
         "sizeScreenH" : "unknown",
@@ -1165,37 +1143,29 @@ let data =
     {
         this.InitFirebase();
         this.refreshBrowserData();
-        firebase.auth().onAuthStateChanged(function(user){
-            console.log("userDetected: " + user)
-            newID = user;
-            previousID = data.userCred.firebaseUserID;
-            userLogout(previousID)
-            .then(function(newID)
+        firebase.auth().onAuthStateChanged(function(user){ 
+            if(user === null)
             {
-                window.user = newID;
-                let userID = newID.uid;
-                if(user)
-                {
-                    data.enableUserCredAgent(userID)
-                    console.log("enabled UserCredAgent")
-                    
-                }
-                else
-                {    
-                data.userLogin()
-                    .then(function(){
-                        let newuserID = data.userCred.firebaseUserID;
-                        data.enableUserCredAgent(newuserID);
-                        console.log("enabled UserCred Agent")
-                    })
-                }
-            })
+                return;
+            }
+            
+            if (data.userCred.firebaseUserID !== null && typeof data.userCred.firebaseUserID !== 'undefined' && data.userCred.firebaseUserID !== 'null' && data.userCred.firebaseUserID !== '')
+            {            
+                console.log("null check on previous user is true")
+                let previousID = data.userCred.firebaseUserID;
+                data.userLogout(previousID)
+            }
+            let newID = user
+            
+            Window.user = newID;
+            let userID = newID.uid;
+            data.enableUserCredAgent(userID)
+            console.log("enabled UserCredAgent")
         })
     },
 
     "enableUserCredAgent": function(id)
     {
-        this.InitFirebase();
         this.userCred.active = true;
         
         //if data exists turn on agent
@@ -1243,7 +1213,6 @@ let data =
 
     "userCredAgent": function(userID)
     {
-        this.InitFirebase();
         userNode = firebase.database().ref('/userCred/' + userID)
         userNode.on('child_added', function(storedCredential)
         {
@@ -1259,7 +1228,6 @@ let data =
     //WRITEDATA
     "writeUserCred": function(userID)
     {
-        this.InitFirebase();
         let Date = new Date().getTime()
         let currentUser = firebase.auth().currentUser;
         this.userCred.firebaseDisplayName = currentUser.displayName;
@@ -1289,12 +1257,12 @@ let data =
 
     "writeUserCredLocal" : function(userID)
     {
-        window.localStorage.setItem(userID, JSON.stringify(data.userCred))
+        Window.localStorage.setItem(userID, JSON.stringify(data.userCred))
         if (this.browserData.cookiesEnabled)
         {
             let Date = new Date().getTime()
             let expireDate = date + 2.628e+9 | 0
-            window.document.cookie = (userID + '=' + (JSON.stringify(data.userCred)) + '; expires=' + expireDate);
+            Window.document.cookie = (userID + '=' + (JSON.stringify(data.userCred)) + '; expires=' + expireDate);
         }
     },
 
@@ -1302,7 +1270,6 @@ let data =
 
     "userIDExists": function(userID)
     {
-        this.InitFirebase();
         firebase.database().ref('/userList').once('userlist')
             .then(function(snapshot)
             {
@@ -1376,8 +1343,7 @@ let data =
 
     "userLogout" : function(userID)
     {
-        this.InitFirebase();
-        userNode = firebase.database().ref('/UserCreds/' + userID)
+        let userNode = firebase.database().ref('/UserCreds/' + userID)
         userNode.off('child_added')
         this.userCred.active = false;
         this.writeUserCredLocal(userID);
@@ -1386,80 +1352,33 @@ let data =
 
     "refreshBrowserData" : function ()
     {
-        window.browserName()
-        {
-            data.browserData.browserName = navigator.browserName;
-        };
-        
-        window.browserEngine()
-        {
-            data.browserData.browserEngine = navigator.browserEngine;
-        };
+        data.browserData.browserName = navigator.appCodeName;
+        data.browserData.browserVersion = navigator.appVersion;
+        data.browserData.browserLanguage = navigator.language;
+        data.browserData.cookiesEnabled = navigator.cookieEnabled;
+        data.browserData.sizeScreenH = screen.height;
+        data.browserData.sizeScreenW = screen.width;
+        navigator.geolocation.getCurrentPosition(GeoLocSuccess, GeoLocFail)
+   
+        data.browserData.referrer = document.referrer;
+        data.browserData.previousSites = Window.history;
 
-        window.browserVersion1a()
+        function GeoLocSuccess(pos)
         {
-            data.browserData.browserEngine = navigator.appVersion;
-        };
-
-        window.browserLanguage()
-        {
-            data.browserData.browserLanguage = navigator.language;
-        };
-
-        window.browserOnline()
-        {
-            data.browserData.browserOnline = navigator.onLine;
-        };
-
-        window.dataCookiesEnabled()
-        {
-            data.browserData.cookiesEnabled = navigator.cookieEnabled;
-        };
-
-        window.sizeScreenH()
-        {
-            data.browserData.sizeScreenH = screen.height;
-        };
-
-        window.sizeScreenW()
-        {
-            data.browserData.sizeScreenW = screen.width;
-        };
-
-        window.latitude()
-        {
-            data.browserData.latCoord = position.coords.latitude;
-        };
-
-        window.longitude()
-        {
-            data.browserData.longCoord = position.coords.longitude;
-        };
-        
-        window.altitude()
-        {
-            data.browserData.altitude = position.coords.altitude;
-        };
-
-        window.accuracy()
-        {
-            data.browserData.accuracy = position.coords.accuracy;
+            let crd = pos.coords;
+            data.browserData.latCoord = crd.latitude;
+            data.browserData.longCoord = crd.longitude;
         }
 
-        window.referrer()
+        function GeoLocFail(pos)
         {
-            data.browserData.referrer = document.referrer;
-        }
-
-        window.previousSites()
-        {
-            data.browserData.previousSites = history;
+            data.browserData.latCoord = "unknown";
+            data.browserData.longCoord = "unknown";
         }
     },
 
     "googleAccessPrep": function()
     {
-        this.InitFirebase();
         var provider = new firebase.auth.googleAuthProvider();
         provider.addScope('profile');
         provider.addScope('email');
@@ -1547,6 +1466,7 @@ let landingPageFunctions = {
     "buttonFunctions": {
         "activate": function()
         {
+            console.log("activating landing page functions")
             this.dietModalSubmit(true)
             this.dietModalCancel(true)
             this.googleLogin(true)
@@ -1638,6 +1558,7 @@ let landingPageFunctions = {
         {
            if(bool)
            {
+                console.log("google signin listener is activated")
                 $('#googleLogin').on('click', function(e){
                     e.preventDefault();
                     console.log("LandingPage Google Sign-in Button EventRegistered:")
@@ -1727,7 +1648,9 @@ let dashboardPageFunctions = {
     "buttonFunctions":
     {
         "activate":function(){},
-        "deactivate":function(){}
+        "deactivate":function(){
+            console.log('deactivated db pages')
+        }
     }
 }
 
@@ -1737,15 +1660,17 @@ let sessionManager = {
         let loc = getLoc()
         if (loc === 'landing.html')
         {
+            console.log("landing page detected")
             data.authAgent(true);
-            dashboardPageFunctions.buttonFunctions.deactivate;
-            landingPageFunctions.buttonFunctions.activate;
+            console.log(landingPageFunctions)
+            dashboardPageFunctions.buttonFunctions.deactivate();
+            landingPageFunctions.buttonFunctions.activate();
         }
         else if(loc === 'dashboard.html')
         {
             data.authAgent(true);
-            landingPageFunctions.buttonFunctions.deactivate;
-            dashboardPageFunctions.buttonFunctions.activate;
+            landingPageFunctions.buttonFunctions.deactivate();
+            dashboardPageFunctions.buttonFunctions.activate();
         }
         //additional adds for additional html files.
         //else if(loc === '')
@@ -1759,6 +1684,7 @@ let sessionManager = {
         {
             var path = window.location.pathname;
             var page = path.split("/").pop();
+            console.log(page)
             return page;
         } 
     },
