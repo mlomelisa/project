@@ -1,7 +1,7 @@
 ////////////////////////////////////
 //delete before  merging
 
-/*var data =
+var data =
 {
     "userCalender" : 
     {
@@ -100,19 +100,19 @@ let data1 = {
 //ms time 1563050837000 dinner 07/13
 //convert to unix time
 //////////////////////////////////
-*/
+
 
 $("#showMeals").on("click", function(){   
     //clear previous selection range before displaying new 
-   $("#meals-section").empty();
+//    $("#meals-section").empty();
 
    var dbDatesArray = (Object.entries(data.userCalender.schedule));
 
    var fromDate = moment.unix(dbDatesArray[0][0]).format('L');
    var toDate = moment.unix(dbDatesArray[dbDatesArray.length-1][0]).format('L');
 
-   // var fromDate = "07/12/2019";
-   // var toDate = "07/13/2019";
+   var fromDate = "07/12/2019";
+    var toDate = "07/13/2019";
 
     let rangeDates = enumerateDaysBetweenDates(fromDate,toDate);
  
@@ -131,7 +131,8 @@ $("#showMeals").on("click", function(){
                         "mealTime":mealType,
                         "mealTitle": dbDatesArray[i][1].value.title,
                         "mealRecipeId" :dbDatesArray[i][1].value.id,
-                        "mealImage" : data.getRecipeData(dbDatesArray[i][1].value.id).image
+                      // "mealImage" : data.getRecipeData(dbDatesArray[i][1].value.id).image
+
                     }); 
                 }       
             }
@@ -175,9 +176,12 @@ function createMealContainer(dayMealsArray)
         divDay.append(mealDate);
     }
 
+   
+    //Carousel section
     for (let i=0; i<dayMealsArray.length; i++)
     {
-        
+        var liCarouselTarget = $('<li data-target="#carouselExampleIndicators">');
+        var mealCardCarousl = $('<div class="carousel-item">');
         var mealCard = $('<div class="card">');
         var mealCardBody = $('<div class="card-body">');
         var mealImage = $('<img class="card-img-top" src="mealIcon.png" alt="Card image cap">');
@@ -190,7 +194,7 @@ function createMealContainer(dayMealsArray)
         viewButton.attr("data-toggle","modal");
         viewButton.attr("data-target","#myModal");
         viewButton.attr("recipeID",dayMealsArray[i].mealRecipeId);
-        var divMeal = $("<div class='meal col-xs-6 col-sm-6 col-md-3 col-lg-3'>");
+        var divMeal = $("<div class='meal col-xs-6 col-sm-6 col-md-4 col-lg-3'>");
         var mealType = $("<h5 class='mealType'>");
 
         mealType.text(dayMealsArray[i].mealTime);
@@ -202,10 +206,24 @@ function createMealContainer(dayMealsArray)
         mealCard.html(mealCardBody);
         divMeal.append(mealCard);
         divDay.append(divMeal);
-    
-    }
+        
+        liCarouselTarget.attr('data-slide-to',i);
 
-    $("#meals-section").append(divDay);
+        if (i == 0 ){
+            mealCardCarousl.addClass('active');
+            liCarouselTarget.addClass('active')
+        }
+         mealCardCarousl.append(divDay);
+        
+        $('.carousel-indicators').append(liCarouselTarget);
+       
+
+    }
+   
+    $(".carousel-inner").append(mealCardCarousl);  
+ 
+      
+    
 }
 
 

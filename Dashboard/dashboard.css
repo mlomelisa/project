@@ -63,6 +63,7 @@ a.nav-link{
     text-align: center;
     margin: 1em 1em 2em 1em;
     background-color: white;
+     
 }
 
 input::placeholder {
@@ -86,6 +87,7 @@ input::placeholder {
     border-radius: 0.1em;
 
 }
+
 .card-body{
     padding: 0em 0em 1em 0em;
 }
