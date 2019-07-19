@@ -45,13 +45,69 @@
                 <div class =" header-text">
                     <h1> Your very own meal calendar</h1>
                 </div>
-                <div class="input-group input-daterange datePick col-12">
-                    <button id="showMeals">Show meals</button>
+               <div class="input-group input-daterange datePick col-12">
+                 <!---  <input type="text" class="form-control" id = "fromDate" placeholder="mm/dd/yyyy">
+                    <input type="text" class="form-control" id = "toDate" placeholder="mm/dd/yyyy">
+                 -->  <button id="showMeals">Show meals</button>
                 </div>
 
-                <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true"><div class="modal-dialog modal-sm"><div class="modal-content">Lalalala</div></div></div>
-                
-                <div class = 'container' id="meals-section">
+                <!-- set up the modal to start hidden and fade in and out -->
+                <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="recipeTitle"></h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <div class="modal-body">
+                                    <div class= "recipe-modal"> 
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!----end of modal-->
+
+                <div id="ingridientsWigdetModal" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <div class= "ingredients-modal"> </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="nutritionsWigdetModal" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <div class= "nutritions-modal"> </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class = 'container-fluid' id="meals-section">
+            <!--Carousel Section-->
+                             <div id="carouselExampleIndicators" class="carousel slide" data-interval="false">
+                                <ol class="carousel-indicators"> 
+                                  
+                                </ol>
+                                <div class="carousel-inner">
+                               
+                                    
+                                </div>
+                                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                  <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                  <span class="sr-only">Next</span>
+                                </a>
+                              </div>
                 </div>
             </div>
         </div>  
