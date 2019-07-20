@@ -807,8 +807,16 @@ let data =
 
 //FirebaseDataAgents
 
-    "userCalenderAgent": function(userID)
+    "userCalenderAgent": function(userID,init)
     {
+
+        if(init){
+
+            firebase.database().ref('userCalender/' + userID).once("value")
+                .then(function(snapshot){
+                    data.userCalender =snapshot.child(userID).val();
+                })
+        }
         try
         {
             let userNode = firebase.database().ref('userCalender/' + userID);
@@ -955,6 +963,7 @@ let data =
 
     "userHealthProfileAgent": function(userID)
     {
+     
         try
         {
             let userNode = firebase.database().ref('userHealthProfile/' + userID)
@@ -1874,6 +1883,7 @@ let landingPageFunctions = {
             var directory = path.substring(path.indexOf('/'), path.lastIndexOf('/'));
             var mainHost = directory.substring(directory.indexOf('/'), directory.lastIndexOf('/'));
             var dashboardUrl = mainHost+'/Dashboard/dashboard.html';
+            console.log(data.userCalender);
             window.location.replace(dashboardUrl);
         }
 
@@ -1943,9 +1953,11 @@ let landingPageFunctions = {
 let dashboardPageFunctions = {
     "buttonFunctions":
     {
-        "activate":function(){},
+        "activate":function(){
+            this.showMeals(true);
+        },
         "deactivate":function(){
-            console.log('deactivated db pages')
+            this.showMeals(false);
         },
 
         "showMeals": function(bool)
@@ -1955,9 +1967,9 @@ let dashboardPageFunctions = {
             $("#showMeals").on("click", function(){   
             //clear previous selection range before displaying new 
             //$("#meals-section").empty();
-        
+        console.log(data.userCalender);
             var dbDatesArray = (Object.entries(data.userCalender.schedule));
-        
+            console.log(dbDatesArray);
             var fromDate = moment.unix(dbDatesArray[0][0]).format('L');
             var toDate = moment.unix(dbDatesArray[dbDatesArray.length-1][0]).format('L');
         
@@ -2069,15 +2081,25 @@ let sessionManager = {
         let loc = getLoc()
         if (loc === 'landing.html')
         {
-            console.log("landing page detected")
             data.authAgent();
+            data.userCalenderAgent(data.userCred.firebaseUserID);
+            data.userHealthProfileAgent(data.userCred.firebaseUserID);
+
+            console.log("userCalender on the landing page " + data.userCalender);
+            console.log("landing page detected")
+    
             console.log(landingPageFunctions)
             dashboardPageFunctions.buttonFunctions.deactivate();
             landingPageFunctions.buttonFunctions.activate();
         }
         else if(loc === 'dashboard.html')
-        {
+        {   
             data.authAgent();
+            data.userCalenderAgent(data.userCred.firebaseUserID,"init");
+            data.userHealthProfileAgent(data.userCred.firebaseUserID);
+            console.log("userCalender on the dashboard page " + data.userCalender);
+
+            console.log("userCalender on the dashboard page after user auth" + data.userCalender);
             landingPageFunctions.buttonFunctions.deactivate();
             dashboardPageFunctions.buttonFunctions.activate();
         }
