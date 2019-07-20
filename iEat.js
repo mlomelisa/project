@@ -140,9 +140,11 @@ let data =
     //ComputeCalls
     "getMealPlanAPI": function(time)
     {
-       let queryURL = buildQuery();
-       try
-       {
+        let queryURL = buildQuery();
+        var queryData
+  
+        try
+        {
             $.ajax({
                 type: "GET",
                 beforeSend: function(request) {
@@ -151,18 +153,22 @@ let data =
                 },
                 url: queryURL,
                 success: function(data) {
-                    return JSON.parse(data);
-                }
+                    queryData = data;
+                },
+                async:false
             })
-       }
-       catch(err)
-       {
-            console.log(`Error: ${err.message}`);
-            console.log(`Error: ${err.stack}`);
-            console.log(`Error: ${err.code}`);
-            console.error('an issue occurred retrieving meal schedule');
-       } 
+        }
+        catch(err)
+        {
+                console.log(`Error: ${err.message}`);
+                console.log(`Error: ${err.stack}`);
+                console.log(`Error: ${err.code}`);
+                console.error('an issue occurred retrieving meal schedule');
+        } 
 
+        return queryData;
+
+        
         function buildQuery()
         {
             
@@ -302,18 +308,33 @@ let data =
     
     "getMealPlan": function(time)
     {
+        console.log("in get Meal Plan")
         try
         {
+            console.log("in first try block")
             let mealPlanObj = data.getMealPlanAPI(time)
             try
             {
+                console.log('in second try block')
+                console.log(mealPlanObj)
                 data.userCalenderGen.parseAPIResponse(mealPlanObj)
                 data.userCalenderGen.refreshCalender();
             }
+            catch
+            {
+                console.log(`Error: ${err.message}`);
+                console.log(`Error: ${err.stack}`);
+                console.log(`Error: ${err.code}`);
+                console.error('an issue occurred retrieving recipe object'); 
+            }
+
         }
         catch
         {
-            
+            console.log(`Error: ${err.message}`);
+            console.log(`Error: ${err.stack}`);
+            console.log(`Error: ${err.code}`);
+            console.error('an issue occurred retrieving recipe object');
         }
     },
     
@@ -324,7 +345,7 @@ let data =
             {
                 if(snapshot.child(recipeID))
                 {
-                    return JSON.parse(snapshot.recipeID);
+                    return snapshot.recipeID.val();
                 }
                 else
                 {
@@ -469,7 +490,7 @@ let data =
             {
                 if(snapshot.child(productID))
                 {
-                    return snapshot.productID;
+                    return snapshot.productID.val();
                 }
                 else 
                 {
@@ -539,7 +560,7 @@ let data =
             {
                 if(snapshot.child(productID))
                 {
-                    return snapshot.productID;
+                    return snapshot.productID.val();
                 }
                 else 
                 {
@@ -664,7 +685,7 @@ let data =
             {
                 if(snapshot.child(recipeID))
                 {
-                    return snapshot.recipeID;
+                    return snapshot.recipeID.val();
                 }
                 else 
                 {
@@ -768,7 +789,7 @@ let data =
             let userNode = firebase.database().ref('userCalender/' + userID);
             userNode.on('child_changed', function(newCalender)
             {
-                data.userCalender = newCalender;
+                data.userCalender = newCalender.val();
             });
         }
         catch(err)
@@ -791,6 +812,7 @@ let data =
             //append meal items
             if(response.items.length > 0 && response !== 'undefined' && response.items !== 'undefined')
             {
+                console.log("parsing Api Response")
                 let currentDate = new Date();
                 let currentTime = currentDate.getTime();
                 let currentLocDate = data.userCalenderFunctions.convertToMomentL(currentTime);
@@ -824,6 +846,7 @@ let data =
             
             function increaseMealTimeStamp(time)
             {
+                console.log("increasing Meal Time Stamp")
                 let timeMS = time.getTime();
                 let timeMsInt = parseInt(timeMS);
                 let newTimeInt = Math.floor(timeMsInt + 8.64e+7);
@@ -834,10 +857,17 @@ let data =
 
         "newCalender": function(userID)
         {
-            if(!(userID)){userID = data.userCred.firebaseUserID;};
+            if(!(userID))
+            {
+                console.log("currentuserid = " + userID)
+                userID = data.userCred.firebaseUserID;
+                console.log("currentuserid = " + userID)
+            };
+            
             data.userCalender.userID = userID;
-            date = new Date();
-            msDate = date.getTime();
+            console.log("currentuserid = " + userID)
+            let date = new Date();
+            let msDate = date.getTime();
             data.userCalender.created = msDate;
         },
 
@@ -902,7 +932,7 @@ let data =
             let userNode = firebase.database().ref('userHealthProfile/' + userID)
             userNode.on('child_changed', function(newSettings)
             {
-                data.userHealthProfile = newSettings;
+                data.userHealthProfile = newSettings.val();
             })
         }
         catch(err)
@@ -921,9 +951,9 @@ let data =
 
         try
         {
-            ref.child(recipeID).setValue(jsonObj)
+            ref.child(recipeID).set(jsonObj)
         }
-        catch 
+        catch(err) 
         {
             console.log(`Error: ${err.message}`)
             console.log(`Error: ${err.stack}`)
@@ -939,9 +969,9 @@ let data =
 
         try
         {
-            ref.child(productID).setValue(jsonObj)
+            ref.child(productID).set(jsonObj)
         }
-        catch 
+        catch(err) 
         {
             console.log(`Error: ${err.message}`)
             console.log(`Error: ${err.stack}`)
@@ -956,9 +986,9 @@ let data =
 
         try
         {
-            ref.child(recipeID).setValue(jsonObj)
+            ref.child(recipeID).set(jsonObj)
         }
-        catch 
+        catch(err)
         {
             console.log(`Error: ${err.message}`)
             console.log(`Error: ${err.stack}`)
@@ -973,9 +1003,9 @@ let data =
 
         try
         {
-            ref.child(userID).setValue(jsonObj)
+            ref.child(userID).set(jsonObj)
         }
-        catch 
+        catch(err) 
         {
             console.log(`Error: ${err.message}`)
             console.log(`Error: ${err.stack}`)
@@ -986,14 +1016,16 @@ let data =
 
     "writeUserHealthProfile": function(userID, jsonObj)
     {
+        console.log(userID, jsonObj)
         let date = new Date();
         let msDate = date.getTime();
         let ref = firebase.database().ref('userHealthProfile');
         try
         {
-            ref.child(userID).child(msDate).setValue(jsonObj)
+            console.log(ref)
+            ref.child(userID).child(msDate).set(jsonObj)
         }
-        catch 
+        catch(err)
         {
             console.log(`Error: ${err.message}`)
             console.log(`Error: ${err.stack}`)
@@ -1009,7 +1041,7 @@ let data =
         let ref = firebase.database().ref('userList');
         try
         {
-            ref.child(userID).setValue(msDate)
+            ref.child(userID).set(msDate)
         }
         catch 
         {
@@ -1025,7 +1057,7 @@ let data =
         let ref = firebase.database().ref('ingredientDisplayWidget');
         try
         {
-            ref.child(recipeID).setValue(string)
+            ref.child(recipeID).set(string)
         }
         catch 
         {
@@ -1041,7 +1073,7 @@ let data =
         let ref = firebase.database().ref('nutritionDisplayWidget');
         try
         {
-            ref.child(recipeID).setValue(string)
+            ref.child(recipeID).set(string)
         }
         catch 
         {
@@ -1057,7 +1089,7 @@ let data =
         let ref = firebase.database().ref('priceDisplayWidget');
         try
         {
-            ref.child(recipeID).setValue(string)
+            ref.child(recipeID).set(string)
         }
         catch 
         {
@@ -1068,9 +1100,7 @@ let data =
         }
     },
 
-    
 
-    
 //ACCESSIBLE DATA OBJECTS  
     "userCalender" : 
     {
@@ -1274,6 +1304,7 @@ let data =
             
             if (data.userCred.firebaseUserID !== null && typeof data.userCred.firebaseUserID !== 'undefined' && data.userCred.firebaseUserID !== 'null' && data.userCred.firebaseUserID !== '')
             {            
+                console.log("currentuserid = " + data.userCred.firebaseUserID)
                 console.log("null check on previous user is true")
                 let previousID = data.userCred.firebaseUserID;
                 data.userLogout(previousID)
@@ -1282,6 +1313,8 @@ let data =
             
             window.user = newID;
             let userID = newID.uid;
+            console.log(newID.uid)
+            data.userCred.firebaseUserID = userID;
             data.enableUserCredAgent(userID)
             data.refreshBrowserData();
             console.log("enabled UserCredAgent")
@@ -1291,6 +1324,7 @@ let data =
     "enableUserCredAgent": function(id)
     {
         this.userCred.active = true;
+        console.log(id)
         
         //if data exists turn on agent
         if (this.userIDExists(id))
@@ -1341,12 +1375,13 @@ let data =
     "userCredAgent": function(userID)
     {
         
+         
         try
         {
             let userNode = firebase.database().ref('userCred/' + userID);
             userNode.on('child_added', function(storedCredential)
             {
-                data.userCred = storedCredential;
+                data.userCred = storedCredential.val();
             });
         }
         catch(err)
@@ -1359,6 +1394,7 @@ let data =
     //WRITEDATA
     "writeUserCred": function(userID)
     {
+         
         let date = new Date();
         let msDate = date.getTime();
         let currentUser = firebase.auth().currentUser;
@@ -1366,12 +1402,19 @@ let data =
         this.userCred.email = currentUser.email;
         this.userCred.refreshToken = currentUser.refreshToken;
         this.userCred.lastSignIn = msDate
+        console.log(data.userCred.firebaseUserID)
 
         try
         {
             let ref = firebase.database().ref();
+             
+            console.log(typeof userID)
+            console.log(typeof msDate)
+             
+            let newcred = JSON.parse(data.userCred)
             ref.child('userList').child(userID).set(msDate);
-            ref.child('userCred').child(userID).child(msDate).set(data.userCred);
+            ref.child('userCred').child(userID).child(msDate).set(newcred);
+             
             ref.child('BrowserSettings').child(userID).child(msDate).set(data.browserData);
            
         }
@@ -1381,6 +1424,10 @@ let data =
             console.log(`Error: ${err.stack}`)
             console.log(`Error: ${err.code}`)
             console.log("There was an issue with saving userProfile Data to our Firebase")
+        }
+        finally
+        {
+             
         }
     },
 
@@ -1414,6 +1461,10 @@ let data =
                     return false;
                 }
             })
+            .catch(function(err)
+            {
+                console.log(err.message)
+            })
     },
 
     //JOBS
@@ -1421,6 +1472,7 @@ let data =
     //**TODO** PASS IN LOGIN METHOD - USE SWITCH TO FIREOFF PREFERRED CHOICE
     "userLogin" : function(method)
     {
+        console.log('userLogin called with ' + method)
         if(method === 'googlePopIn')
         {
             var result = false;
@@ -1465,11 +1517,16 @@ let data =
             var result = false;
             try
             {
-                data.firebaseConfig.authInit.signInAnonymously()
-                let currentUser = data.firebaseConfig.authInit.currentUser;
-                this.userCred.firebaseUserID = currentUser.uid;
-                this.userCred.anonymous = true;
+                console.log('logging anon')
+                firebase.auth().signInAnonymously()
+                let currentUser = firebase.auth().currentUser;
+                console.log(currentUser.uid)
+                data.userCred.firebaseUserID = currentUser.uid;
+                console.log(currentUser)
+                data.userCred.anonymous = true;
                 result = true;
+                console.log('in try block')
+                console.log(result)
             }
             catch
             {
@@ -1480,7 +1537,8 @@ let data =
             }
             finally
             {
-                    return result;
+                console.log(result)    
+                return result;
             }
         }
     },
@@ -1541,6 +1599,7 @@ let data =
             if(result.credential)
             {
                 let currentUser = firebase.auth().currentUser;
+                console.log(currentUser.uid)
                 data.userCred.firebaseUserID = currentUser.uid;
                 data.userCred.anonymous = false;
                 data.userCred.googUserInfo = result.user;
@@ -1578,6 +1637,7 @@ let data =
             .then(function(result){
                 if(result.credential)
                 {
+                    console.log(currentUser.uid)
                     let currentUser = firebase.auth().currentUser;
                     data.userCred.firebaseUserID = currentUser.uid;
                     data.userCred.anonymous = false;
@@ -1630,76 +1690,33 @@ let landingPageFunctions = {
                 //todo allow multiple options
                 $('#btnNext').on('click', function(event){
                     console.log("dietModal SubmitButton EventRegistered:")
+                     
                     event.preventDefault();
-                        if (data.userLogin('anon'))
+                        var user = firebase.auth().currentUser;
+
+                        if (user) 
                         {
+                            landingPageFunctions.initUser();
+                        } 
+                        else 
+                        {
+                            // No user is signed in.
                             try
                             {
-                                //buildUserProfile
-                                let userID = data.userCred.firebaseUserID
-                                let newUserHealthProfile = data.userHealthProfile;
-                                newUserHealthProfile.calories = $('#inputCalories').val();
-                                var dietOptions = $('#dietOption').val();
-                                let excVal = $('#inputExclusion').val().toLowerCase()
-                                let excArr = convertExclusionValuetoArray(excVal)
-                                newUserHealthProfile.dietarySelection = dietOptions;
-                                newUserHealthProfile.healthSettings.calTarget = calories;
-                                newUserHealthProfile.exclusionList = excArr
-
-                                //StoreUserProfile
-                                try
-                                {
-                                    writeUserHealthProfile(userID, newUserHealthProfile)
-                                }
-                                catch(err)
-                                {
-                                    console.log(`Error: ${err.message}`)
-                                    console.log(`Error: ${err.stack}`)
-                                }
-
-                                //GenerateCalenderAddSchedule
-                                try
-                                {
-                                    data.userCalenderGen.newCalender();
-                                    data.getMealPlan("week");
-                                }
-                                catch(err)
-                                {
-                                    console.log(`Error: ${err.message}`)
-                                    console.log(`Error: ${err.stack}`)
-                                }
+                                console.log("attempting to login via auth")
+                                data.userLogin('auth')
                             }
-                            catch(err)
+                            catch
                             {
-                                console.log(`Error: ${err.message}`)
-                                console.log(`Error: ${err.stack}`)
+                                console.log("user failed to login, trying to init session anyways")
                             }
-                            
-                            //DOM Manipulation and Redirect
                             finally
                             {
-                                $('#myModalDiet').modal('hide');
-                                $('#inputCalories').val('');
-                                $('#dietOption option:selected').prop('selected', false);
-                                $('#dietOption :first').prop('selected', true);
-                                $('li').remove();
-                                $('#loginModal').modal('show');
-                                window.location.replace(dashboard)
+                                landingPageFunctions.initUser();
                             }
+                           
                         }
                 })
-            }
-            
-            function convertExclusionValuetoArray(input)
-            {
-                if (input.includes(','))
-                {
-                    return input.split(',')
-                }
-                else
-                {
-                    return input.trim();
-                }
             }
         },
 
@@ -1762,6 +1779,80 @@ let landingPageFunctions = {
                 $('#anonymousLogin').off('click')
             }
         } 
+    },
+
+    "initUser": function()
+    {
+        console.log('trying to init user')
+        try
+        {
+            //buildUserProfile
+             ;
+            console.log(data.userCred.firebaseUserID);
+            let userID = data.userCred.firebaseUserID;
+             ;
+            let newUserHealthProfile = data.userHealthProfile;
+            let calories = $('#inputCalories').val();
+            var dietOptions = $('#dietOption').val();
+            let excVal = $('#inputExclusion').val().toLowerCase()
+            let excArr = convertExclusionValuetoArray(excVal)
+            newUserHealthProfile.dietarySelection = dietOptions;
+            newUserHealthProfile.healthSettings.calTarget = calories;
+            newUserHealthProfile.exclusionList = excArr
+
+            //StoreUserProfile
+            try
+            {
+                 
+                data.writeUserHealthProfile(userID, newUserHealthProfile)
+            }
+            catch(err)
+            {
+                console.log(`Error: ${err.message}`)
+                console.log(`Error: ${err.stack}`)
+            }
+
+            //GenerateCalenderAddSchedule
+            try
+            {
+                data.userCalenderGen.newCalender(userID);
+                data.getMealPlan("week");
+            }
+            catch(err)
+            {
+                console.log(`Error: ${err.message}`)
+                console.log(`Error: ${err.stack}`)
+            }
+        }
+        catch(err)
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+        }
+        
+        //DOM Manipulation and Redirect
+        finally
+        {
+            $('#myModalDiet').modal('hide');
+            $('#inputCalories').val('');
+            $('#dietOption option:selected').prop('selected', false);
+            $('#dietOption :first').prop('selected', true);
+            $('li').remove();
+            $('#loginModal').modal('show');
+            window.location.replace(dashboard)
+        }
+
+        function convertExclusionValuetoArray(input)
+            {
+                if (input.includes(','))
+                {
+                    return input.split(',')
+                }
+                else
+                {
+                    return input.trim();
+                }
+            }
     },
 
     "beingHealthyFunctions": {
@@ -1966,6 +2057,8 @@ let sessionManager = {
         {
             var path = window.location.pathname;
             var page = path.split("/").pop();
+            console.log(window.location)
+            console.log(path)
             console.log(page)
             return page;
         } 
@@ -2050,5 +2143,6 @@ $( document ).ready(function() {
     sessionManager.detectPage();
 });
 ////////////////////MAIN END
+
 
 
