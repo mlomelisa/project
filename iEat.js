@@ -20,23 +20,7 @@ let data =
     {
         let host = data.spoonifyConfig.url
         let queryString = `${host}/recipes/${recipeID}/information`
-        
-        $.ajax({
-            type: "GET",
-            beforeSend: function(request) {
-              request.setRequestHeader("X-RapidAPI-Host", data.spoonifyConfig.host);
-            },
-            url: queryString,
-            success: function(data) {
-              return JSON.parse(data);
-            }
-          });
-    },
-
-    "getProductDataAPI": function(productID)
-    {
-        let host = data.spoonifyConfig.url
-        let queryString = `${host}/food/products/${productID}`
+        var result
         
         $.ajax({
             type: "GET",
@@ -46,9 +30,34 @@ let data =
             },
             url: queryString,
             success: function(data) {
-                return JSON.parse(data);
-            }
+                result = data;
+            },
+            async:false
           });
+
+          return result;
+    },
+
+    "getProductDataAPI": function(productID)
+    {
+        let host = data.spoonifyConfig.url
+        let queryString = `${host}/food/products/${productID}`
+        var result
+        
+        $.ajax({
+            type: "GET",
+            beforeSend: function(request) {
+              request.setRequestHeader("X-RapidAPI-Host", data.spoonifyConfig.host);
+              request.setRequestHeader("X-RapidAPI-Key", data.spoonifyConfig.key );
+            },
+            url: queryString,
+            success: function(data) {
+                result = data;
+            },
+            async:false
+          });
+
+          return result;
         
         // .get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/products/22347")
         // return json 
@@ -58,6 +67,7 @@ let data =
     {
         let host = data.spoonifyConfig.url
         let queryString = `${host}/recipes/${recipeID}/nutritionWidget.json`
+        var result
         
         $.ajax({
             type: "GET",
@@ -67,9 +77,12 @@ let data =
             },
             url: queryString,
             success: function(data) {
-                return data;
-            }
+                result = data;
+            },
+            async:false
           });
+
+          return result;
         
         // .get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/{id}/nutritionWidget.json")
         // return json
@@ -80,6 +93,7 @@ let data =
     {
         let host = data.spoonifyConfig.url
         let queryString = `${host}/recipes/${recipeID}/ingredientWidget`
+        var result
         
         $.ajax({
             type: "GET",
@@ -89,9 +103,12 @@ let data =
             },
             url: queryString,
             success: function(data) {
-                return data;
-            }
+                result = data;
+            },
+            async:false
           });
+
+          return result;
         // get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/1003464/ingredientWidget"
         // //returns an htmlstring/widget
     },
@@ -100,6 +117,7 @@ let data =
     {
         let host = data.spoonifyConfig.url
         let queryString = `${host}/recipes/${recipeID}/priceBreakdownWidget?defaultCss=false`
+        var result
         
         $.ajax({
             type: "GET",
@@ -109,9 +127,12 @@ let data =
             },
             url: queryString,
             success: function(data) {
-                return data;
-            }
+                result = data;
+            },
+            async:false
           });
+
+          return result;
         // .get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/641408/priceBreakdownWidget?defaultCss=false")
         
     },
@@ -120,6 +141,7 @@ let data =
     {
         let host = data.spoonifyConfig.url
         let queryString = `${host}/food/menuItems/${recipeID}/nutritionWidget`
+        var result
         
         $.ajax({
             type: "GET",
@@ -129,9 +151,12 @@ let data =
             },
             url: queryString,
             success: function(data) {
-                return data;
-            }
+                result = data;
+            },
+            async:false
           });
+
+          return result;
         // .get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/menuItems/1003464/nutritionWidget")
         // return htmlstring
         // "<div itemprop=\"nutrition\" itemscope itemtype=\"http://schema.org/NutritionInformation\"><div class=\"spoonacular-caption\">Quickview</div><div class=\"spoonacular-quickview\" itemprop=\"calories\">0.0 Calories</div><div class=\"spoonacular-quickview\" itemprop=\"proteinContent\">0.0g Protein</div><div class=\"spoonacular-quickview\" itemprop=\"fatContent\">0.0g Total Fat</div><div class=\"spoonacular-quickview\" itemprop=\"carbohydrateContent\">0.0g Carbs</div></div><div class=\"spoonacular-caption spoonacular-salmon\">Limit These</div><div class=\"spoonacular-nutrient-name\">Calories</div><div class=\"spoonacular-nutrient-value\">0.0</div><div style=\"display:inline-block;width: -moz-calc(100% - 189px);width: -webkit-calc(100% - 189px);width: -o-calc(100% - 189px);width: calc(100% - 189px);\"><div class=\"spoonacular-nutrition-visualization-bar spoonacular-salmon\" style=\"width:0.0%\" onmouseover=\"spoonacularShowNutritionComposition(event,'ENERGY')\" onmouseout=\"spoonacularHideNutritionComposition('ENERGY')\"></div><div class=\"spoonacular-nutrition-visualization-bar-number spoonacular-salmon\">0%</div></div><br><div class=\"spoonacular-nutrient-name\">Fat</div><div class=\"spoonacular-nutrient-value\">0.0g</div><div style=\"display:inline-block;width: -moz-calc(100% - 189px);width: -webkit-calc(100% - 189px);width: -o-calc(100% - 189px);width: calc(100% - 189px);\"><div class=\"spoonacular-nutrition-visualization-bar spoonacular-salmon\" style=\"width:0.0%\" onmouseover=\"spoonacularShowNutritionComposition(event,'FAT')\" onmouseout=\"spoonacularHideNutritionComposition('FAT')\"></div><div class=\"spoonacular-nutrition-visualization-bar-number spoonacular-salmon\">0%</div></div><br><div class=\"spoonacular-nutrient-name\">&nbsp;&nbsp;Saturated Fat</div><div class=\"spoonacular-nutrient-value\">0.0g</div><div style=\"display:inline-block;width: -moz-calc(100% - 189px);width: -webkit-calc(100% - 189px);width: -o-calc(100% - 189px);width: calc(100% - 189px);\"><div class=\"spoonacular-nutrition-visualization-bar spoonacular-salmon\" style=\"width:0.0%\" onmouseover=\"spoonacularShowNutritionComposition(event,'FAT_SATURATED')\" onmouseout=\"spoonacularHideNutritionComposition('FAT_SATURATED')\"></div><div class=\"spoonacular-nutrition-visualization-bar-number spoonacular-salmon\">0%</div></div><br><div class=\"spoonacular-nutrient-name\">Carbohydrates</div><div class=\"spoonacular-nutrient-value\">0.0g</div><div style=\"display:inline-block;width: -moz-calc(100% - 189px);width: -webkit-calc(100% - 189px);width: -o-calc(100% - 189px);width: calc(100% - 189px);\"><div class=\"spoonacular-nutrition-visualization-bar spoonacular-salmon\" style=\"width:0.0%\" onmouseover=\"spoonacularShowNutritionComposition(event,'CARBOHYDRATES')\" onmouseout=\"spoonacularHideNutritionComposition('CARBOHYDRATES')\"></div><div class=\"spoonacular-nutrition-visualization-bar-number spoonacular-salmon\">0%</div></div><br><div class=\"spoonacular-nutrient-name\">&nbsp;&nbsp;Sugar</div><div class=\"spoonacular-nutrient-value\">0.0g</div><div style=\"display:inline-block;width: -moz-calc(100% - 189px);width: -webkit-calc(100% - 189px);width: -o-calc(100% - 189px);width: calc(100% - 189px);\"><div class=\"spoonacular-nutrition-visualization-bar spoonacular-salmon\" style=\"width:0.0%\" onmouseover=\"spoonacularShowNutritionComposition(event,'SUGAR')\" onmouseout=\"spoonacularHideNutritionComposition('SUGAR')\"></div><div class=\"spoonacular-nutrition-visualization-bar-number spoonacular-salmon\">0%</div></div><br><div class=\"spoonacular-nutrient-name\">Cholesterol</div><div class=\"spoonacular-nutrient-value\">0.0mg</div><div style=\"display:inline-block;width: -moz-calc(100% - 189px);width: -webkit-calc(100% - 189px);width: -o-calc(100% - 189px);width: calc(100% - 189px);\"><div class=\"spoonacular-nutrition-visualization-bar spoonacular-salmon\" style=\"width:0.0%\" onmouseover=\"spoonacularShowNutritionComposition(event,'CHOLESTEROL')\" onmouseout=\"spoonacularHideNutritionComposition('CHOLESTEROL')\"></div><div class=\"spoonacular-nutrition-visualization-bar-number spoonacular-salmon\">0%</div></div><br><div class=\"spoonacular-nutrient-name\">Sodium</div><div class=\"spoonacular-nutrient-value\">0.0mg</div><div style=\"display:inline-block;width: -moz-calc(100% - 189px);width: -webkit-calc(100% - 189px);width: -o-calc(100% - 189px);width: calc(100% - 189px);\"><div class=\"spoonacular-nutrition-visualization-bar spoonacular-salmon\" style=\"width:0.0%\" onmouseover=\"spoonacularShowNutritionComposition(event,'SODIUM')\" onmouseout=\"spoonacularHideNutritionComposition('SODIUM')\"></div><div class=\"spoonacular-nutrition-visualization-bar-number spoonacular-salmon\">0%</div></div><br><div class=\"spoonacular-caption spoonacular-blue\">Get Enough Of These</div><div class=\"spoonacular-nutrient-name\">Protein</div><div class=\"spoonacular-nutrient-value\">0.0g</div><div style=\"display:inline-block;width: -moz-calc(100% - 189px);width: -webkit-calc(100% - 189px);width: -o-calc(100% - 189px);width: calc(100% - 189px);\"><div class=\"spoonacular-nutrition-visualization-bar spoonacular-blue\" style=\"width:0.0%\" onmouseover=\"spoonacularShowNutritionComposition(event,'PROTEIN')\" onmouseout=\"spoonacularHideNutritionComposition('PROTEIN')\"></div><div class=\"spoonacular-nutrition-visualization-bar-number spoonacular-blue\">0%</div></div><br><div style=\"margin-top:12px;width:12px;height:12px\" class=\"spoonacular-nutrition-visualization-bar spoonacular-salmon\"></div><div style=\"margin-left:6px;margin-right:6px;width:12px;height:12px\" class=\"spoonacular-nutrition-visualization-bar spoonacular-blue\"></div>covered percent of daily need"
@@ -320,7 +345,7 @@ let data =
                 data.userCalenderGen.parseAPIResponse(mealPlanObj)
                 data.userCalenderGen.refreshCalender();
             }
-            catch
+            catch(err)
             {
                 console.log(`Error: ${err.message}`);
                 console.log(`Error: ${err.stack}`);
@@ -329,12 +354,12 @@ let data =
             }
 
         }
-        catch
+        catch(err)
         {
             console.log(`Error: ${err.message}`);
             console.log(`Error: ${err.stack}`);
             console.log(`Error: ${err.code}`);
-            console.error('an issue occurred retrieving recipe object');
+            console.error('an issue occurred during meal plan');
         }
     },
     
@@ -803,8 +828,11 @@ let data =
     {
         "addMealArray": function(msCurrentTime, mealObject)
         {
+            console.log('adding meal array')
+            console.log(msCurrentTime)
             let key = this.userCalenderFunctions.convertToMomentL(msCurrentTime)
             data.userCalender.schedule[key] = mealObject;
+            console.log(data.userCalender.schedule)
         },
 
         "parseAPIResponse": function(response)
@@ -812,11 +840,11 @@ let data =
             //append meal items
             if(response.items.length > 0 && response !== 'undefined' && response.items !== 'undefined')
             {
-                console.log("parsing Api Response")
                 let currentDate = new Date();
                 let currentTime = currentDate.getTime();
                 let currentLocDate = data.userCalenderFunctions.convertToMomentL(currentTime);
-                let currentLocTime = currentLocDate.getTime();
+                let currentLocDatetoDate = moment(currentLocDate).toDate();
+                let currentLocTime = currentLocDatetoDate.getTime();
                 let mealArray = response.items;
                 let mealCount = mealArray.length;
                 let mealTimestamp = this.getNextMealTimeKey(currentLocTime)
@@ -824,7 +852,6 @@ let data =
 
                 for(let i = 0; i < mealCount; i++)
                 {
-                    
                     if(mealsUntilDayExpires === 0)
                     {
                         mealsUntilDayExpires = 3;
@@ -833,7 +860,8 @@ let data =
                     }
                     else
                     {
-                        mealUntilDayExpires--
+                        
+                        mealsUntilDayExpires--
                         this.addMealArray(mealTimestamp, mealArray[i]);
                     }
                 }
@@ -880,6 +908,7 @@ let data =
 
         "getNextMealTimeKey": function(timeMSloc)
         {
+            console.log(timeMSloc)
             let lastEntryDate = data.userCalenderFunctions.getLastEntryDate();
             let lastEntryMSloc = lastEntryDate.getTime();
             
@@ -887,12 +916,13 @@ let data =
             {
                 let lastEntryNum = parseInt(lastEntryMSloc);
                 let nextMealTime = Math.floor(lastEntryNum + 8.64e+7);
-                let timeKey = data.userCalenderFunctions.convertToMomentL(nextMealTime);
+                let timeKey = moment(nextMealTime).format('L');
                 return timeKey;
             }
             else
             {
-                let timeKey = data.userCalenderFunctions.convertToMomentL(timeMSloc);
+                let timeKey = moment(timeMSloc).format('L');
+                console.log(timeKey)
                 return timeKey;
             }
 
@@ -1146,6 +1176,7 @@ let data =
            let keyID = Math.floor(Object.keys(data.userCalender.schedule).length - 1);
            let key = Object.keys(data.userCalender.schedule)[keyID];
            let date = new Date(key);
+           console.log(date)
            return date;
        },
 
@@ -1806,10 +1837,10 @@ let landingPageFunctions = {
                  
                 data.writeUserHealthProfile(userID, newUserHealthProfile)
             }
-            catch(err)
+            catch(er)
             {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
+                console.log(`Error: ${er.message}`)
+                console.log(`Error: ${er.stack}`)
             }
 
             //GenerateCalenderAddSchedule
@@ -1818,10 +1849,10 @@ let landingPageFunctions = {
                 data.userCalenderGen.newCalender(userID);
                 data.getMealPlan("week");
             }
-            catch(err)
+            catch(e)
             {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
+                console.log(`Error: ${e.message}`)
+                console.log(`Error: ${e.stack}`)
             }
         }
         catch(err)
@@ -1839,7 +1870,11 @@ let landingPageFunctions = {
             $('#dietOption :first').prop('selected', true);
             $('li').remove();
             $('#loginModal').modal('show');
-            window.location.replace(dashboard)
+            // var path = document.location.pathname;
+            // var directory = path.substring(path.indexOf('/'), path.lastIndexOf('/'));
+            // var mainHost = directory.substring(directory.indexOf('/'), directory.lastIndexOf('/'));
+            // var dashboardUrl = mainHost+'/Dashboard/dashboard.html';
+            // window.location.replace(dashboardUrl);
         }
 
         function convertExclusionValuetoArray(input)
