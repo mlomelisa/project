@@ -308,6 +308,7 @@ let data =
             try
             {
                 data.userCalenderGen.parseAPIResponse(mealPlanObj)
+                data.userCalenderGen.refreshCalender();
             }
         }
         catch
@@ -787,39 +788,48 @@ let data =
 
         "parseAPIResponse": function(response)
         {
-            let currentDate = new Date();
-            let currentTime = currentDate.getTime();
-            
             //append meal items
             if(response.items.length > 0 && response !== 'undefined' && response.items !== 'undefined')
             {
+                let currentDate = new Date();
+                let currentTime = currentDate.getTime();
+                let currentLocDate = data.userCalenderFunctions.convertToMomentL(currentTime);
+                let currentLocTime = currentLocDate.getTime();
                 let mealArray = response.items;
                 let mealCount = mealArray.length;
-                let mealTimeStamp = 
+                let mealTimestamp = this.getNextMealTimeKey(currentLocTime)
+                let mealsUntilDayExpires = 3
 
                 for(let i = 0; i < mealCount; i++)
                 {
-                    let mealTimestamp = this.getNextMealTime(currentTime)
-                    mealUntilDayExpires--
+                    
                     if(mealsUntilDayExpires === 0)
                     {
                         mealsUntilDayExpires = 3;
-                        this.addMealArray(currentTime, mealArray[i])
-
+                        mealTimestamp = increaseMealTimeStamp(mealTimestamp);
+                        this.addMealArray(mealTimestamp, mealArray[i]);
                     }
                     else
                     {
-
+                        mealUntilDayExpires--
+                        this.addMealArray(mealTimestamp, mealArray[i]);
                     }
                 }
-
-                
-            
             }
             else
             {
-
-            }            
+                console.log("Issue with API response")
+                console.log(response)
+            }
+            
+            function increaseMealTimeStamp(time)
+            {
+                let timeMS = time.getTime();
+                let timeMsInt = parseInt(timeMS);
+                let newTimeInt = Math.floor(timeMsInt + 8.64e+7);
+                let timeKey = data.userCalenderFunctions.convertToMomentL(newTimeInt);
+                return timeKey;
+            }
         },
 
         "newCalender": function(userID)
@@ -838,16 +848,24 @@ let data =
             data.userCalender.availableRecipes = data.userCalenderFunctions.getAllScheduleRecipes();
         },
 
-        "getNextMealTime": function(timeMS)
+        "getNextMealTimeKey": function(timeMSloc)
         {
             let lastEntryDate = data.userCalenderFunctions.getLastEntryDate();
-            let lastEntryMS = data.userCalenderFunctions.convertToMomentL
-            if(lastEntryMS > timeMS)
-            {
-
-            }
-            else 
+            let lastEntryMSloc = lastEntryDate.getTime();
             
+            if(lastEntryMSloc > timeMSloc)
+            {
+                let lastEntryNum = parseInt(lastEntryMSloc);
+                let nextMealTime = Math.floor(lastEntryNum + 8.64e+7);
+                let timeKey = data.userCalenderFunctions.convertToMomentL(nextMealTime);
+                return timeKey;
+            }
+            else
+            {
+                let timeKey = data.userCalenderFunctions.convertToMomentL(timeMSloc);
+                return timeKey;
+            }
+
         },
 
 
@@ -1642,7 +1660,8 @@ let landingPageFunctions = {
                                 //GenerateCalenderAddSchedule
                                 try
                                 {
-                                    data.getMealPlan("week")
+                                    data.userCalenderGen.newCalender();
+                                    data.getMealPlan("week");
                                 }
                                 catch(err)
                                 {
@@ -1665,6 +1684,7 @@ let landingPageFunctions = {
                                 $('#dietOption :first').prop('selected', true);
                                 $('li').remove();
                                 $('#loginModal').modal('show');
+                                window.location.replace(dashboard)
                             }
                         }
                 })
