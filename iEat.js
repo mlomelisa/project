@@ -343,7 +343,7 @@ let data =
                 console.log('in second try block')
                 console.log(mealPlanObj)
                 data.userCalenderGen.parseAPIResponse(mealPlanObj)
-                data.userCalenderGen.refreshCalender();
+                data.writeUserCalender(data.userCred.firebaseUserID, data.userCalender);
             }
             catch(err)
             {
@@ -828,11 +828,11 @@ let data =
     {
         "addMealArray": function(msCurrentTime, mealObject)
         {
-            console.log('adding meal array')
-            console.log(msCurrentTime)
-            let key = this.userCalenderFunctions.convertToMomentL(msCurrentTime)
+            console.log('adding meal array');
+            console.log(msCurrentTime);
+            let key = msCurrentTime;
             data.userCalender.schedule[key] = mealObject;
-            console.log(data.userCalender.schedule)
+            console.log(data.userCalender.schedule);
         },
 
         "parseAPIResponse": function(response)
@@ -842,12 +842,9 @@ let data =
             {
                 let currentDate = new Date();
                 let currentTime = currentDate.getTime();
-                let currentLocDate = data.userCalenderFunctions.convertToMomentL(currentTime);
-                let currentLocDatetoDate = moment(currentLocDate).toDate();
-                let currentLocTime = currentLocDatetoDate.getTime();
                 let mealArray = response.items;
                 let mealCount = mealArray.length;
-                let mealTimestamp = this.getNextMealTimeKey(currentLocTime)
+                let mealTimestamp = this.getNextMealTimeKey(currentTime)
                 let mealsUntilDayExpires = 3
 
                 for(let i = 0; i < mealCount; i++)
@@ -855,6 +852,7 @@ let data =
                     if(mealsUntilDayExpires === 0)
                     {
                         mealsUntilDayExpires = 3;
+                        console.log(mealTimestamp)
                         mealTimestamp = increaseMealTimeStamp(mealTimestamp);
                         this.addMealArray(mealTimestamp, mealArray[i]);
                     }
@@ -875,10 +873,10 @@ let data =
             function increaseMealTimeStamp(time)
             {
                 console.log("increasing Meal Time Stamp")
-                let timeMS = time.getTime();
+                let timeMS = time;
                 let timeMsInt = parseInt(timeMS);
                 let newTimeInt = Math.floor(timeMsInt + 8.64e+7);
-                let timeKey = data.userCalenderFunctions.convertToMomentL(newTimeInt);
+                let timeKey = newTimeInt;
                 return timeKey;
             }
         },
@@ -901,6 +899,7 @@ let data =
 
         "refreshCalender": function()
         {
+            data.userCalender.starts = data.userCalenderFunctions.getF
             data.userCalender.starts = data.userCalenderFunctions.getFirstEntryDate();
             data.userCalender.expires = data.userCalenderFunctions.getLastEntryDate();
             data.userCalender.availableRecipes = data.userCalenderFunctions.getAllScheduleRecipes();
@@ -910,24 +909,23 @@ let data =
         {
             console.log(timeMSloc)
             let lastEntryDate = data.userCalenderFunctions.getLastEntryDate();
-            let lastEntryMSloc = lastEntryDate.getTime();
+            let lastEntryMSloc = parseInt(lastEntryDate);
             
             if(lastEntryMSloc > timeMSloc)
             {
                 let lastEntryNum = parseInt(lastEntryMSloc);
                 let nextMealTime = Math.floor(lastEntryNum + 8.64e+7);
-                let timeKey = moment(nextMealTime).format('L');
+                let timeKey = nextMealTime;
                 return timeKey;
             }
             else
             {
-                let timeKey = moment(timeMSloc).format('L');
+                let timeKey = timeMSloc;
                 console.log(timeKey)
                 return timeKey;
             }
 
         },
-
 
           // "mealObject":
         // {
@@ -1030,7 +1028,8 @@ let data =
     "writeUserCalender": function(userID, jsonObj)
     {
         let ref = firebase.database().ref('userCalender');
-
+        console.log(userID)
+        console.log(jsonObj)
         try
         {
             ref.child(userID).set(jsonObj)
@@ -1135,12 +1134,6 @@ let data =
     "userCalender" : 
     {
         "userID": "",
-        //first 
-        "starts": "",
-        //the last localized date time schedules, key/values.
-        "expires": "",
-        //this a returned from an API Call which is all the recipe id's returned in meal query.
-        "availableRecipes" : [],
         //key = datelocal value = mealObject
         "schedule" : {},
     },
@@ -1176,7 +1169,6 @@ let data =
            let keyID = Math.floor(Object.keys(data.userCalender.schedule).length - 1);
            let key = Object.keys(data.userCalender.schedule)[keyID];
            let date = new Date(key);
-           console.log(date)
            return date;
        },
 
@@ -1219,7 +1211,15 @@ let data =
        },
 
        "convertToMomentL": function(datetime){
-           return moment.unix(datetime).format('L');
+           
+            console.log(datetime)
+            if (typeof datetime === 'string')
+            {
+                datetime = datetime.toString()
+            }
+
+            let momentObj = moment.unix(datetime).format('L');
+            return;
        },
 
        "convertToEpoch": function(datetime){
@@ -1256,7 +1256,7 @@ let data =
                for(let i = 0;i < Object.keys(data.userCalender.schedule).length; i++)
                {
 
-                   let key = Object.key(data.userCalender.schedule)[i];
+                   let key = Object.keys(data.userCalender.schedule)[i];
                    let recipeID = data.userCalender.schedule[key].value.id;
                    recipeIDArray.push(recipeID);
                }
@@ -1870,11 +1870,11 @@ let landingPageFunctions = {
             $('#dietOption :first').prop('selected', true);
             $('li').remove();
             $('#loginModal').modal('show');
-            // var path = document.location.pathname;
-            // var directory = path.substring(path.indexOf('/'), path.lastIndexOf('/'));
-            // var mainHost = directory.substring(directory.indexOf('/'), directory.lastIndexOf('/'));
-            // var dashboardUrl = mainHost+'/Dashboard/dashboard.html';
-            // window.location.replace(dashboardUrl);
+            var path = document.location.pathname;
+            var directory = path.substring(path.indexOf('/'), path.lastIndexOf('/'));
+            var mainHost = directory.substring(directory.indexOf('/'), directory.lastIndexOf('/'));
+            var dashboardUrl = mainHost+'/Dashboard/dashboard.html';
+            window.location.replace(dashboardUrl);
         }
 
         function convertExclusionValuetoArray(input)
