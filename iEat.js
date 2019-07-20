@@ -1,5 +1,5 @@
 'use strict';
-let data1 = 
+let data = 
 {
 
 //API
@@ -140,94 +140,117 @@ let data1 =
     //ComputeCalls
     "getMealPlanAPI": function(time)
     {
-        let host = data.spoonifyConfig.url
-        let mealgenerator = "/recipes/mealplans/generate?";
-        let queryString = `${host}${mealgenerator}timeFrame=${time}`
-            .then(function(){data.getMealPlanAPI.appendCalories();})
-            .then(function(){data.getMealPlanAPI.appendDietString();})
-            .then(function(){data.getMealPlanAPI.appendExcludeString();})
-            .then(function(){
-                $.ajax({
+       let queryURL = buildQuery();
+       try
+       {
+            $.ajax({
                 type: "GET",
                 beforeSend: function(request) {
                 request.setRequestHeader("X-RapidAPI-Host", data.spoonifyConfig.host);
                 request.setRequestHeader("X-RapidAPI-Key", data.spoonifyConfig.key );
                 },
-                url: queryString,
+                url: queryURL,
                 success: function(data) {
                     return JSON.parse(data);
                 }
-            })})
-            .catch(function(err)
+            })
+       }
+       catch(err)
+       {
+            console.log(`Error: ${err.message}`);
+            console.log(`Error: ${err.stack}`);
+            console.log(`Error: ${err.code}`);
+            console.error('an issue occurred retrieving meal schedule');
+       } 
+
+        function buildQuery()
+        {
+            
+            let host = data.spoonifyConfig.url
+            let mealgenerator = "/recipes/mealplans/generate?";
+            let queryString = `${host}${mealgenerator}timeFrame=${time}`
+            try
+            {
+                appendCalories();
+                appendDietString();
+                appendExcludeString();
+            }
+            catch
             {
                 console.log(`Error: ${err.message}`);
                 console.log(`Error: ${err.stack}`);
                 console.log(`Error: ${err.code}`);
-                console.error('an issue occurred retrieving meal schedule');
-            })
-        
-          //query builders
-        function appendCalories()
-        {
-            let calorieTarget = data.userHealthProfile.healthSettings.calTarget
-            if(calorieTarget === 0)
-            {
-                return;
             }
-            else
+            finally
             {
-            let calories = caloriesTarget.toString();
-            queryString.concat(`&targetCalories=${calories}`)
+                return queryString;
             }
-        }
-
-        function appendDietString()
-        {
-        if(data.userHealthProfile.dietArray[0] === "null")
-        {
-            return;
-        }
-        else
-        {
-            let dietArray = data.userHealthProfile.dietarySelection;
-            let andOperator = '%2C+';
-            let dietString = `&diet=${dietArray[0]}`
             
-            if(dietArray.length > 1)
+            
+            
+            //query builders
+            function appendCalories()
             {
-                for(let i=1; i<dietArray.length; i++)
+                let calorieTarget = data.userHealthProfile.healthSettings.calTarget
+                if(calorieTarget === 0)
                 {
-                    dietString.concat(andOperator + dietArray[i])
+                    return;
+                }
+                else
+                {
+                let calories = caloriesTarget.toString();
+                queryString.concat(`&targetCalories=${calories}`)
                 }
             }
 
-            queryString.concat(dietString)
-        }
-        
-        }
-
-        function appendExcludeString()
-        {
-        if(data.userHealthProfile.exclusionList[0] === "null")
-        {
-            return;
-        }
-        else
-        {
-            let excludeArray = data.userHealthProfile.exclusionList;
-            let andOperator = '%2C+';
-            let excludeString = `&exclude=${excludeArray[0]}`
-            
-            if(excludeArray.length > 1)
+            function appendDietString()
             {
-                for(let i=1; i<excludeArray.length; i++)
+                if(data.userHealthProfile.dietArray[0] === "null")
                 {
-                    excludeString.concat(andOperator + excludeArray[i])
+                    return;
                 }
+                else
+                {
+                    let dietArray = data.userHealthProfile.dietarySelection;
+                    let andOperator = '%2C+';
+                    let dietString = `&diet=${dietArray[0]}`
+                    
+                    if(dietArray.length > 1)
+                    {
+                        for(let i=1; i<dietArray.length; i++)
+                        {
+                            dietString.concat(andOperator + dietArray[i])
+                        }
+                    }
+
+                    queryString.concat(dietString)
+                }
+            
             }
 
-            queryString.concat(excludeString)
-        }
+            function appendExcludeString()
+            {
+                if(data.userHealthProfile.exclusionList[0] === "null")
+                {
+                    return;
+                }
+                else
+                {
+                    let excludeArray = data.userHealthProfile.exclusionList;
+                    let andOperator = '%2C+';
+                    let excludeString = `&exclude=${excludeArray[0]}`
+                    
+                    if(excludeArray.length > 1)
+                    {
+                        for(let i=1; i<excludeArray.length; i++)
+                        {
+                            excludeString.concat(andOperator + excludeArray[i])
+                        }
+                    }
+
+                    queryString.concat(excludeString)
+                }
+            }
         }
         
         // "mealObject":
@@ -277,9 +300,26 @@ let data1 =
 //FirebaseDataQueries
     //mockObject
     
+    "getMealPlan": function(time)
+    {
+        try
+        {
+            let mealPlanObj = data.getMealPlanAPI(time)
+            try
+            {
+                data.userCalenderGen.parseAPIResponse(mealPlanObj)
+                data.userCalenderGen.refreshCalender();
+            }
+        }
+        catch
+        {
+            
+        }
+    },
+    
     "getRecipeData":  function(recipeID)
     {
-        firebase.database().ref('/recipeData').once('value')
+        firebase.database().ref('recipeData').once('value')
             .then(function(snapshot)
             {
                 if(snapshot.child(recipeID))
@@ -424,7 +464,7 @@ let data1 =
         //     }
     "getProductData": function(productID)
     {
-        firebase.database().ref('/productData').once('value')
+        firebase.database().ref('productData').once('value')
             .then(function(snapshot)
             {
                 if(snapshot.child(productID))
@@ -494,7 +534,7 @@ let data1 =
     
     "getNutritionData": function(recipeID)
     {
-        firebase.database().ref('/nutritionData').once('value')
+        firebase.database().ref('nutritionData').once('value')
             .then(function(snapshot)
             {
                 if(snapshot.child(productID))
@@ -619,7 +659,7 @@ let data1 =
     
     "getIngredientWidget": function(recipeID)
     {
-        firebase.database().ref('/ingredientDisplayWidget').once('value')
+        firebase.database().ref('ingredientDisplayWidget').once('value')
             .then(function(snapshot)
             {
                 if(snapshot.child(recipeID))
@@ -653,7 +693,7 @@ let data1 =
 
     "getNutritionWidget": function(recipeID)
     {
-        firebase.database().ref('/nutritionDisplayWidget').once('value')
+        firebase.database().ref('nutritionDisplayWidget').once('value')
             .then(function(snapshot)
             {
                 if(snapshot.child(recipeID))
@@ -687,7 +727,7 @@ let data1 =
     
     "getPriceWidget": function(recipeID)
     {
-        firebase.database().ref('/priceDisplayWidget').once('value')
+        firebase.database().ref('priceDisplayWidget').once('value')
             .then(function(snapshot)
             {
                 if(snapshot.child(recipeID))
@@ -723,48 +763,109 @@ let data1 =
 
     "userCalenderAgent": function(userID)
     {
-        userNode = firebase.database().ref('/userCalender/' + userID)
-        userNode.on('child_changed', function(newCalender)
+        try
         {
-            data.userCalender = newCalender;
-        })
-            .catch(function(err)
+            let userNode = firebase.database().ref('userCalender/' + userID);
+            userNode.on('child_changed', function(newCalender)
             {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-            })
- 
-           
+                data.userCalender = newCalender;
+            });
+        }
+        catch(err)
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+        }
     },
 
-    "UserCalenderGen":
+    "userCalenderGen":
     {
-        "addMealArray": function(timekeystring, mealObject)
+        "addMealArray": function(msCurrentTime, mealObject)
         {
-            data.userCalender.schedule[timekeystring] = mealObject;
+            let key = this.userCalenderFunctions.convertToMomentL(msCurrentTime)
+            data.userCalender.schedule[key] = mealObject;
         },
 
         "parseAPIResponse": function(response)
         {
-            if(response.items.length > 3)
+            //append meal items
+            if(response.items.length > 0 && response !== 'undefined' && response.items !== 'undefined')
             {
-               
-            
+                let currentDate = new Date();
+                let currentTime = currentDate.getTime();
+                let currentLocDate = data.userCalenderFunctions.convertToMomentL(currentTime);
+                let currentLocTime = currentLocDate.getTime();
+                let mealArray = response.items;
+                let mealCount = mealArray.length;
+                let mealTimestamp = this.getNextMealTimeKey(currentLocTime)
+                let mealsUntilDayExpires = 3
+
+                for(let i = 0; i < mealCount; i++)
+                {
+                    
+                    if(mealsUntilDayExpires === 0)
+                    {
+                        mealsUntilDayExpires = 3;
+                        mealTimestamp = increaseMealTimeStamp(mealTimestamp);
+                        this.addMealArray(mealTimestamp, mealArray[i]);
+                    }
+                    else
+                    {
+                        mealUntilDayExpires--
+                        this.addMealArray(mealTimestamp, mealArray[i]);
+                    }
+                }
+            }
+            else
+            {
+                console.log("Issue with API response")
+                console.log(response)
             }
             
+            function increaseMealTimeStamp(time)
+            {
+                let timeMS = time.getTime();
+                let timeMsInt = parseInt(timeMS);
+                let newTimeInt = Math.floor(timeMsInt + 8.64e+7);
+                let timeKey = data.userCalenderFunctions.convertToMomentL(newTimeInt);
+                return timeKey;
+            }
         },
 
         "newCalender": function(userID)
         {
             if(!(userID)){userID = data.userCred.firebaseUserID;};
             data.userCalender.userID = userID;
-
+            date = new Date();
+            msDate = date.getTime();
+            data.userCalender.created = msDate;
         },
+
         "refreshCalender": function()
         {
             data.userCalender.starts = data.userCalenderFunctions.getFirstEntryDate();
             data.userCalender.expires = data.userCalenderFunctions.getLastEntryDate();
             data.userCalender.availableRecipes = data.userCalenderFunctions.getAllScheduleRecipes();
+        },
+
+        "getNextMealTimeKey": function(timeMSloc)
+        {
+            let lastEntryDate = data.userCalenderFunctions.getLastEntryDate();
+            let lastEntryMSloc = lastEntryDate.getTime();
+            
+            if(lastEntryMSloc > timeMSloc)
+            {
+                let lastEntryNum = parseInt(lastEntryMSloc);
+                let nextMealTime = Math.floor(lastEntryNum + 8.64e+7);
+                let timeKey = data.userCalenderFunctions.convertToMomentL(nextMealTime);
+                return timeKey;
+            }
+            else
+            {
+                let timeKey = data.userCalenderFunctions.convertToMomentL(timeMSloc);
+                return timeKey;
+            }
+
         },
 
 
@@ -796,154 +897,175 @@ let data1 =
 
     "userHealthProfileAgent": function(userID)
     {
-        userNode = firebase.database().ref('/userHealthProfile/' + userID)
-        userNode.on('child_changed', function(newSettings)
+        try
         {
-            data.userHealthProfile = newSettings;
-        })
-            .catch(function(err)
+            let userNode = firebase.database().ref('userHealthProfile/' + userID)
+            userNode.on('child_changed', function(newSettings)
             {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
+                data.userHealthProfile = newSettings;
             })
+        }
+        catch(err)
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+        }
+            
     },
 
-//FirebaseWrite
+//FirebaseWrite 
+    //RecipeID:Object
     "writeRecipeData": function(recipeID, jsonObj)
     {
-        firebase.database().getInstance().getReference()
-            .then(function(snapshot){
-                snapshot.child(recipeData).child(recipeID).setValue(jsonObj)
-            })
-            .catch(err)
-            {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-                console.log(`Error: ${err.code}`)
-                console.log("There was an issue with saving Recipe Data to our Database")
-            }
+        let ref = firebase.database().ref('recipeData');
+
+        try
+        {
+            ref.child(recipeID).setValue(jsonObj)
+        }
+        catch 
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+            console.log(`Error: ${err.code}`)
+            console.log("There was an issue with writing recipe data to firebasedb.")
+        }  
     },
 
+    //ProductID:Object
     "writeProductData": function(productID, jsonObj)
     {
-        firebase.database().getInstance().getReference()
-            .then(function(snapshot){
-                snapshot.child(productData).child(productID).setValue(jsonObj)
-            })
-            .catch(err)
-            {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-                console.log(`Error: ${err.code}`)
-                console.log("There was an issue with saving Recipe Data to our Database")
-            }
+        let ref = firebase.database().ref('productData');
+
+        try
+        {
+            ref.child(productID).setValue(jsonObj)
+        }
+        catch 
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+            console.log(`Error: ${err.code}`)
+            console.log("There was an issue with writing product data to our firebasedb")
+        } 
     },
 
     "writeNutritionData": function(recipeID, jsonObj)
     {
-        firebase.database().getInstance().getReference()
-            .then(function(snapshot){
-                snapshot.child(nutritionData).child(recipeID).setValue(jsonObj)
-            })
-            .catch(err)
-            {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-                console.log(`Error: ${err.code}`)
-                console.log("There was an issue with saving Nutrition Data to our Database")
-            }
+        let ref = firebase.database().ref('nutritionData');
+
+        try
+        {
+            ref.child(recipeID).setValue(jsonObj)
+        }
+        catch 
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+            console.log(`Error: ${err.code}`)
+            console.log("There was an issue with writing nutrition data to our firebasedb")
+        } 
     },
 
     "writeUserCalender": function(userID, jsonObj)
     {
-        firebase.database().getInstance().getReference()
-            .then(function(snapshot){
-                snapshot.child(userCalender).child(userID).setValue(jsonObj)
-            })
-            .catch(err)
-            {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-                console.log(`Error: ${err.code}`)
-                console.log("There was an issue with saving Recipe Data to our Database")
-            }
+        let ref = firebase.database().ref('userCalender');
+
+        try
+        {
+            ref.child(userID).setValue(jsonObj)
+        }
+        catch 
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+            console.log(`Error: ${err.code}`)
+            console.log("There was an issue with writing usercalender to our fbdb")
+        } 
     },
 
     "writeUserHealthProfile": function(userID, jsonObj)
     {
-        let Date = new Date().getTime()
-        firebase.database().getInstance().getReference()
-            .then(function(snapshot){
-                snapshot.child(userHealthProfile).child(userID).child(msDate).setValue(jsonObj)
-            })
-            .catch(err)
-            {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-                console.log(`Error: ${err.code}`)
-                console.log("There was an issue with saving Recipe Data to our Database")
-            }
+        let date = new Date();
+        let msDate = date.getTime();
+        let ref = firebase.database().ref('userHealthProfile');
+        try
+        {
+            ref.child(userID).child(msDate).setValue(jsonObj)
+        }
+        catch 
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+            console.log(`Error: ${err.code}`)
+            console.log("There was an issue with writing user health profile to our fbdb")
+        } 
     },
 
     "writeUserList": function(userID)
     {
-        let Date = new Date().getTime()
-        firebase.database().getInstance().getReference()
-            .then(function(snapshot){
-                snapshot.child(userHealthProfile).child(userID).child(msDate).setValue(jsonObj)
-            })
-            .catch(err)
-            {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-                console.log(`Error: ${err.code}`)
-                console.log("There was an issue with saving Recipe Data to our Database")
-            }
+        let date = new Date();
+        let msDate = date.getTime();
+        let ref = firebase.database().ref('userList');
+        try
+        {
+            ref.child(userID).setValue(msDate)
+        }
+        catch 
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+            console.log(`Error: ${err.code}`)
+            console.log("There was an issue with adding user to userlist in fbdb")
+        }
     },
 
     "writeIngredientDisplayWidget": function(recipeID, string)
     {
-        firebase.database().getInstance().getReference()
-            .then(function(snapshot){
-                snapshot.child(ingredientDisplayWidget).child(recipeID).setValue(string)
-            })
-            .catch(err)
-            {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-                console.log(`Error: ${err.code}`)
-                console.log("There was an issue with saving Recipe Data to our Database")
-            }
+        let ref = firebase.database().ref('ingredientDisplayWidget');
+        try
+        {
+            ref.child(recipeID).setValue(string)
+        }
+        catch 
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+            console.log(`Error: ${err.code}`)
+            console.log("There was an issue with writing ingredientwidget to our fbdb")
+        }
     },
 
     "writeNutritionDisplayWidget": function(recipeID, string)
     {
-        firebase.database().getInstance().getReference()
-            .then(function(snapshot){
-                snapshot.child(nutrientDisplayWidget).child(recipeID).setValue(string)
-            })
-            .catch(err)
-            {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-                console.log(`Error: ${err.code}`)
-                console.log("There was an issue with saving Recipe Data to our Database")
-            }
+        let ref = firebase.database().ref('nutritionDisplayWidget');
+        try
+        {
+            ref.child(recipeID).setValue(string)
+        }
+        catch 
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+            console.log(`Error: ${err.code}`)
+            console.log("There was an issue with writing nutrition widget to our fbdb")
+        }
     },
 
     "writePriceDisplayWidget": function(recipeID, string)
     {
-        firebase.database().getInstance().getReference()
-            .then(function(snapshot){
-                snapshot.child(priceDisplayWidget).child(recipeID).setValue(string)
-            })
-            .catch(err)
-            {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-                console.log(`Error: ${err.code}`)
-                console.log("There was an issue with saving Recipe Data to our Database")
-            }
+        let ref = firebase.database().ref('priceDisplayWidget');
+        try
+        {
+            ref.child(recipeID).setValue(string)
+        }
+        catch 
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+            console.log(`Error: ${err.code}`)
+            console.log("There was an issue with writing price widget to our fbdb")
+        }
     },
 
     
@@ -1036,7 +1158,7 @@ let data1 =
        },
 
        "convertToMomentL": function(datetime){
-           return moment(datetime).format('L');
+           return moment.unix(datetime).format('L');
        },
 
        "convertToEpoch": function(datetime){
@@ -1142,10 +1264,11 @@ let data1 =
     "authAgent": function()
     {
         this.InitFirebase();
-        this.refreshBrowserData();
         firebase.auth().onAuthStateChanged(function(user){ 
+            console.log("authagent state change detected: " + user)
             if(user === null)
             {
+                data.refreshBrowserData();
                 return;
             }
             
@@ -1157,9 +1280,10 @@ let data1 =
             }
             let newID = user
             
-            Window.user = newID;
+            window.user = newID;
             let userID = newID.uid;
             data.enableUserCredAgent(userID)
+            data.refreshBrowserData();
             console.log("enabled UserCredAgent")
         })
     },
@@ -1191,78 +1315,86 @@ let data1 =
         //else turn on data and write settings data.
         else
         {
-        data.userCred.signupDate = msDate;
-        data.userCredAgent(id)
-            .then(console.log("user cred agent activated"))
-            .catch(function(id)
+            
+            console.log(id);
+            let msDate = new Date().getTime();
+            data.userCred.signupDate = msDate;
+            
+            try
             {
-                //attempts to read from local if failing to write to db
-                data.readUserCredLocal(id);
-            })
-        data.writeUserCredLocal(id)
-            .then(console.log("user cred written locally"))
-        data.writeUserCred(id)
-            .then(console.log("user cred written to FB"))
-            .catch(function(id)
+                data.userCredAgent(id)
+            }
+
+            catch
             {
-                //attempts to read from local if failing to write to db
                 data.readUserCredLocal(id);
-            })
+            }
+            
+                
+            //attempts to read from local if failing to write to db
+            
+            data.writeUserCredLocal(id)
+            data.writeUserCred(id)
         }
     },
 
     "userCredAgent": function(userID)
     {
-        userNode = firebase.database().ref('/userCred/' + userID)
-        userNode.on('child_added', function(storedCredential)
+        
+        try
         {
-            data.userCred = storedCredential
-        })
-            .catch(function (err)
+            let userNode = firebase.database().ref('userCred/' + userID);
+            userNode.on('child_added', function(storedCredential)
             {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-            })
-    },
+                data.userCred = storedCredential;
+            });
+        }
+        catch(err)
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+        }
+},
 
     //WRITEDATA
     "writeUserCred": function(userID)
     {
-        let Date = new Date().getTime()
+        let date = new Date();
+        let msDate = date.getTime();
         let currentUser = firebase.auth().currentUser;
         this.userCred.firebaseDisplayName = currentUser.displayName;
         this.userCred.email = currentUser.email;
         this.userCred.refreshToken = currentUser.refreshToken;
         this.userCred.lastSignIn = msDate
 
-        firebase.database().getInstance().getReference()
-            .then(function(snapshot){
-                snapshot.child(userList).child(userID).setValue(msDate)
-            })
-            .then(function(snapshot){
-                snapshot.child(userCred).child(userID).child(msDate).setValue(data.userCred)
-            })
-            .then(function(snapshot)
-            {
-                snapshot.child(BrowserSettings).child(userID).child(msDate).setValue(data.browserData)
-            })
-            .catch(err)
-            {
-                console.log(`Error: ${err.message}`)
-                console.log(`Error: ${err.stack}`)
-                console.log(`Error: ${err.code}`)
-                console.log("There was an issue with saving userProfile Data to our Firebase")
-            }
+        try
+        {
+            let ref = firebase.database().ref();
+            ref.child('userList').child(userID).set(msDate);
+            ref.child('userCred').child(userID).child(msDate).set(data.userCred);
+            ref.child('BrowserSettings').child(userID).child(msDate).set(data.browserData);
+           
+        }
+        catch(err)
+        {
+            console.log(`Error: ${err.message}`)
+            console.log(`Error: ${err.stack}`)
+            console.log(`Error: ${err.code}`)
+            console.log("There was an issue with saving userProfile Data to our Firebase")
+        }
     },
 
     "writeUserCredLocal" : function(userID)
     {
-        Window.localStorage.setItem(userID, JSON.stringify(data.userCred))
+        let stringcred = JSON.stringify(data.userCred);
+        console.log(stringcred)
+        window.localStorage.setItem(userID, stringcred)
+        
         if (this.browserData.cookiesEnabled)
         {
-            let Date = new Date().getTime()
-            let expireDate = date + 2.628e+9 | 0
-            Window.document.cookie = (userID + '=' + (JSON.stringify(data.userCred)) + '; expires=' + expireDate);
+            let date = new Date()
+            let expireDate = date.getTime() + 2.628e+9 | 0
+            window.document.cookie = (userID + '=' + (JSON.stringify(data.userCred)) + '; expires=' + expireDate);
         }
     },
 
@@ -1270,7 +1402,7 @@ let data1 =
 
     "userIDExists": function(userID)
     {
-        firebase.database().ref('/userList').once('userlist')
+        firebase.database().ref('userList').once('value')
             .then(function(snapshot)
             {
                 if(snapshot.child(userID))
@@ -1291,59 +1423,71 @@ let data1 =
     {
         if(method === 'googlePopIn')
         {
-            data.googleLoginPopUp()
-                .then(function ()
-                {
-                    let currentUser = data.firebaseConfig.authInit.currentUser;
-                    data.userCred.firebaseUserID = currentUser.uid;
-                    data.userCred.anonymous = false;
-                    this.authAgent();
-                })
-                .catch(function (err)
-                {
-                    alert(`Error: ${err.message}`);
-                    console.log(`Error: ${err.message}`)
-                    console.log(`Error: ${err.stack}`)
-                })
+            var result = false;
+            try
+            {
+                data.googleLoginPopUp()
+                result = true;
+            }   
+            catch
+            {
+                console.log(`Error: ${err.message}`)
+                console.log(`Error: ${err.stack}`)
+                result = false;
+            }
+            finally
+            {
+                return result;
+            }
         }
         else if(method === 'googleRedirect')
         {
-            data.googleLoginRedirect()
-                .then(function ()
-                {
-                    let currentUser = data.firebaseConfig.authInit.currentUser;
-                    data.userCred.firebaseUserID = currentUser.uid;
-                    data.userCred.anonymous = false;
-                })
-                .catch(function (err)
-                {
-                    alert(`Error: ${err.message}`);
-                    console.log(`Error: ${err.message}`)
-                    console.log(`Error: ${err.stack}`)
-                })
+            var result = false;
+            try
+            {
+                data.googleLoginRedirect()
+                result = true;
+            }   
+            catch
+            {
+                alert(`Error: ${err.message}`);
+                console.log(`Error: ${err.message}`)
+                console.log(`Error: ${err.stack}`)
+                result = false;
+            }
+            finally
+            {
+                return result;
+            }
         }
         else
-        {
-            data.firebaseConfig.authInit.signInAnonymously()
-                .then(function ()
-                {
-                    let currentUser = data.firebaseConfig.authInit.currentUser;
-                    this.userCred.firebaseUserID = currentUser.uid;
-                    this.userCred.anonymous = true;
-                })
-                .catch(function (err)
-                {
-                    alert(`Error: ${err.message}`);
-                    console.log(`Error: ${err.message}`)
-                    console.log(`Error: ${err.stack}`)
-                }
-            )
+        {  
+            var result = false;
+            try
+            {
+                data.firebaseConfig.authInit.signInAnonymously()
+                let currentUser = data.firebaseConfig.authInit.currentUser;
+                this.userCred.firebaseUserID = currentUser.uid;
+                this.userCred.anonymous = true;
+                result = true;
+            }
+            catch
+            {
+                alert(`Error: ${err.message}`);
+                console.log(`Error: ${err.message}`)
+                console.log(`Error: ${err.stack}`)
+                result = false;
+            }
+            finally
+            {
+                    return result;
+            }
         }
     },
 
     "userLogout" : function(userID)
     {
-        let userNode = firebase.database().ref('/UserCreds/' + userID)
+        let userNode = firebase.database().ref('UserCreds/' + userID)
         userNode.off('child_added')
         this.userCred.active = false;
         this.writeUserCredLocal(userID);
@@ -1361,7 +1505,7 @@ let data1 =
         navigator.geolocation.getCurrentPosition(GeoLocSuccess, GeoLocFail)
    
         data.browserData.referrer = document.referrer;
-        data.browserData.previousSites = Window.history;
+        data.browserData.previousSites = window.history;
 
         function GeoLocSuccess(pos)
         {
@@ -1379,34 +1523,33 @@ let data1 =
 
     "googleAccessPrep": function()
     {
-        var provider = new firebase.auth.googleAuthProvider();
+        var provider = new firebase.auth.GoogleAuthProvider();
         provider.addScope('profile');
         provider.addScope('email');
-        provider.addScope("https://www.googleapis.com/auth/admin.directory.customer.readonly")
-        provider.addScope("https://www.googleapis.com/auth/analytics.readonly")
-        provider.addScope("https://www.googleapis.com/auth/adsense.readonly")
-        provider.addScope('https://www.googleapis.com/auth/contacts.readonly')
+        provider.addScope('openid');
         firebase.auth().useDeviceLanguage();
     },
     
     "googleLoginPopUp": function()
     {
         this.googleAccessPrep()
-        .then(function()
-        {
-            firebase.auth().signInWithPopup(provider)
-        })
+        var provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth().signInWithPopup(provider)
         .then(function(result)
         {
+            console.log(result)
             if(result.credential)
             {
-                //userInfo
+                let currentUser = firebase.auth().currentUser;
+                data.userCred.firebaseUserID = currentUser.uid;
+                data.userCred.anonymous = false;
                 data.userCred.googUserInfo = result.user;
-                //used to access googles other API functionality for user
                 data.userCred.googAcsTkn = result.credential.accessToken;
             }
             else{
-                break;
+                console.log(result);
+                console.log(result.credential);
+                return;
             }
         })
         .catch(function(err)
@@ -1435,13 +1578,14 @@ let data1 =
             .then(function(result){
                 if(result.credential)
                 {
-                     //userInfo
+                    let currentUser = firebase.auth().currentUser;
+                    data.userCred.firebaseUserID = currentUser.uid;
+                    data.userCred.anonymous = false;
                     data.userCred.googUserInfo = result.user;
-                    //used to access googles other API functionality for user
                     data.userCred.googAcsTkn = result.credential.accessToken;
                 }
                 else{
-                    break;
+                    return;
                 }
             }
             )
@@ -1459,9 +1603,7 @@ let data1 =
     },
 }
 
-////////////////////////LANDING
-
-////////////////////MAIN
+////////////////////////LANDING//////////////
 let landingPageFunctions = {
     "buttonFunctions": {
         "activate": function()
@@ -1489,37 +1631,65 @@ let landingPageFunctions = {
                 $('#btnNext').on('click', function(event){
                     console.log("dietModal SubmitButton EventRegistered:")
                     event.preventDefault();
-                    data.userLogin('anon')
-                        .this(function(){
-                            let newUserHealthProfile = data.userHealthProfile;
-                            newUserHealthProfile.calories = $('#inputCalories').val();
-                            var dietOptions = $('#dietOption').val();
-                            let excVal = $('#inputExclusion').val().toLowerCase()
-                            let excArr = convertExclusionValuetoArray(excVal)
-                            newUserHealthProfile.dietarySelection = dietOptions;
-                            newUserHealthProfile.healthSettings.calTarget = calories;
-                            newUserHealthProfile.exclusionList = excArr
-                            console.log(newUserHealthProfile);
-                            $('#myModalDiet').modal('hide');
-                            $('#inputCalories').val('');
-                            $('#dietOption option:selected').prop('selected', false);
-                            $('#dietOption :first').prop('selected', true);
-                            $('li').remove();
-                            $('#loginModal').modal('show');
-                        })
-                        .catch(err)
+                        if (data.userLogin('anon'))
                         {
-                            alert(`Error: ${err.message}`);
-                            console.log(`Error: ${err.message}`);
-                            console.log(`Error: ${err.stack}`);
-                        }
-                });
-            }
-            else
-            {
-                $('#btnNext').off('click')
-            }
+                            try
+                            {
+                                //buildUserProfile
+                                let userID = data.userCred.firebaseUserID
+                                let newUserHealthProfile = data.userHealthProfile;
+                                newUserHealthProfile.calories = $('#inputCalories').val();
+                                var dietOptions = $('#dietOption').val();
+                                let excVal = $('#inputExclusion').val().toLowerCase()
+                                let excArr = convertExclusionValuetoArray(excVal)
+                                newUserHealthProfile.dietarySelection = dietOptions;
+                                newUserHealthProfile.healthSettings.calTarget = calories;
+                                newUserHealthProfile.exclusionList = excArr
 
+                                //StoreUserProfile
+                                try
+                                {
+                                    writeUserHealthProfile(userID, newUserHealthProfile)
+                                }
+                                catch(err)
+                                {
+                                    console.log(`Error: ${err.message}`)
+                                    console.log(`Error: ${err.stack}`)
+                                }
+
+                                //GenerateCalenderAddSchedule
+                                try
+                                {
+                                    data.userCalenderGen.newCalender();
+                                    data.getMealPlan("week");
+                                }
+                                catch(err)
+                                {
+                                    console.log(`Error: ${err.message}`)
+                                    console.log(`Error: ${err.stack}`)
+                                }
+                            }
+                            catch(err)
+                            {
+                                console.log(`Error: ${err.message}`)
+                                console.log(`Error: ${err.stack}`)
+                            }
+                            
+                            //DOM Manipulation and Redirect
+                            finally
+                            {
+                                $('#myModalDiet').modal('hide');
+                                $('#inputCalories').val('');
+                                $('#dietOption option:selected').prop('selected', false);
+                                $('#dietOption :first').prop('selected', true);
+                                $('li').remove();
+                                $('#loginModal').modal('show');
+                                window.location.replace(dashboard)
+                            }
+                        }
+                })
+            }
+            
             function convertExclusionValuetoArray(input)
             {
                 if (input.includes(','))
@@ -1574,7 +1744,7 @@ let landingPageFunctions = {
            }
         },
         
-        "anonLogin" : function()
+        "anonLogin" : function(bool)
         {
             if(bool)
             {
@@ -1643,7 +1813,7 @@ let landingPageFunctions = {
     },
 
 }
-
+////////////////////////LANDINGEND///////////////////////
 let dashboardPageFunctions = {
     "buttonFunctions":
     {
@@ -1766,7 +1936,7 @@ let dashboardPageFunctions = {
 
 
 }
-
+///////////////////////////Dashboard End
 let sessionManager = {
     "detectPage": function()
     {
@@ -1774,14 +1944,14 @@ let sessionManager = {
         if (loc === 'landing.html')
         {
             console.log("landing page detected")
-            data.authAgent(true);
+            data.authAgent();
             console.log(landingPageFunctions)
             dashboardPageFunctions.buttonFunctions.deactivate();
             landingPageFunctions.buttonFunctions.activate();
         }
         else if(loc === 'dashboard.html')
         {
-            data.authAgent(true);
+            data.authAgent();
             landingPageFunctions.buttonFunctions.deactivate();
             dashboardPageFunctions.buttonFunctions.activate();
         }
@@ -1790,7 +1960,6 @@ let sessionManager = {
 
         else
         {
-            data.authAgent(false);
             console.error("session Manager detected invalid document: " + loc)
         }
         function getLoc()
@@ -1875,13 +2044,11 @@ let sessionManager = {
     
     
 }
+
 ///////////////MAIN ENTRY
 $( document ).ready(function() {
     sessionManager.detectPage();
 });
+////////////////////MAIN END
 
 
-
-////////////////////////LANDINGEND
-
-///////////////////////////Dashboard End
