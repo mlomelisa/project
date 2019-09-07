@@ -10,9 +10,7 @@ let data =
     "spoonifyConfig":
     {
         "project":"",
-        "key":"0b151b0d8dmsh59752643ccdd463p17ee4cjsncd65478a0ec8",
-        "host":"spoonacular-recipe-food-nutrition-v1.p.rapidapi.com",
-        "url":"https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
+     
     },
     
     //API CALLS
@@ -809,14 +807,16 @@ let data =
 
 //FirebaseDataAgents
 
-    "userCalenderAgent": function(userID,init)
+    "userCalenderAgent": function(userID, init)
     {
-
-        if(init){
-
-            firebase.database().ref('userCalender/' + userID).once("value")
+        let user = 'Pzlh7x0bNPUUr30OygVTRNE42M33';
+        console.log(userID)
+        if(init)
+        {
+            firebase.database().ref('userCalender/' + user).once("value")
                 .then(function(snapshot){
-                    data.userCalender =snapshot.child(userID).val();
+                    console.log(user)
+                    data.userCalender = snapshot.child(user).val();
                 })
         }
         try
@@ -1336,30 +1336,39 @@ let data =
     "authAgent": function()
     {
         this.InitFirebase();
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         firebase.auth().onAuthStateChanged(function(user){ 
-            console.log("authagent state change detected: " + user)
             if(user === null)
             {
                 data.refreshBrowserData();
-                return;
+                let newID = user
+                window.user = newID;
+                let userID = newID.uid;
+                console.log(newID.uid)
+                data.userCred.firebaseUserID = userID;
+                data.enableUserCredAgent(userID)
+                data.refreshBrowserData();
+                console.log(user)
             }
             
-            if (data.userCred.firebaseUserID !== null && typeof data.userCred.firebaseUserID !== 'undefined' && data.userCred.firebaseUserID !== 'null' && data.userCred.firebaseUserID !== '')
+            else(data.userCred.firebaseUserID !== null && typeof data.userCred.firebaseUserID !== 'undefined' && data.userCred.firebaseUserID !== 'null' && data.userCred.firebaseUserID !== '')
             {            
                 console.log("currentuserid = " + data.userCred.firebaseUserID)
                 console.log("null check on previous user is true")
                 let previousID = data.userCred.firebaseUserID;
                 data.userLogout(previousID)
+                let userID = user.uid;
+                console.log(user.uid)
+                data.userCred.firebaseUserID = userID;
+                data.enableUserCredAgent(userID)
+                data.refreshBrowserData();
+                console.log(user)
+                console.log(userID)
+                console.log(data.userCred.firebaseUserID)
             }
-            let newID = user
             
-            window.user = newID;
-            let userID = newID.uid;
-            console.log(newID.uid)
-            data.userCred.firebaseUserID = userID;
-            data.enableUserCredAgent(userID)
-            data.refreshBrowserData();
-            console.log("enabled UserCredAgent")
+            
+            
         })
     },
 
@@ -1969,7 +1978,7 @@ let dashboardPageFunctions = {
             $("#showMeals").on("click", function(){   
             //clear previous selection range before displaying new 
             //$("#meals-section").empty();
-        console.log(data.userCalender);
+            console.log(data.userCalender);
             var dbDatesArray = (Object.entries(data.userCalender.schedule));
             console.log(dbDatesArray);
             var fromDate = moment.unix(dbDatesArray[0][0]).format('L');
@@ -2084,24 +2093,22 @@ let sessionManager = {
         if (loc === 'landing.html')
         {
             data.authAgent();
-            data.userCalenderAgent(data.userCred.firebaseUserID);
-            data.userHealthProfileAgent(data.userCred.firebaseUserID);
-
-            console.log("userCalender on the landing page " + data.userCalender);
-            console.log("landing page detected")
-    
-            console.log(landingPageFunctions)
+            console.log(firebase.auth())
+            let id = data.userCred.firebaseUserID
+            data.userCalenderAgent(id);
+            data.userHealthProfileAgent(id);
             dashboardPageFunctions.buttonFunctions.deactivate();
             landingPageFunctions.buttonFunctions.activate();
         }
         else if(loc === 'dashboard.html')
         {   
             data.authAgent();
-            data.userCalenderAgent(data.userCred.firebaseUserID,"init");
-            data.userHealthProfileAgent(data.userCred.firebaseUserID);
-            console.log("userCalender on the dashboard page " + data.userCalender);
-
-            console.log("userCalender on the dashboard page after user auth" + data.userCalender);
+            console.log(firebase.auth())
+            let id = data.userCred.firebaseUserID
+            console.log(data.userCred.firebaseUserID)
+            console.log('kjhkjhkjhj: ', id)
+            data.userCalenderAgent(id,"init");
+            data.userHealthProfileAgent(id);
             landingPageFunctions.buttonFunctions.deactivate();
             dashboardPageFunctions.buttonFunctions.activate();
         }
